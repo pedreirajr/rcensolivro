@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Estatística Descritiva – Censo Demográfico no R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./3-manipulacao-de-dados-tabulares.html" rel="next">
+<link href="./1-introducao-ao-r.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1-introducao-ao-r.html">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</a></li><li class="breadcrumb-item"><a href="./2-estatistica-descritiva.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Censo Demográfico no R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prefácio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1-introducao-ao-r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introdução ao R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2-estatistica-descritiva.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3-manipulacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4-visualizacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Visualização de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5-dados-geograficos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dados Geográficos</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6-conceitos-e-metodos-censo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Censo Demográfico: Conceitos e Métodos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7-agregados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Agregados por Setor Censitário</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8-microdados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9-grade-estatistica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-cnefe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNEFE</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-entorno.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Características Urbanísticas do Entorno dos Domicílios</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Referências</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice do Capítulo</h2>
+   
+  <ul>
+  <li><a href="#introdução" id="toc-introdução" class="nav-link active" data-scroll-target="#introdução"><span class="header-section-number">2.1</span> Introdução</a></li>
+  <li><a href="#medidas-de-posição" id="toc-medidas-de-posição" class="nav-link" data-scroll-target="#medidas-de-posição"><span class="header-section-number">2.2</span> Medidas de Posição</a>
+  <ul>
+  <li><a href="#média" id="toc-média" class="nav-link" data-scroll-target="#média"><span class="header-section-number">2.2.1</span> Média</a></li>
+  <li><a href="#mediana" id="toc-mediana" class="nav-link" data-scroll-target="#mediana"><span class="header-section-number">2.2.2</span> Mediana</a></li>
+  <li><a href="#sec-moda" id="toc-sec-moda" class="nav-link" data-scroll-target="#sec-moda"><span class="header-section-number">2.2.3</span> Moda</a></li>
+  <li><a href="#percentis-e-quartis" id="toc-percentis-e-quartis" class="nav-link" data-scroll-target="#percentis-e-quartis"><span class="header-section-number">2.2.4</span> Percentis e Quartis</a></li>
+  </ul></li>
+  <li><a href="#medidas-de-dispersão" id="toc-medidas-de-dispersão" class="nav-link" data-scroll-target="#medidas-de-dispersão"><span class="header-section-number">2.3</span> Medidas de Dispersão</a>
+  <ul>
+  <li><a href="#variância" id="toc-variância" class="nav-link" data-scroll-target="#variância"><span class="header-section-number">2.3.1</span> Variância</a></li>
+  <li><a href="#desvio-padrão" id="toc-desvio-padrão" class="nav-link" data-scroll-target="#desvio-padrão"><span class="header-section-number">2.3.2</span> Desvio-padrão</a></li>
+  <li><a href="#amplitude" id="toc-amplitude" class="nav-link" data-scroll-target="#amplitude"><span class="header-section-number">2.3.3</span> Amplitude</a></li>
+  <li><a href="#intervalo-interquartil-iqr" id="toc-intervalo-interquartil-iqr" class="nav-link" data-scroll-target="#intervalo-interquartil-iqr"><span class="header-section-number">2.3.4</span> Intervalo Interquartil (IQR)</a></li>
+  </ul></li>
+  <li><a href="#medidas-para-variáveis-categóricas" id="toc-medidas-para-variáveis-categóricas" class="nav-link" data-scroll-target="#medidas-para-variáveis-categóricas"><span class="header-section-number">2.4</span> Medidas para Variáveis Categóricas</a></li>
+  <li><a href="#exercícios" id="toc-exercícios" class="nav-link" data-scroll-target="#exercícios"><span class="header-section-number">2.5</span> Exercícios</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1-introducao-ao-r.html">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</a></li><li class="breadcrumb-item"><a href="./2-estatistica-descritiva.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Para quem preferir esta aula em formato audiovisual, há uma <em>playlist</em> de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 02 e 03.</p>
+<p><a href="https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE">▶️ Abrir playlist no YouTube</a></p>
+<section id="introdução" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="introdução"><span class="header-section-number">2.1</span> Introdução</h2>
+<p>Estatísticas descritivas são métricas que resumem determinadas características de um conjunto de dados em um único valor numérico. Quando calculamos estatísticas descritivas, nosso objetivo é transformar uma determinada variável da base de dados, potencialmente com centenas ou milhares de observações, em um punhado de indicadores que capturam estes atributos.</p>
+<p>Duas famílias de medidas são fundamentais. As <strong>medidas de posição</strong> (ou de tendência central) indicam onde os dados se concentram: qual é o valor “típico” de uma variável. As <strong>medidas de dispersão</strong> indicam o quanto os dados se afastam desse valor central: se as observações estão agrupadas em torno do mesmo ou mais espalhadas. Usadas em conjunto, essas medidas fornecem uma descrição concisa sobre as variáveis de qualquer base de dados.</p>
+<p>A escolha das medidas adequadas depende da escala de mensuração da variável, que podem ser do tipo <strong>numérica</strong> ou <strong>categórica</strong>. Para variáveis numéricas, dispõe-se de um amplo repertório. Média, mediana, moda, percentis e quartis são comuns como medidas de posição. Por sua vez, variância, desvio-padrão, amplitude e intervalo interquartil são bastante utilizadas para indicar o nível de dispersão. Para variáveis categóricas, nosso interesse é principalmente na proporção de cada categoria encontrada, que serve como uma métrica de posição. Medidas de dispersão são menos comum para este tipo de variável, apesar de haver propostas nesse sentido.</p>
+</section>
+<section id="medidas-de-posição" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="medidas-de-posição"><span class="header-section-number">2.2</span> Medidas de Posição</h2>
+<p>Para dados numéricos, as medidas de posição mais comuns são a média, a mediana, a moda e os percentis. Cada uma descreve um aspecto diferente de onde os dados se localizam na distribuição.</p>
+<section id="média" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="média"><span class="header-section-number">2.2.1</span> Média</h3>
+<p>A média aritmética é a medida de posição mais usada. Ela representa o ponto de equilíbrio da distribuição: se todos os valores fossem redistribuídos igualmente entre os indivíduos, cada um receberia exatamente a média.</p>
+<p>O cálculo é direto. Para uma amostra de tamanho <span class="math inline">\(n\)</span>, a média amostral <span class="math inline">\(\bar{X}\)</span> é dada por:</p>
+<p><span class="math display">\[
+\bar{X} = \frac{1}{n} \sum_{i=1}^{n} x_i
+\]</span></p>
+<p><strong>Exemplo.</strong> Considere os tempos de espera (em minutos) em um ponto de ônibus, registrados para uma amostra de cinco moradores:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tempos <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">15</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Cálculo "força bruta": soma dividida pelo número de observações</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(tempos) <span class="sc">/</span> <span class="fu">length</span>(tempos)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+<p>Note, entretanto, que não precisamos calcular a média na “força bruta” como realizado acima. No R <em>base</em>, temos uma função específica para cumprir este papel, a <code>mean()</code>, que recebe como principal argumento o vetor de dados numérico:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Função predefinida</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(tempos)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+<p>Observe como os dois cálculos produzem o mesmo resultado: 9 minutos.</p>
+</section>
+<section id="mediana" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="mediana"><span class="header-section-number">2.2.2</span> Mediana</h3>
+<p>A mediana é o valor central da distribuição quando os dados estão ordenados em ordem crescente. Ela divide a amostra em dois grupos iguais: metade das observações fica abaixo dela, metade fica acima.</p>
+<p>O procedimento de cálculo tem dois casos, dependendo se <span class="math inline">\(n\)</span> é ímpar ou par.</p>
+<p><strong>Caso 1 (<span class="math inline">\(n\)</span> ímpar):</strong> Ordene os dados e selecione o valor na posição <span class="math inline">\((n + 1) / 2\)</span>. Verifique para produzir valores de um determinado vetor de forma crescente, podemos utilizar a função <code>sort()</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tempos_crescente <span class="ot">&lt;-</span> <span class="fu">sort</span>(tempos)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tempos_crescente</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  4  6  8 12 15</code></pre>
+</div>
+</div>
+<p>Com este vetor com valores crescentes, podemos então encontrar qual valor está na posição <span class="math inline">\((n+1)/2\)</span> da seguinte maneira:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quantidade de valores (tamanho do vetor)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(tempos_crescente)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Posição central</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pos <span class="ot">&lt;-</span> (n <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>tempos_crescente[pos]</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+</div>
+<p>Note que com cinco observações, o valor central está na posição 3. Deste modo, e a mediana desta base de dados é 8 minutos.</p>
+<p><strong>Caso 2 (<span class="math inline">\(n\)</span> par):</strong> Ordene os dados e calcule a média entre os dois valores centrais, nas posições <span class="math inline">\(n/2\)</span> e <span class="math inline">\(n/2 + 1\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tempos2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">15</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tempos2_crescente <span class="ot">&lt;-</span> <span class="fu">sort</span>(tempos2)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="fu">length</span>(tempos2_crescente)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Duas posições centrais</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>pos1 <span class="ot">&lt;-</span> n2 <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pos2 <span class="ot">&lt;-</span> n2 <span class="sc">/</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>(tempos2_crescente[pos1] <span class="sc">+</span> tempos2_crescente[pos2]) <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+<p>Veja que o procedimento para calcular a mediana na “força bruta” envolve uma quantidade razoável de código, pois primeiro temos que ordenar, depois encontrar a posição e, por fim, achar o valor daquela posição no vetor. Felizmente, no R <em>base</em> podemos obter esse resultado com uma linha de código utilizando a função <code>median()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(tempos)    <span class="co"># n ímpar → mediana = 8</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(tempos2)   <span class="co"># n par  → mediana = (8 + 10) / 2 = 9</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-moda" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="sec-moda"><span class="header-section-number">2.2.3</span> Moda</h3>
+<p>A moda é o valor de uma variável numérica (ou categoria de uma variável categórica) que ocorre com maior frequência no conjunto de dados. Em variáveis contínuas, representadas por números racionais (<span class="math inline">\(\mathbb{Q}\)</span>) ou reais (<span class="math inline">\(\mathbb{R}\)</span>), geralmente há valores com mais de uma casa decimal, fazendo com que raramente haja repetições destes valores. Isso faz com que a moda seja pouco informativa nestes casos. Ela é mais útil quando temos variáveis numéricas inteiras (<span class="math inline">\(\mathbb{Z}\)</span>) com bastante repetição de valores, a exemplo da <em>quantidade de automóveis presentes no domicílio</em>, ou variáveis categóricas, como o <em>número de automóveis por domicílio</em> ou o <em>modo de transporte escolhido para as viagens a trabalho</em>.</p>
+<p>O R <em>base</em> não possui uma função adequada para calcular a moda estatística. O comando <code>mode()</code> retorna o <em>tipo</em> de objeto em R (como <code>"numeric"</code> ou <code>"character"</code>), não a moda da distribuição. A forma mais direta é combinar <code>table()</code>, para produzir uma tabela de frequências, juntamente com a função <code>which.max()</code>, que retorna a posição do elemento de maior frequência em um determinado vetor. Comecemos primeiro gerando um vetor com dados de número de automóveis por domicílio em um conjunto de 10 residências:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Número de automóveis por domicílio em dez residências</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>autos <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabela de frequências</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">table</span>(autos)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>tb</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>autos
+0 1 2 3 
+2 5 2 1 </code></pre>
+</div>
+</div>
+<p>Para interpretar o resultado de uma objeto produzido por uma função <code>table()</code>, devemos sempre entender que a primeira linha indicam os níveis/categorias possíveis da base de dados e a segunda linha a quantidade de vezes que esses níveis/categorias aparecem. Observe para o caso acima que temos o valor <strong>3</strong> automóveis com frequência igual a <strong>1</strong> (última coluna).</p>
+<p>Um fato interessante sobre o objeto criado por esta função <code>table()</code> é que podemos obter os valores dos níveis/categorias passando-o como argumento na expressão <code>names()</code>, ao passo que o valor das frequências pode ser gerado convertendo esse objeto para um vetor numérico com a função <code>as.numeric()</code>. Observe abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Níveis/categorias possíveis de quantidade de automóveis em casa:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tb)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "0" "1" "2" "3"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Frequências observadas para cada um desses níveis/categorias:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(tb)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 5 2 1</code></pre>
+</div>
+</div>
+<p>Entendido este funcionamento, podemos determinar este valor de maior frequência (<strong>moda</strong>) com:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Posição de tb com o valor de maior frequência</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>pos_max <span class="ot">&lt;-</span> <span class="fu">which.max</span>(tb)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtenção do valor de maior frequência</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(tb[pos_max])</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Neste exemplo, o valor <strong>1</strong> aparece <strong>cinco</strong> vezes e é a moda da distribuição. Isso significa que é muito comum encontrar residências com somente um automóvel em casa nessa base de dados!</p>
+</section>
+<section id="percentis-e-quartis" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored" data-anchor-id="percentis-e-quartis"><span class="header-section-number">2.2.4</span> Percentis e Quartis</h3>
+<p>O percentil <span class="math inline">\(P\)</span> é o valor abaixo do qual uma proporção <span class="math inline">\(P/100\)</span> dos dados se encontra. O percentil 50 (<span class="math inline">\(P_{50}\)</span>) coincide com a mediana os percentis 25 (<span class="math inline">\(P_{25}\)</span>) e 75 (<span class="math inline">\(P_{75}\)</span>) são chamados de primeiro quartil (<span class="math inline">\(Q_1\)</span>) e terceiro quartil (<span class="math inline">\(Q_3\)</span>), respectivamente.</p>
+<p>Existem várias formas de calcular percentis, que seguem uma lógica bastante parecida com a da mediana, mostrada anteriromente. Uma maneira bem simples de produzir o resultado de percentil pode ser de acordo com o seguinte conjunto de etapas:</p>
+<ol type="1">
+<li>Ordenar os dados em ordem crescente.</li>
+<li>Calcular a posição <span class="math inline">\(R = (P / 100) \times n\)</span>.</li>
+<li>Se <span class="math inline">\(R\)</span> for inteiro, o percentil é o valor que está nesta posição <span class="math inline">\(R\)</span> dos dados ordenados. Caso não seja inteiro, arredonda-se <span class="math inline">\(R\)</span> para cima e usa-se o valor nessa posição.</li>
+</ol>
+<p>Suponha dados de distância de viagem (em metros) de 10 indivíduos abaixo, sobre o qual queiramos calcular o percentil 85 (<span class="math inline">\(P_{85}\)</span>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dist <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">1500</span>, <span class="dv">3800</span>, <span class="dv">4000</span>, <span class="dv">800</span>, <span class="dv">9000</span>, <span class="dv">15000</span>, <span class="dv">100</span>, <span class="dv">2000</span>, <span class="dv">7100</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Vamos obter inicialmente estes valores ordenados de forma crescente (Passo <strong>1</strong>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dist_crescente <span class="ot">&lt;-</span> <span class="fu">sort</span>(dist)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>dist_crescente</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]   100   800  1500  2000  2000  3800  4000  7100  9000 15000</code></pre>
+</div>
+</div>
+<p>Na sequência, vamos calcular a posição do percentil 85 (Passo <strong>2</strong>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="dv">85</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(dist_crescente)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Posição</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>R <span class="ot">&lt;-</span> (P <span class="sc">/</span> <span class="dv">100</span>) <span class="sc">*</span> n</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>R</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8.5</code></pre>
+</div>
+</div>
+<p>Note que <span class="math inline">\(R = 8.5\)</span> não é inteiro, logo temos que obter o seu valor inteiro superior (ou seja, na posição <strong>9</strong>). No R <em>base</em>, podemos extrair esse valor por meio da função <code>ceiling()</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> (Passo <strong>3</strong>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pos <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(R)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>pos</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+<p>Sendo assim, passando essa posição no vetor de distâncias ordenado crescentemente, temos que <span class="math inline">\(P_{85}\)</span> é:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>dist_crescente[pos]</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9000</code></pre>
+</div>
+</div>
+<p>Assim como nos outros casos, não precisamos obter valores de percentis com essa quantidade de código. Para tanto, utilizamos a função <code>quantile()</code> que permite calcular simultaneamente mais de um percentil com seu parâmetro <code>probs</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(dist, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.50</span>, <span class="fl">0.75</span>, <span class="fl">0.85</span>, <span class="fl">0.90</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> 25%  50%  75%  85%  90% 
+1625 2900 6325 8335 9600 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Métodos de cálculo de quantis no R
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Observe que o valor do percentil 85 gerado pela função <code>quantile()</code> (<em>8335</em>) é diferente daquele que geramos pelo método de 3 passos sugerido inicialmente (<em>9000</em>). Isso ocorre porque o R implementa 9 métodos diferentes de cálculo de quantis, selecionáveis pelo argumento <code>type</code> de <code>quantile()</code>. O método padrão da função <code>quantile()</code> é o <code>type = 7</code>, que usa interpolação linear. O método que utilizamos é o <code>type = 1</code>, vale a pena reproduzir com este parâmetro e testar por aí. Para uma comparação entre os métodos, veja <span class="citation" data-cites="hyndman1996">Hyndman &amp; Fan (<a href="references.html#ref-hyndman1996" role="doc-biblioref">1996</a>)</span>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="medidas-de-dispersão" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="medidas-de-dispersão"><span class="header-section-number">2.3</span> Medidas de Dispersão</h2>
+<p>A média e as demais medidas de posição descrevem onde os dados estão centrados, mas não revelam o quanto eles variam. Considere os dados abaixo sobre atrasos (em minutos) de um ônibus ao longo do dia, registrados em três paradas diferentes (A, B e C):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>parada_a <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>parada_b <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>parada_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">10</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Vamos calcular as médias em cada uma destas paradas:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(parada_a)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(parada_b)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(parada_c)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Observe como os valores do atraso médio são idênticos (5 minutos). Note, entretanto, que as experiências dos passageiros nas três paradas são muito diferentes. Enquanto na parada A os atrasos variam pouco, na parada C eles oscilam entre zero e dez minutos, uma diferença não capturada pela média. Podemos avaliar essa diferença no gráfico abaixo, onde cada ponto representa uma parada (eixo y) e seu respectivo valor de atraso (eixo x). No <a href="./4-visualizacao-de-dados-tabulares.html">Capítulo 4</a>, entenderemos como produzir visualizações como esta no R.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-paradas-dotplot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-paradas-dotplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;2.1: Atrasos de ônibus em três paradas com a mesma média (5 min). A linha tracejada indica a média comum. As paradas diferem no grau de dispersão dos valores.
+</figcaption>
+<div aria-describedby="fig-paradas-dotplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="2-estatistica-descritiva_files/figure-html/fig-paradas-dotplot-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>As medidas de dispersão quantificam essa variação em torno da média. Abordaremos aqui as medidas de <strong>Variância</strong>, <strong>Desvio-padrão</strong>, <strong>Amplitude</strong> e <strong>Intervalo Interquartil</strong>.</p>
+<section id="variância" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="variância"><span class="header-section-number">2.3.1</span> Variância</h3>
+<p>Em essência, a variância dimensiona o quanto os valores de uma determinada variável se encontram longe da sua média. Para tanto, variância calcula <em>a média dos desvios quadráticos em relação à média dos dados</em>. Se essa descrição não te parece intuitiva, vamos entender, passo a passo, como o cálculo da variância funciona:</p>
+<p><strong>Passo 1:</strong> calcule os desvios de cada observação <span class="math inline">\(i\)</span> (<span class="math inline">\(d_i\)</span>) em relação à média, fazendo <span class="math inline">\(d_i = x_i - \bar{X}\)</span>. Observe que o conceito de <em>desvio</em> é simplesmente a diferença numérica entre um valor específico de uma observação <span class="math inline">\(i\)</span> (<span class="math inline">\(x_i\)</span>) e a sua média.</p>
+<p><strong>Passo 2:</strong> eleve cada desvio ao quadrado, <span class="math inline">\((x_i - \bar{X})^2\)</span>.</p>
+<p><strong>Passo 3:</strong> calcule a média dos desvios quadráticos. Para uma amostra, divide-se por <span class="math inline">\(n - 1\)</span> (e não por <span class="math inline">\(n\)</span>) para obter aquilo que chamamos de um estimador <em>não-viesado</em> da variância populacional em Estatística. Não se preocupe com isto agora, pois é tema para o futuro.</p>
+<p>Neste momento, você pode estar se perguntando “por que elevar os desvios ao quadrado, ao invés de tomar a sua média diretamente?”. Note que a soma desses desvios <span class="math inline">\(\sum_{i=1}^{n} d_i\)</span> é sempre zero, pois os desvios positivos e negativos se cancelam, o que faz com que a média desses desvios, ou seja <span class="math inline">\(\bar{d_i}=\frac{1}{n} \sum_{i=1}^{n} d_i\)</span>, seja também zero. Uma maneira de contornar essa situação é elevar os desvios ao quadrado antes de calcular a média, pois isso tornam positivos os valores negativos de desvio.</p>
+<p>Se quisermos representar os passos 1 a 3 do cálculo variância amostral (dada por <span class="math inline">\(s^2\)</span>) em uma única fórmula, fazemos então:</p>
+<p><span class="math display">\[
+s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{X})^2
+\]</span></p>
+<p>Vamos calcular a variância amostral na “força bruta”. Começamos primeiro produzindo os desvios:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> parada_b</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Desvios em relação à média</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>desvios <span class="ot">&lt;-</span> x <span class="sc">-</span> <span class="fu">mean</span>(x)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>desvios</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -4 -2  0  2  4</code></pre>
+</div>
+</div>
+<p>Na sequência obtemos os desvios quadráticos e calculamos sua média com o denonimador <span class="math inline">\(n-1\)</span> ao invés de <span class="math inline">\(n\)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Desvios quadráticos</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>desvios<span class="sc">^</span><span class="dv">2</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16  4  0  4 16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Variância amostral</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(desvios<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Obviamente, há uma maneira mais direta, que pode ser realizada com a função <code>var()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Função predefinida</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(x)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Uma limitação da variância é que sua unidade de medida é o quadrado da unidade original. Por exemplo, se os tempos são medidos em minutos, a variância é expressa em minutos ao quadrado (<span class="math inline">\(min^2\)</span>, o que dificulta sua interpretação direta. Para tanto, temos uma alternativa interessante denominada <strong>Desvio-padrão</strong>.</p>
+</section>
+<section id="desvio-padrão" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="desvio-padrão"><span class="header-section-number">2.3.2</span> Desvio-padrão</h3>
+<p>O desvio-padrão resolve a limitação da variância ao tomar sua raiz quadrada, devolvendo o resultado à unidade de medida original dos dados. Representado por <span class="math inline">\(s\)</span>, o desvio-padrão possui a seguinte formulação:</p>
+<p><span class="math display">\[
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{X})^2}
+\]</span></p>
+<p>Calculando, na “força bruta”, temos:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>((x <span class="sc">-</span> <span class="fu">mean</span>(x))<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.162278</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ou equivalentemente</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">var</span>(x))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.162278</code></pre>
+</div>
+</div>
+<p>Porém, temos a função <code>sd()</code><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>, preconcebida para esta função:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(x)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.162278</code></pre>
+</div>
+</div>
+<p>Aplicando às três paradas, o desvio-padrão confirma o que o gráfico mostrava:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(parada_a)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.581139</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(parada_b)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.162278</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(parada_c)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.527693</code></pre>
+</div>
+</div>
+<p>A parada C tem o maior desvio-padrão (4.53 min), indicando maior variabilidade nos atrasos. A parada A tem o menor (1.58 min).</p>
+</section>
+<section id="amplitude" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="amplitude"><span class="header-section-number">2.3.3</span> Amplitude</h3>
+<p>A amplitude é uma medida de dispersão mais simples, refletindo meramente a diferença entre o maior e o menor valor do conjunto de dados, que podem ser obtidos pelas funções <code>max()</code> e <code>min()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(parada_c) <span class="sc">-</span> <span class="fu">min</span>(parada_c)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Uma outra maneira de obter esses resultados é por meio das funções <code>range()</code> e <code>diff()</code>. Enquanto a primeira retorna um vetor com os valores mínimo e máximo da base de dados, a segunda calcula a diferença entre a segunda e a primeira observação desse vetor<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>min_max <span class="ot">&lt;-</span> <span class="fu">range</span>(parada_b)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>min_max</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 9</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>amp <span class="ot">&lt;-</span> <span class="fu">diff</span>(min_max)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>amp</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+</div>
+<p>A principal limitação da amplitude é sua sensibilidade extrema a valores extremos. Um único valor atípico, muito alto ou muito baixo, pode inflar consideravelmente a amplitude, sem que isso reflita o comportamento da maioria dos dados. É aí que entra em cena o <strong>Intervalo Interquartil</strong>.</p>
+</section>
+<section id="intervalo-interquartil-iqr" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="intervalo-interquartil-iqr"><span class="header-section-number">2.3.4</span> Intervalo Interquartil (IQR)</h3>
+<p>O intervalo interquartil (IQR, do inglês <em>interquartile range</em>) mede a amplitude do “meio” da distribuição: a diferença entre o terceiro e o primeiro quartil.</p>
+<p><span class="math display">\[
+\text{IQR} = Q_3 - Q_1
+\]</span></p>
+<p>Como ele cobre apenas os 50% centrais dos dados, é muito mais robusto a valores extremos do que a amplitude. Para obtê-lo manualmente, fazemos:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>q1 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(parada_c, <span class="fl">0.25</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>q1</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>25% 
+  1 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>q3 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(parada_c, <span class="fl">0.75</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>q3</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>75% 
+  9 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>iqr <span class="ot">&lt;-</span> q3 <span class="sc">-</span> q1</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>iqr <span class="co"># Veja que aparece um 75% acima do valor 8 (herdado de q3), mas que deve ser desconsiderado.</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>75% 
+  8 </code></pre>
+</div>
+</div>
+<p>Assim como as demais estatísticas, também é possível calcular o IQR por meio de uma função pré-definida no R <em>base</em>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">IQR</span>(parada_c)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="medidas-para-variáveis-categóricas" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="medidas-para-variáveis-categóricas"><span class="header-section-number">2.4</span> Medidas para Variáveis Categóricas</h2>
+<p>Para variáveis categóricas, as medidas de posição baseadas em operações aritméticas (como média e mediana) não fazem sentido. Não é possível calcular a “média” de uma variável que represente o modo de transporte que a pessoa utiliza na viagem ao trabalho, por exemplo. O que importa, nesse caso, é conhecer quais categorias existem, com que frequência cada uma aparece e qual delas é a mais comum.</p>
+<p>Considere uma amostra de 20 pessoas pesquisadas sobre o modo de transporte principal utilizado nas viagens ao trabalho:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>modo <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"onibus"</span>, <span class="st">"automovel"</span>, <span class="st">"caminhada"</span>, <span class="st">"automovel"</span>, <span class="st">"bicicleta"</span>,</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"onibus"</span>, <span class="st">"automovel"</span>, <span class="st">"motocicleta"</span>, <span class="st">"onibus"</span>, <span class="st">"automovel"</span>,</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"caminhada"</span>, <span class="st">"onibus"</span>, <span class="st">"automovel"</span>, <span class="st">"bicicleta"</span>, <span class="st">"onibus"</span>,</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"automovel"</span>, <span class="st">"motocicleta"</span>, <span class="st">"onibus"</span>, <span class="st">"automovel"</span>, <span class="st">"caminhada"</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Com a função <code>unique()</code>, é possível listar as categorias distintas presentes na variável, sem repetição:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(modo)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "onibus"      "automovel"   "caminhada"   "bicicleta"   "motocicleta"</code></pre>
+</div>
+</div>
+<p>Vimos anteriormente (<a href="#sec-moda" class="quarto-xref"><span>Seção 2.2.3</span></a>) que a função <code>table()</code> nos ajudou a calcular a moda de uma variável relativa à quantidade de automóveis em cada residência de uma pesquisa. De maneira análoga, vamos utilizá-la aqui para identificar a frequência absoluta de cada nível/categoria da variável categórica <code>modo</code> que criamos acima:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>tab_modo <span class="ot">&lt;-</span> <span class="fu">table</span>(modo)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Para obter as proporções (frequências relativas), aplica-se <code>prop.table()</code> sobre o resultado de <code>table()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(tab_modo)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>modo
+  automovel   bicicleta   caminhada motocicleta      onibus 
+       0.35        0.10        0.15        0.10        0.30 </code></pre>
+</div>
+</div>
+<p>Multiplicando por 100, obtemos os percentuais:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(tab_modo) <span class="sc">*</span> <span class="dv">100</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>modo
+  automovel   bicicleta   caminhada motocicleta      onibus 
+         35          10          15          10          30 </code></pre>
+</div>
+</div>
+<p>Nesse conjunto de dados, o automóvel é o modo mais frequente, com 35% das respostas. Esse é exatamente o conceito de <strong>moda</strong> aplicado a variáveis categóricas: a categoria com maior frequência. Conforme visto anteriormente na seção sobre moda, o R não possui uma função nativa para isso, mas a combinação <code>which.max(table())</code> resolve o caso:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">which.max</span>(<span class="fu">table</span>(modo)))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "automovel"</code></pre>
+</div>
+</div>
+</section>
+<section id="exercícios" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="exercícios"><span class="header-section-number">2.5</span> Exercícios</h2>
+<p><strong>1.</strong> Dado o vetor de salários mensais (em R$): <code>c(1800, 2200, 1500, 3100, 2800, 1900, 4500, 2100)</code>:</p>
+<ol type="a">
+<li>Calcule a média e a mediana usando “força bruta” e funções pré-definidas em R.</li>
+<li>Calcule o percentil 25, 50, 75 e 90 manualmente e com uma função pré-definida em R.</li>
+<li>Calcule o IQR manualmente e com uma função pré-definida em R.</li>
+</ol>
+<p><strong>2.</strong> Considere dois grupos de estudantes com as seguintes notas:</p>
+<ul>
+<li>Grupo 1: <code>c(6, 6, 7, 7, 7, 8, 8, 9)</code></li>
+<li>Grupo 2: <code>c(3, 4, 6, 7, 8, 9, 10, 10)</code></li>
+</ul>
+<ol type="a">
+<li>Calcule a média de cada grupo. O que você observa?</li>
+<li>Calcule a variância e o desvio-padrão de cada grupo usando “força bruta” e funções pré-definidas. Qual grupo apresenta maior homogeneidade nas notas?</li>
+</ol>
+<p><strong>3.</strong> O vetor abaixo registra o grau de instrução de 15 entrevistados em uma pesquisa domiciliar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>instrucao <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"fundamental"</span>, <span class="st">"medio"</span>, <span class="st">"superior"</span>, <span class="st">"medio"</span>, <span class="st">"fundamental"</span>,</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"medio"</span>, <span class="st">"superior"</span>, <span class="st">"medio"</span>, <span class="st">"fundamental"</span>, <span class="st">"medio"</span>,</span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"superior"</span>, <span class="st">"medio"</span>, <span class="st">"sem instrucao"</span>, <span class="st">"fundamental"</span>, <span class="st">"medio"</span></span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="a">
+<li>Quais são as categorias distintas presentes na variável?</li>
+<li>Monte a tabela de frequências absolutas e relativas. Qual é a categoria mais frequente?</li>
+<li>Identifique a moda dessa variável.</li>
+</ol>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-hyndman1996" class="csl-entry" role="listitem">
+Hyndman, R. J., &amp; Fan, Y. (1996). Sample Quantiles in Statistical Packages. <em>The American Statistician</em>, <em>50</em>(4), 361–365. <a href="https://doi.org/10.2307/2684934">https://doi.org/10.2307/2684934</a>
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>A função <code>sort()</code> possui um argumento <code>decreasing</code> que tem, por padrão, o valor <code>FALSE</code>, ou seja, o ordenamento é crescente. Caso queiramos ordenamento decrescente, poderíamos reajustá-lo para <code>decreasing = TRUE</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Curiosidade: <em>ceiling</em>, em inglês, significa <strong>teto</strong>. Do mesmo modo, podemos obter o valor inteiro inferior por meio da função <code>floor()</code>, nome que pode ser traduzido como <strong>piso/chão</strong><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>do inglês, <em>standard deviation</em><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>A função <code>diff()</code>, na verdade, calcula as diferenças entre os valores consecutivos de um vetor. Por exemplo, seja um vetor <code>v</code> dado por <code>v &lt;- c(2, 5, 10)</code>, a operação <code>diff(v)</code> retornará o vetor <code>c(3,5)</code>, isto é, as diferenças entre os valores 5 e 2 e entre 10 e 5<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./1-introducao-ao-r.html" class="pagination-link" aria-label="Introdução ao R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introdução ao R</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./3-manipulacao-de-dados-tabulares.html" class="pagination-link" aria-label="Manipulação de Dados Tabulares">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

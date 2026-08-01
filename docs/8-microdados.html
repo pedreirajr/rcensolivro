@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>8&nbsp; Microdados da Amostra – Censo Demográfico no R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./9-grade-estatistica.html" rel="next">
+<link href="./7-agregados.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./6-conceitos-e-metodos-censo.html">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</a></li><li class="breadcrumb-item"><a href="./8-microdados.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Censo Demográfico no R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prefácio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1-introducao-ao-r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introdução ao R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2-estatistica-descritiva.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3-manipulacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4-visualizacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Visualização de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5-dados-geograficos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dados Geográficos</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6-conceitos-e-metodos-censo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Censo Demográfico: Conceitos e Métodos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7-agregados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Agregados por Setor Censitário</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8-microdados.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9-grade-estatistica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-cnefe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNEFE</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-entorno.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Características Urbanísticas do Entorno dos Domicílios</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Referências</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice do Capítulo</h2>
+   
+  <ul>
+  <li><a href="#introdução" id="toc-introdução" class="nav-link active" data-scroll-target="#introdução"><span class="header-section-number">8.1</span> Introdução</a></li>
+  <li><a href="#aspectos-metodológicos" id="toc-aspectos-metodológicos" class="nav-link" data-scroll-target="#aspectos-metodológicos"><span class="header-section-number">8.2</span> Aspectos metodológicos</a>
+  <ul>
+  <li><a href="#o-plano-amostral" id="toc-o-plano-amostral" class="nav-link" data-scroll-target="#o-plano-amostral"><span class="header-section-number">8.2.1</span> O plano amostral</a></li>
+  <li><a href="#expansão-da-amostra" id="toc-expansão-da-amostra" class="nav-link" data-scroll-target="#expansão-da-amostra"><span class="header-section-number">8.2.2</span> Expansão da amostra</a></li>
+  <li><a href="#sec-areas-pond" id="toc-sec-areas-pond" class="nav-link" data-scroll-target="#sec-areas-pond"><span class="header-section-number">8.2.3</span> Áreas de ponderação (aspectos metodológicos)</a></li>
+  </ul></li>
+  <li><a href="#sec-survey" id="toc-sec-survey" class="nav-link" data-scroll-target="#sec-survey"><span class="header-section-number">8.3</span> Os pacotes survey e srvyr</a></li>
+  <li><a href="#sec-dom" id="toc-sec-dom" class="nav-link" data-scroll-target="#sec-dom"><span class="header-section-number">8.4</span> Analisando microdados de <em>domicílios</em></a>
+  <ul>
+  <li><a href="#obtendo-e-preparando-os-dados" id="toc-obtendo-e-preparando-os-dados" class="nav-link" data-scroll-target="#obtendo-e-preparando-os-dados"><span class="header-section-number">8.4.1</span> Obtendo e preparando os dados</a></li>
+  <li><a href="#declarando-o-plano-amostral" id="toc-declarando-o-plano-amostral" class="nav-link" data-scroll-target="#declarando-o-plano-amostral"><span class="header-section-number">8.4.2</span> Declarando o plano amostral</a></li>
+  <li><a href="#sec-dom-estat" id="toc-sec-dom-estat" class="nav-link" data-scroll-target="#sec-dom-estat"><span class="header-section-number">8.4.3</span> Calculando estatísticas</a></li>
+  <li><a href="#produzindo-mapas" id="toc-produzindo-mapas" class="nav-link" data-scroll-target="#produzindo-mapas"><span class="header-section-number">8.4.4</span> Produzindo mapas</a></li>
+  </ul></li>
+  <li><a href="#sec-ind" id="toc-sec-ind" class="nav-link" data-scroll-target="#sec-ind"><span class="header-section-number">8.5</span> Analisando microdados de <em>indivíduos</em></a>
+  <ul>
+  <li><a href="#obtendo-e-preparando-os-dados-1" id="toc-obtendo-e-preparando-os-dados-1" class="nav-link" data-scroll-target="#obtendo-e-preparando-os-dados-1"><span class="header-section-number">8.5.1</span> Obtendo e preparando os dados</a></li>
+  <li><a href="#declarando-o-plano-amostral-1" id="toc-declarando-o-plano-amostral-1" class="nav-link" data-scroll-target="#declarando-o-plano-amostral-1"><span class="header-section-number">8.5.2</span> Declarando o plano amostral</a></li>
+  <li><a href="#calculando-estatísticas" id="toc-calculando-estatísticas" class="nav-link" data-scroll-target="#calculando-estatísticas"><span class="header-section-number">8.5.3</span> Calculando estatísticas</a></li>
+  <li><a href="#produzindo-mapas-1" id="toc-produzindo-mapas-1" class="nav-link" data-scroll-target="#produzindo-mapas-1"><span class="header-section-number">8.5.4</span> Produzindo mapas</a></li>
+  </ul></li>
+  <li><a href="#exercícios" id="toc-exercícios" class="nav-link" data-scroll-target="#exercícios"><span class="header-section-number">8.6</span> Exercícios</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./6-conceitos-e-metodos-censo.html">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</a></li><li class="breadcrumb-item"><a href="./8-microdados.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introdução" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="introdução"><span class="header-section-number">8.1</span> Introdução</h2>
+<p>Nos dois capítulos anteriores, introduzimos conceitualmente o Censo Demográfico e aprendemos a explorar um dos seus principais produtos, os Agregados por Setor Censitário. Todavia, os Agregados são limitados com relação aos aspectos sociodemográficos que são possíveis de analisar a partir do Censo, já que se referem somente aos itens levantados no Questionário Básico. Neste capítulo, apresentaremos um produto distinto e complementar, os <strong>microdados da amostra do Censo Demográfico</strong>, que permitem análises muito mais ricas em termos de variáveis, embora ao custo de uma resolução espacial menor.</p>
+<p>A modalidade amostral do Censo <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/9662-censo-demografico-2010.html?edicao=9754&amp;t=conceitos-e-metodos">tem raízes na edição de 1960</a>, quando o Brasil adotou técnicas de amostragem probabilística na coleta censitária. A partir de então, passou-se a utilizar dois tipos de questionário para as entrevistas domiciliares, o Básico e o da Amostra, que seguem até os dias atuais. Os microdados são a forma mais desagregada de divulgação dos Resultados da Amostra, com os registros individuais<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> de cada domicílio e morador entrevistados.</p>
+<p>Ao contrário dos agregados por setor, os microdados não vêm com totais pré-calculados para áreas diferentes do território, mas sim com os valores individuais de cada variável para cada domicílio ou pessoa. É o pesquisador quem decide quais estatísticas calcular e como organizá-las. Essa riqueza temática é possível porque os microdados registram todas as variáveis do <strong>Questionário da Amostra</strong>, o instrumento mais completo do Censo. Esse questionário contém todos os quesitos do Questionário Básico (26 questões no Censo 2022 e 34 no de 2010) e um conjunto adicional de temas, como outras características dos domicílios (ex.: acesso a Internet e quantidade de cômodos) e dos indivíduos (ex.: nupcialidade, fecundidade, religião, deficiência, migração e deslocamento para estudo/trabalho) <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>. Em 2022, o questionário da amostra foi composto 77 questões, uma redução importante em relação ao questionário de 2010, que contava com 102 quesitos. Em ambas as edições, o questionário foi respondido por aproximadamente 1 de cada 10 domicílios brasileiros.</p>
+<p>Em contrapartida, a menor unidade geográfica identificável de cada domicílio ou indivíduo nos microdados é a <strong>área de ponderação</strong>, um agrupamento de setores censitários descrito em detalhe na <a href="#sec-areas-pond" class="quarto-xref"><span>Seção 8.2.3</span></a>. Esse recorte é bastante mais amplo que o setor censitário, já que uma área de ponderação contém, no mínimo, 400 domicílios particulares ocupados na amostra. Para se ter uma ideia, no Censo de 2010, o maior município do país, São Paulo-SP, possuía 5.082 setores censitários e somente 107 áreas de ponderação. Em municípios menores, ela corresponde ao município inteiro. Isso significa que análises espacialmente detalhadas (como as possíveis com os Agregados e a Grade Estatística) ficam fora do alcance dos microdados. No entanto, para estudar variáveis que o Questionário Básico não cobre, os microdados são o único caminho.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Aviso</span>Microdados do Censo 2022 ainda não disponíveis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No momento da escrita deste capítulo (início de abril de 2026), o IBGE ainda não havia divulgado os microdados da amostra do Censo Demográfico 2022. Todos os exemplos práticos das seções 4 e 5 utilizam dados do Censo de 2010, acessados via pacote <code>censobr</code>. Os conceitos e procedimentos apresentados são equivalentes para ambas as edições, e os códigos deverão funcionar para 2022 com ajustes mínimos após a divulgação dos dados.</p>
+</div>
+</div>
+</section>
+<section id="aspectos-metodológicos" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="aspectos-metodológicos"><span class="header-section-number">8.2</span> Aspectos metodológicos</h2>
+<section id="o-plano-amostral" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="o-plano-amostral"><span class="header-section-number">8.2.1</span> O plano amostral</h3>
+<p>Para o planejamento da coleta dos dados do Questionário da Amostra, o IBGE realiza uma <strong>amostragem probabilística</strong> no interior de cada setor censitário. Em cada setor, uma fração fixa de domicílios particulares é selecionada por sorteio aleatório. Portanto, o setor censitário é o <strong>estrato</strong> do plano, com a seleção ocorrendo de forma independente dentro de cada um, onde nenhum domicílio é selecionado com base no que ocorreu nos demais setores.</p>
+<p>Quando um domicílio é selecionado, todos os seus moradores são entrevistados. Isso cria dois regimes de amostragem distintos para os dois arquivos de microdados, cuja distinção tem consequências diretas para a análise, como veremos na <a href="#sec-survey" class="quarto-xref"><span>Seção 8.3</span></a>:</p>
+<ul>
+<li><strong>Microdados de domicílios:</strong> amostragem aleatória estratificada de domicílios, com estratos nos setores censitários.</li>
+<li><strong>Microdados de pessoas:</strong> amostragem estratificada e conglomerada, com estratificação nos setores censitários (estratos = setores censitários) e conglomeração nos domicílios (conglomerados = domicílios). Isso significa que os indivíduos não são sorteados diretamente, mas compõem um conglomerado inserido em um domicílio que foi selecionado.</li>
+</ul>
+<p>A fração amostral aplicada aos setores depende do porte do município ao qual pertencem. Para os dois últimos Censos (2010 e 2022), estes valores foram os mesmos, conforme se observa na <a href="#tbl-fracoes" class="quarto-xref">Tabela&nbsp;<span>8.1</span></a>. Isso resultou em 6,2 milhões de domicílios com 20,6 milhões de pessoas no Censo de 2010 e 7,8 milhões de domicílios com 21,9 milhões de pessoas no Censo de 2022 <span class="citation" data-cites="ibge_metodologia2010 ibge_nota_am2022">(<a href="references.html#ref-ibge_metodologia2010" role="doc-biblioref">IBGE, 2016</a>, <a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">2024</a>)</span>. Em ambos os casos, temos quase 11% do total da população em análise respondendo ao Questionário da Amostra, cujos dados exploraremos mais adiante.</p>
+<div class="cell">
+<div id="tbl-fracoes" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-fracoes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;8.1: Frações amostrais dos Censo Demográficos de 2010 e 2022 por porte do município. Fonte: <span class="citation" data-cites="ibge_metodologia2010">IBGE (<a href="references.html#ref-ibge_metodologia2010" role="doc-biblioref">2016</a>)</span> e <span class="citation" data-cites="ibge_nota_am2022">IBGE (<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">2024</a>)</span>.
+</figcaption>
+<div aria-describedby="tbl-fracoes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Porte do município (habitantes)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Nº Municípios (2010)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Nº Municípios (2022)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Fração (2010 e 2022)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Até 2.500</td>
+<td style="text-align: center;">260</td>
+<td style="text-align: center;">289</td>
+<td style="text-align: center;">50%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2.501 a 8.000</td>
+<td style="text-align: center;">1912</td>
+<td style="text-align: center;">1808</td>
+<td style="text-align: center;">33%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">8.001 a 20.000</td>
+<td style="text-align: center;">1749</td>
+<td style="text-align: center;">1673</td>
+<td style="text-align: center;">20%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">20.001 a 500.000</td>
+<td style="text-align: center;">1604</td>
+<td style="text-align: center;">1751</td>
+<td style="text-align: center;">10%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Mais de 500.000</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">49</td>
+<td style="text-align: center;">5%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>A fração mais alta nos municípios menores garante que mesmo localidades com poucos domicílios tenham amostras de tamanho suficiente para a divulgação de resultados com qualidade estatística aceitável. Em contrapartida, nos 49 municípios com mais de 500 mil habitantes em 2022, a fração de 5% já representa volumes consideráveis de domicílios entrevistados.</p>
+<p>Em ambas as edições, alguns distritos e subdistritos de grandes municípios receberam frações maiores que a padrão municipal, para viabilizar a divulgação de resultados em nível inframunicipal. Em 2022, o procedimento foi estendido também a Terras Indígenas, Territórios Quilombolas e Favelas e Comunidades Urbanas, que receberam frações diferenciadas chegando a 100% em alguns casos <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>.</p>
+</section>
+<section id="expansão-da-amostra" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="expansão-da-amostra"><span class="header-section-number">8.2.2</span> Expansão da amostra</h3>
+<p>Numa pesquisa por amostragem probabilística, cada domicílio selecionado não representa apenas a si mesmo. Ele “fala” por outros domicílios que não foram sorteados. Para quantificar essa representatividade, cada domicílio da amostra recebe um <strong>peso amostral</strong>, que indica quantos domicílios ele representa na população. Para esclarecer esse processo, suponha um município hipotético com a configuração da <a href="#fig-config_cidade_hipo" class="quarto-xref">Figura&nbsp;<span>8.1</span></a>, com os 105 domicílios distribuídos em 3 áreas de ponderação e 5 setores censtiários.</p>
+<div id="fig-config_cidade_hipo" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-config_cidade_hipo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.1: Município hipotético com 105 domicílios em 2 áreas de ponderação e 5 setores censitários
+</figcaption>
+<div aria-describedby="fig-config_cidade_hipo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/8-microdados/fig-config_cidade_hipo.png" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+<p>Suponha que a fração amostral seja de 20% para todo esse município, implicando que 1 a cada 5 domicílios de cada setor censitário seja selecionado para compor a amostra. Uma primeira aproximação para esse peso é o inverso da fração amostral efetiva. Ou seja, cada domicílio selecionado representa aproximadamente 5 outros domicílios (pois, <span class="math inline">\(1/0,20 = 5\)</span>). Deste modo, suponha que tenhamos selecionado aleatoriamente os domicílios na cor vermelha conforme a <a href="#fig-domicilios_sorteados" class="quarto-xref">Figura&nbsp;<span>8.2</span></a> no município hipotético. Nesse processo, cada recebe peso amostral igual a 5 (ou seja, representam 5 domicílios em seu setor). <!-- Domicílios em setores com frações distintas recebem pesos distintos, o que introduz probabilidades de seleção desiguais entre domicílios de municípios de portes diferentes.--></p>
+<div id="fig-domicilios_sorteados" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-domicilios_sorteados-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.2: Domicílios selecionados aleatoriamente em cada setor censitário, de acordo com uma fração amostral de 20%
+</figcaption>
+<div aria-describedby="fig-domicilios_sorteados-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/8-microdados/fig-domicilios_sorteados.png" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+<p>Esse peso inicial, porém, pode não refletir adequadamente a distribuição real da população. Por acaso, a amostra pode ter capturado um número menor de pessoas de 0 a 15 anos ou mais pessoas do sexo feminino em comparação ao que se sabe do universo naquela região. Para corrigir essa variação aleatória, o IBGE realiza um processo de <strong>calibração</strong> destes pesos.</p>
+<p>A calibração consiste em ajustar os pesos iniciais de maneira que as estimativas da amostra se aproximem dos totais já conhecidos para um conjunto de variáveis <em>auxiliares</em>. Tais variáveis são obtidas de quesitos que existem em ambos os questionários (Básico e da Amostra), ou seja, através delas conseguimos obter totais <strong>populacionais conhecidos</strong> do processo de levantamento do Censo.</p>
+<p>O método de calibração baseia-se em uma estratégia de Mínimos Quadrados Generalizados (MQG), considerando as propostas de <span class="citation" data-cites="bankier1992">Bankier et al. (<a href="references.html#ref-bankier1992" role="doc-biblioref">1992</a>)</span> e <span class="citation" data-cites="deville1993">Deville et al. (<a href="references.html#ref-deville1993" role="doc-biblioref">1993</a>)</span>, similar ao empregado em censos de outros países, como o canadense <span class="citation" data-cites="ibge_metodologia2010 ibge_nota_am2022 statisticscanada2009">(<a href="references.html#ref-ibge_metodologia2010" role="doc-biblioref">IBGE, 2016</a>, <a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">2024</a>; <a href="references.html#ref-statisticscanada2009" role="doc-biblioref">Statistics Canada, 2009</a>)</span>. Questões metodológicas específicas sobre amostragem complexa não são o foco deste livro, mas o(a) leitor(a) interessado pode ganhar mais profundidade teórica e prática consultando as obras de <span class="citation" data-cites="silva2021amostragem">Silva et al. (<a href="references.html#ref-silva2021amostragem" role="doc-biblioref">2021</a>)</span>, <span class="citation" data-cites="lumley2011">Lumley (<a href="references.html#ref-lumley2011" role="doc-biblioref">2011</a>)</span> e <span class="citation" data-cites="zimmer2024">Zimmer et al. (<a href="references.html#ref-zimmer2024" role="doc-biblioref">2024</a>)</span>.</p>
+<p>É importante destacar que esse processo de calibração é realizado no nível da área de <em>ponderação</em>, que recebe esse nome justamente por servir como unidade espacial onde se realiza a calibração dos pesos. Nesse sentido, as <strong>restrições de calibração</strong> consistem em impor que os totais populacionais das variáveis auxiliares se aproximem da estimativa obtida a partir somente das informações da amostra expandida (multiplicada por estes pesos) neste nível de desagregação espacial.</p>
+<p>Em 2010, foram consideradas 40 restrições, incluindo total de pessoas, total de domicílios, distribuição por sexo e faixas etárias detalhadas <span class="citation" data-cites="ibge_metodologia2010">(<a href="references.html#ref-ibge_metodologia2010" role="doc-biblioref">IBGE, 2016</a>)</span>. Em 2022, o conjunto foi ampliado para 47 restrições, com a adição de Terras Indígenas, Territórios Quilombolas, Favelas e Comunidades Urbanas, além de categorias de número de banheiros nos domicílios particulares permanentes <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>.</p>
+<p>Nesse processo, há ainda a preocupação em evitar pesos extremos (muito pequenos ou muito grandes) que poderiam distorcer as estimativas. Isso se dá através da imposição de limites aos pesos calibrados. Na prática, considerando os pesos inicial e calibrado de um domicílio <span class="math inline">\(i\)</span> em uma área de ponderação <span class="math inline">\(a\)</span> como <span class="math inline">\(w_{ai}\)</span> e <span class="math inline">\(w^*_{ai}\)</span>, respectivamente, tem-se que os pesos calibrados não podem ser nem inferiores a 1/5 (<span class="math inline">\(w^*_{ai} \ge w_{ai}/5\)</span>) nem superiores a 5 vezes (<span class="math inline">\(w^*_{ai}\le 5w_{ai}\)</span>) o valor deste peso inicial <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>.</p>
+<p>O produto final é um único peso calibrado para cada domicílio da amostra, que é replicado para todos os seus moradores. Esse peso, armazenado na variável <code>V0010</code> para a base de microdados do Censo de 2010<!--Atualizar quando for 2022!!!-->, é o que utilizaremos em toda a análise. O IBGE recomenda que ele seja mantido como valor fracionário (com 10 casas decimais), pois o arredondamento para valores inteiros rompe a consistência das restrições de calibração <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>.</p>
+<p>Na tabela da <a href="#fig-vars_aux_censo22" class="quarto-xref">Figura&nbsp;<span>8.3</span></a> abaixo, obtida de um <em>screenshot</em> do documento metodológico do Censo de 2022 <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>, é possível evidenciar o resultado desse processo, comparando as diferenças entre os totais observados e os totais estimados com os pesos amostrais calibrados. Observe, as diferenças são sempre menores que 1%, à exceção da variável <em>Total de domicílios particulares permanentes sem banheiro</em> (~1,35%).</p>
+<div id="fig-vars_aux_censo22" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-vars_aux_censo22-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.3: Comparação entre os totais observados e com peso de cada variável auxiliar da calibração para o Censo de 2022. Fonte: <span class="citation" data-cites="ibge_nota_am2022">IBGE (<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">2024</a>)</span>
+</figcaption>
+<div aria-describedby="fig-vars_aux_censo22-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/8-microdados/fig-vars_aux_censo22.png" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-areas-pond" class="level3" data-number="8.2.3">
+<h3 data-number="8.2.3" class="anchored" data-anchor-id="sec-areas-pond"><span class="header-section-number">8.2.3</span> Áreas de ponderação (aspectos metodológicos)</h3>
+<p>Conforme mencionado anteriormente, a <strong>área de ponderação</strong> é o recorte geográfico mais desagregado para o qual os microdados da amostra podem ser divulgados publicamente. No Censo de 2010, estamos falando de 10.184 áreas de ponderação compreendendo os cerca de 313 mil setores censitários. Para o Censo de 2022, temos, até o presente momento<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, somente áreas de ponderação preliminares (cuja malha espacial não foi divulgada), com pesos calibrados para a produção de alguns resultados parciais. Eles compõem um total de 10.607 áreas de ponderação, que abrangem os 468 mil setores censitários do país. <!-- Atualizar aqui--></p>
+<p>Dois critérios justificam essa escolha. O primeiro é a <strong>precisão estatística</strong>, já que domínios geográficos muito pequenos produzem estimativas com erros amostrais elevados. O segundo é a <strong>proteção da confidencialidade</strong>, já que identificar unidades geográficas menores nos microdados públicos permitiria, em muitas situações, identificar domicílios ou indivíduos específicos.</p>
+<p>A formação das áreas de ponderação obedece a três critérios simultâneos: (i) <strong>contiguidade</strong> dos setores que a compõem; (ii) <strong>tamanho mínimo</strong> de 400 domicílios particulares ocupados na amostra; e (iii) <strong>homogeneidade socioeconômica</strong> interna. Em 2022, a homogeneidade foi maximizada por um algoritmo baseado em oito variáveis dos setores censitários, entre elas renda média do responsável, proporção de domicílios na rede de esgoto e estrutura etária da população <span class="citation" data-cites="ibge_nota_am2022">(<a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">IBGE, 2024</a>)</span>.<!--Checar esses detalhes metodológicos--></p>
+<p>O método de formação varia conforme o porte do município. Em municípios com menos de 100 mil habitantes nos quais é possível formar pelo menos duas áreas, o processo é automático, via algoritmo em R desenvolvido pelo IBGE. Em municípios com mais de 100 mil habitantes, os técnicos do Instituto realizam o agrupamento manualmente, utilizando as áreas de ponderação do Censo 2010 como referência e fazendo ajustes com base em critérios de homogeneidade e morfologia urbana. Municípios com uma única área cobrem o território municipal por inteiro.</p>
+</section>
+</section>
+<section id="sec-survey" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sec-survey"><span class="header-section-number">8.3</span> Os pacotes survey e srvyr</h2>
+<p>Como discutido na seção anterior, os microdados da amostra têm uma estrutura amostral complexa. A seleção foi feita por amostragem estratificada (estratos nos setores censitários) nos domicílios, com uma etapa adicional de conglomeração no caso de indivíduos. Cada observação tem um peso diferente resultante da calibração. Calcular estatísticas sem levar essa estrutura em conta produz estimativas que, para as médias e totais, podem estar razoavelmente corretas, mas com <strong>erros-padrão incorretos</strong> (geralmente subestimados). Isso faz com que intervalos de confiança sejam mais estreitos do que deveriam, o que pode levar a conclusões equivocadas sobre a significância das diferenças encontradas.</p>
+<p>O pacote <code>survey</code> para R <span class="citation" data-cites="survey_pkg">(<a href="references.html#ref-survey_pkg" role="doc-biblioref">Lumley, 2023</a>)</span> foi desenvolvido especificamente para lidar com esse problema. A ideia é implementar estimadores e métodos de estimação de variância corretos para amostras complexas, incorporando automaticamente os pesos, a estratificação e a conglomeração em todos os cálculos. Vale salientar que o pacote <code>survey</code> é inclusive a solução utilizada pelo corpo técnico do IBGE no processo de calibração dos pesos desde o Censo de 2010 <span class="citation" data-cites="ibge_metodologia2010 ibge_nota_am2022">(<a href="references.html#ref-ibge_metodologia2010" role="doc-biblioref">IBGE, 2016</a>, <a href="references.html#ref-ibge_nota_am2022" role="doc-biblioref">2024</a>)</span>. O ponto de partida é a criação de um <strong>objeto de desenho amostral</strong> (<em>survey design object</em>) com a função <code>svydesign()</code>, que armazena os dados junto com a especificação do plano de amostragem. Todas as funções de análise recebem esse objeto em vez do <em>data frame</em> original.</p>
+<p>Já o pacote <code>srvyr</code> <span class="citation" data-cites="srvyr_pkg">(<a href="references.html#ref-srvyr_pkg" role="doc-biblioref">Ellis &amp; Schneider, 2023</a>)</span> é uma extensão do <code>survey</code> que oferece uma interface no estilo tidyverse. O objeto de desenho é criado com <code>as_survey_design()</code>, que aceita os mesmos argumentos de <code>svydesign()</code> mas sem fórmulas, de modo a se integrar naturalmente ao fluxo <code>|&gt;</code>. A análise por grupos usa <code>group_by()</code> e <code>summarize()</code>, exatamente como no <code>dplyr</code>.</p>
+<p>A <a href="#tbl-survey-srvyr" class="quarto-xref">Tabela&nbsp;<span>8.2</span></a> apresenta as principais funções equivalentes entre os dois pacotes.</p>
+<div class="cell">
+<div id="tbl-survey-srvyr" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-survey-srvyr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;8.2: Funções equivalentes nos pacotes <code>survey</code> e <code>srvyr</code>.
+</figcaption>
+<div aria-describedby="tbl-survey-srvyr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Tarefa</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">`survey`</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">`srvyr`</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Criar objeto de plano amostral</td>
+<td style="text-align: center;">`svydesign()`</td>
+<td style="text-align: center;">`as_survey_design()`</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Média</td>
+<td style="text-align: center;">`svymean()`</td>
+<td style="text-align: center;">`survey_mean()`</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: center;">`svytotal()`</td>
+<td style="text-align: center;">`survey_total()`</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mediana / quantis</td>
+<td style="text-align: center;">`svyquantile()`</td>
+<td style="text-align: center;">`survey_median()` / `survey_quantile()`</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Proporção</td>
+<td style="text-align: center;">`svymean()`</td>
+<td style="text-align: center;">`survey_prop()`</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Estatísticas por grupo</td>
+<td style="text-align: center;">`svyby()`</td>
+<td style="text-align: center;">`group_by()` + `summarize()`</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Nos exemplos das próximas seções, usaremos exclusivamente o <code>srvyr</code>. Leitores que preferirem o <code>survey</code> podem consultar <span class="citation" data-cites="lumley2011">Lumley (<a href="references.html#ref-lumley2011" role="doc-biblioref">2011</a>)</span> e <span class="citation" data-cites="zimmer2024">Zimmer et al. (<a href="references.html#ref-zimmer2024" role="doc-biblioref">2024</a>)</span> para a sintaxe equivalente. Eles se baseiam no tutorial de <span class="citation" data-cites="silva2017censo">Silva et al. (<a href="references.html#ref-silva2017censo" role="doc-biblioref">2017</a>)</span>, apresentado no 6º Seminário de Metodologia do IBGE em 2017. Para quem deseja aprofundar em fundamentos metodológicos de amostragem complexa, com foco especial no Censo Demográfico brasileiro, o livro de <span class="citation" data-cites="pessoa1998analise">Pessoa &amp; Silva (<a href="references.html#ref-pessoa1998analise" role="doc-biblioref">1998</a>)</span> é uma referência clássica na área.</p>
+</section>
+<section id="sec-dom" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="sec-dom"><span class="header-section-number">8.4</span> Analisando microdados de <em>domicílios</em></h2>
+<p>Esta seção e a próxima (<a href="#sec-ind" class="quarto-xref"><span>Seção 8.5</span></a>) percorrem um ciclo completo de trabalho com microdados do Censo, desde a obtenção dos dados brutos à visualização dos resultados. A seção atual trata dos microdados de domicílios e a seguinte dos microdados de indivíduos. Em ambas, usamos Belo Horizonte como município de exemplo, o que nos permite explorar um contexto urbano de grande porte com diversidade interna expressiva. Como os microdados da amostra do Censo 2022 ainda não foram divulgados pelo IBGE no momento da escrita deste capítulo, todos os exemplos utilizam dados do Censo de 2010, acessados via pacote <code>censobr</code>.</p>
+<section id="obtendo-e-preparando-os-dados" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="obtendo-e-preparando-os-dados"><span class="header-section-number">8.4.1</span> Obtendo e preparando os dados</h3>
+<p>O ponto de partida é carregar os pacotes necessários para as duas seções<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(censobr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geobr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Antes de ler os dados, vale consultar o dicionário de variáveis do arquivo de domicílios. A função <code>data_dictionary()</code> do <code>censobr</code> abre arquivos html no seu browse com um quadro com nomes, descrições e categorias de cada variável disponível. Com a grande quantidade de colunas nos arquivos de microdados, esse passo é essencial para identificar as variáveis de interesse antes de qualquer leitura. Observe que definimos <code>year = 2010</code> e <code>dataset = 'households'</code> na função <code>data_dictionary()</code> para obter o dicionário dos microdados de domicílios relativos ao Censo de 2010:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>censobr<span class="sc">::</span><span class="fu">data_dictionary</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">dataset =</span> <span class="st">'households'</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Este processo fará abrir o quadro mostrado conforme a <a href="#fig-tab_dict" class="quarto-xref">Figura&nbsp;<span>8.4</span></a>:</p>
+<div id="fig-tab_dict" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-tab_dict-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.4: Parte do quadro com as variáveis dos microdados dos domicílios para o Censo de 2010 obtido com a função <code>data_dictionary()</code>
+</figcaption>
+<div aria-describedby="fig-tab_dict-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/8-microdados/fig-tab_dict.png" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+<p>Com o dicionário em mãos, o passo seguinte é obter a geometria das áreas de ponderação de Belo Horizonte (código IBGE 3106200) com a função <code>read_weighting_area()</code> do <code>geobr</code>. Com ele, poderemos visualizar espacialmente os resultados nos mapas produzidos adiante e selecionar os códigos das áreas de ponderação a serem utilizados para filtrar os microdados de BH.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ap_bh <span class="ot">&lt;-</span> geobr<span class="sc">::</span><span class="fu">read_weighting_area</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_weighting =</span> <span class="dv">3106200</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2010</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplified =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ap_bh) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">"gray92"</span>, <span class="at">color =</span> <span class="st">"gray60"</span>, <span class="at">linewidth =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bh-areas" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-bh-areas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.5: Áreas de ponderação de Belo Horizonte, Censo Demográfico 2010.
+</figcaption>
+<div aria-describedby="fig-bh-areas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-bh-areas-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>A partir dos códigos das áreas de ponderação, podemos ler os microdados filtrados somente para Belo Horizonte. A função <code>read_households()</code> do <code>censobr</code> retorna os dados de todo o Brasil como um <em>Arrow Table</em> (assim como na <code>read_tracts()</code> para os Agregados por Setor Censitário do capítulo anterior), sem carregá-los para a memória imediatamente. O filtro por <code>code_weighting</code> seleciona apenas os domicílios de Belo Horizonte, e <code>collect()</code> materializa o resultado em um <em>data frame</em> convencional. Selecionaremos também apenas as variáveis de interesse, o que reduz consideravelmente o volume de dados em memória.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Armazenando códigos das áreas de ponderação de BH em um vetor ap_bh_cods</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ap_bh_cods <span class="ot">&lt;-</span> ap_bh <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(code_weighting)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Variáveis selecionadas do arquivo de domicílios</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>cols_dom <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0300'</span>,          <span class="co"># Identificador do domicílio (controle)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0010'</span>,          <span class="co"># Peso amostral calibrado</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V1006'</span>,          <span class="co"># Situação do domicílio (urbano/rural)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">'code_weighting'</span>, <span class="co"># Área de ponderação</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V4001'</span>,          <span class="co"># Tipo de domicílio</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0201'</span>,          <span class="co"># Condição de ocupação do domicílio (próprio, alugado, ...)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V6203'</span>,          <span class="co"># Densidade (moradores por cômodo)</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0207'</span>,          <span class="co"># Tipo de esgotamento sanitário</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V6531'</span>,          <span class="co"># Rendimento domiciliar per capita</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0222'</span>           <span class="co"># Automóvel particular (sim/não)</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Leitura e filtragem para BH</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>md_dom_bh <span class="ot">&lt;-</span> censobr<span class="sc">::</span><span class="fu">read_households</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">columns =</span> cols_dom) <span class="sc">|&gt;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_weighting <span class="sc">%in%</span> ap_bh_cods) <span class="sc">|&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Para visualizar as primeiras linhas dessa base de dados, podemos fazer:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(md_dom_bh)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 10
+  V0300 V0010 V1006 code_weighting V4001 V0201 V6203 V0207 V6531 V0222
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;
+1   169  20.7 1     3106200005001  01    1       0.6 1      700  1    
+2 14998  23.4 1     3106200005001  01    1       0.8 1      637. 2    
+3 32175  20.8 1     3106200005001  01    1       0.9 1      507. 2    
+4 43533  19.8 1     3106200005001  01    3       0.6 1      170  2    
+5 68172  22.9 1     3106200005001  01    1       0.8 1      333. 1    
+6 72256  23.2 1     3106200005001  01    1       1   1      600  2    </code></pre>
+</div>
+</div>
+<p>Na sequência, faremos a definição do plano amostral que nos permitirá explorar adequadamente essa base.</p>
+</section>
+<section id="declarando-o-plano-amostral" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="declarando-o-plano-amostral"><span class="header-section-number">8.4.2</span> Declarando o plano amostral</h3>
+<p>Na <a href="#sec-survey" class="quarto-xref"><span>Seção 8.3</span></a>, mencionamos que para obter estimativas estatisticamente válidas para os microdados, é preciso declarar ao <code>srvyr</code> o tipo de amostragem realizada com a função <code>as_survey_design</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. Sem essa declaração, as estatísticas descritivas ignorariam a estratificação e os pesos calibrados, produzindo erros-padrão incorretos e, consequentemente, intervalos de confiança inadequados.</p>
+<p>Lembremos que no caso dos domicílios, temos uma <strong>amostragem aleatória estratificada</strong>, em que os setores censitários são os estratos. Nosso objetivo, então, é caracterizar esse plano amostral por meio do preenchimento de 4 parâmetros da função <code>as_survey_design</code>:</p>
+<ul>
+<li><code>id</code>: unidade amostral.</li>
+<li><code>strata</code>: o estrato do plano amostral.</li>
+<li><code>weights</code>: pesos amostrais.</li>
+<li><code>fpc</code>: correção de população finita (do inglês, <em>finite population correction</em>).</li>
+</ul>
+<p>Em primeiro lugar, para o parâmetro <code>id</code>, devemos indicar as unidades que foram amostradas aleatoriamente no nosso plano. Como cada linha representa um domicílio na tabela <code>md_dom_bh</code>, podemos fazer simplesmente passar <code>id = 1</code> dentro da função <code>as_survey_design()</code>. Na sequência, devemos definir o estrato do plano amostral em <code>strata</code>. À primeira vista, parece óbvio que devamos indicar os setores censitários para este parâmetro. Todavia, além de não haver essa informação nos microdados, lembremos que os pesos amostrais fornecidos na coluna <code>V0010</code> referem-se à versão <strong>calibrada</strong> e que essa calibração é feita no nível da <strong>área de ponderação</strong>. Deste modo, devemos inserir a coluna com o código da área de ponderação da tabela <code>md_dom_bh</code>, ou seja, <code>code_weighting</code>.</p>
+<p>Posteriormente, temos que declarar os pesos, e isto é simples, uma vez que eles são representados pela coluna <code>V0010</code> de <code>md_dom_bh</code>. Finalmente, precisamos inserir o parâmetro <code>fpc</code>, um fator usado em amostragem para ajustar a variância, o erro-padrão e a margem de erro quando a amostra representa uma fração não desprezível de uma população finita. A ideia é que quando a população é finita e você retira uma parcela considerável dela, há menos incerteza do que haveria numa população muito grande ou “infinita”. Então, o FPC reduz o erro amostral estimado<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+<p>Neste caso, o que a função <code>as_survey_design()</code> necessita é que forneçamos uma coluna na base de dados <code>md_dom_bh</code> com o total de unidades correspondente aos estratos definido em <code>strata</code>, ou seja, a quantidade de domicílios total da área de ponderação (no nosso caso.) Uma maneira de obtermos essa informação é somar os valores dos pesos <code>V0010</code> em cada área de ponderação. Lembre-se que a ideia do peso de uma unidade amostral é exatamente indicar quantas unidades ela representa em seu estrato. Logo somar os pesos de todas as unidades dentro da área de ponderação corresponderá ao valor total de domicílios nesta área.</p>
+<p>Para tanto, devemos primeiro produzimos uma tabela sumarizada que computa os totais de domicílios de cada área de ponderação. Na sequência, trazemos esses totais da tabela sumarizada para cada linha de <code>md_dom_bh</code> com o operador <code>left_join</code>, informando <code>code_weighting</code> como chave, conforme o código abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Total de domicílios expandido por área de ponderação (para correção de população finita)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dom_ap <span class="ot">&lt;-</span> md_dom_bh <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_dom =</span> <span class="fu">sum</span>(V0010))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Adiciona n_dom ao arquivo de domicílios</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>md_dom_bh <span class="ot">&lt;-</span> md_dom_bh <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dom_ap, <span class="at">by =</span> <span class="st">"code_weighting"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Observe a última coluna n_dom adicionada à tabela</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(md_dom_bh)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  V0300 V0010 V1006 code_weighting V4001 V0201 V6203 V0207 V6531 V0222 n_dom
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+1   169  20.7 1     3106200005001  01    1       0.6 1      700  1     13998
+2 14998  23.4 1     3106200005001  01    1       0.8 1      637. 2     13998
+3 32175  20.8 1     3106200005001  01    1       0.9 1      507. 2     13998
+4 43533  19.8 1     3106200005001  01    3       0.6 1      170  2     13998
+5 68172  22.9 1     3106200005001  01    1       0.8 1      333. 1     13998
+6 72256  23.2 1     3106200005001  01    1       1   1      600  2     13998</code></pre>
+</div>
+</div>
+<p>Observe que os valores de <code>n_dom</code> são repetidos para todas as 6 primeiras linhas mostradas acima, pois essas observações são relativas a domicílios de uma mesma área de ponderação identificada pela coluna <code>code_weighting</code>. Com estas definições, podemos finalmente produzir o plano amostral da função <code>as_survey_design()</code>, de acordo com o código abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Objeto de desenho amostral (srvyr)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pa_dom <span class="ot">&lt;-</span> md_dom_bh <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ids     =</span> <span class="dv">1</span>,               <span class="co"># cada linha é um domicílio (unidade sorteada)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">strata  =</span> code_weighting,  <span class="co"># estratos = áreas de ponderação (onde a calibração foi feita)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">weights =</span> V0010,           <span class="co"># pesos calibrados</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fpc     =</span> n_dom            <span class="co"># total de domicílios em cada área (correção de população finita)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O objeto <code>pa_dom</code> reúne os dados e a especificação completa do plano amostral. Todas as funções de análise do <code>srvyr</code> a seguir receberão esse objeto, garantindo que as estimativas levem em conta a estratificação e os pesos.</p>
+</section>
+<section id="sec-dom-estat" class="level3" data-number="8.4.3">
+<h3 data-number="8.4.3" class="anchored" data-anchor-id="sec-dom-estat"><span class="header-section-number">8.4.3</span> Calculando estatísticas</h3>
+<p>Com o plano amostral configurado, podemos calcular estimativas para qualquer variável dos microdados. O fluxo de trabalho é similar ao do <code>dplyr</code>, com <code>summarize()</code> para estatísticas do município como um todo e <code>group_by()</code> para análises por subgrupos.</p>
+<p>Começamos estimando a média e a mediana do rendimento domiciliar per capita (<code>V6531</code>) em Belo Horizonte. Os argumentos <code>vartype = "ci"</code> (de <em>Confidence Interval</em>) e <code>level = 0.95</code> solicitam que o resultado inclua os limites inferior e superior do intervalo de confiança de 95%.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pa_dom <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">renda_media   =</span> <span class="fu">survey_mean</span>(V6531, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">renda_mediana =</span> <span class="fu">survey_median</span>(V6531, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Média"</span>, <span class="st">"IC inf. (média)"</span>, <span class="st">"IC sup. (média)"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Mediana"</span>, <span class="st">"IC inf. (mediana)"</span>, <span class="st">"IC sup. (mediana)"</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-renda-bh" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-renda-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;8.3: Rendimento domiciliar per capita em Belo Horizonte (R$), Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-renda-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">Média</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">IC inf. (média)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">IC sup. (média)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mediana</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">IC inf. (mediana)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">IC sup. (mediana)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1765.2</td>
+<td style="text-align: right;">1714.5</td>
+<td style="text-align: right;">1815.8</td>
+<td style="text-align: right;">765</td>
+<td style="text-align: right;">759</td>
+<td style="text-align: right;">777.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>A mediana é substancialmente menor que a média, o que reflete a assimetria positiva da distribuição de renda. Uma minoria de domicílios com rendimentos muito altos eleva a média sem deslocar a mediana, tornando esta última a medida mais representativa da renda típica.</p>
+<p>Uma comparação natural é verificar como a posse de automóvel particular (<code>V0222</code>) se associa ao rendimento domiciliar (<code>V6531</code>). O gráfico a seguir apresenta a renda mediana estimada para cada categoria (função <code>survey_median()</code>), com o respectivo intervalo de confiança de 95%.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pa_dom <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(V0222)) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(V0222) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">renda_mediana =</span> <span class="fu">survey_median</span>(V6531, <span class="at">na.rm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">V0222 =</span> <span class="fu">factor</span>(V0222,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Com automóvel"</span>, <span class="st">"Sem automóvel"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> V0222, <span class="at">y =</span> renda_mediana,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">ymin =</span> renda_mediana_low, <span class="at">ymax =</span> renda_mediana_upp)) <span class="sc">+</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>, <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">color =</span> <span class="st">"orange"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_dollar</span>(<span class="at">prefix =</span> <span class="st">"R$ "</span>, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Renda mediana (R$)"</span>) <span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-renda-automovel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-renda-automovel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.6: Rendimento domiciliar per capita mediano por posse de automóvel, Belo Horizonte (Censo 2010). Barras de erro indicam IC 95%.
+</figcaption>
+<div aria-describedby="fig-renda-automovel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-renda-automovel-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>A diferença entre os dois grupos é expressiva, e como os intervalos de confiança não se sobrepõem, ela é estatisticamente significativa. Domicílios com automóvel apresentam renda per capita mediana substancialmente maior, resultado esperado dado o custo de aquisição e manutenção de um veículo próprio.</p>
+<p>Os microdados também permitem estimar proporções para variáveis categóricas. O gráfico a seguir apresenta a distribuição de domicílios por condição de ocupação do domicílio (<code>V0201</code>), com a proporção estimada e o intervalo de confiança de 95% para cada categoria (função <code>survey_prop()</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pa_dom <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(V0201) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">V0201 =</span> <span class="fu">factor</span>(V0201,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span>,<span class="st">"6"</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Próprio de algum morador - já pago"</span>, <span class="st">"Próprio de algum morador - ainda pagando"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">"Alugado"</span>,<span class="st">"Cedido por empregador"</span>,<span class="st">"Cedido de outra forma"</span>,<span class="st">"Outra condição"</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                        )</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">|&gt;</span> </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(V0201, proporcao), <span class="at">y =</span> proporcao,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">ymin =</span> proporcao_low, <span class="at">ymax =</span> proporcao_upp)) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="at">width =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"orange"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Proporção"</span>) <span class="sc">+</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-condicao-ocup" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-condicao-ocup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.7: Proporção de domicílios por condição de ocupação, Belo Horizonte (Censo 2010). Barras de erro indicam IC 95%.
+</figcaption>
+<div aria-describedby="fig-condicao-ocup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-condicao-ocup-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Por fim, vamos mostrar como produzir uma nova variável a partir de uma existente e computar algumas estatísticas. Utilizaremos a variável <code>V0207</code> (Tipo de esgotamento sanitário), cujas cateorias são: - 1- Rede geral de esgoto ou pluvial - 2- Fossa séptica - 3- Fossa rudimentar - 4- Vala - 5- Rio, lago ou mar - 6- Outro</p>
+<p>Produziremos uma nova variável denominada <code>esg_rede</code> que indica se o tipo de esgotamento sanitário é adequado (rede geral de esgoto/pluvial ou fossa séptica: 1 e 2) ou inadequado (demais categorias: 3 a 6), conforme preconizado no Índice de Vulnerabilidade Social <span class="citation" data-cites="ipea_ivs2015">(<a href="references.html#ref-ipea_ivs2015" role="doc-biblioref">Costa &amp; Marguti, 2015</a>)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pa_dom <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">esg_rede =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(V0207 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'1'</span>,<span class="st">'2'</span>), <span class="st">'Adequado'</span>, <span class="st">'Inadequado'</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(esg_rede) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> esg_rede, <span class="at">y =</span> proporcao,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">ymin =</span> proporcao_low, <span class="at">ymax =</span> proporcao_upp)) <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>, <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">color =</span> <span class="st">"orange"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Proporção"</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-esgoto-bh" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-esgoto-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.8: Proporção de domicílios por tipo de esgotamento sanitário, Belo Horizonte (Censo 2010). Barras de erro indicam IC 95%.
+</figcaption>
+<div aria-describedby="fig-esgoto-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-esgoto-bh-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="produzindo-mapas" class="level3" data-number="8.4.4">
+<h3 data-number="8.4.4" class="anchored" data-anchor-id="produzindo-mapas"><span class="header-section-number">8.4.4</span> Produzindo mapas</h3>
+<p>As mesmas estatísticas calculadas para o município como um todo podem ser desagregadas por área de ponderação com <code>group_by(code_weighting)</code> e visualizadas espacialmente com <code>geom_sf()</code>. O mapa da <a href="#fig-bh-renda" class="quarto-xref">Figura&nbsp;<span>8.9</span></a> apresenta a renda domiciliar per capita mediana em cada área de ponderação. Para isso, calculamos a mediana por área com <code>survey_median()</code> e depois unimos o resultado à geometria com <code>left_join()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estatística por área de ponderação</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rend_ap <span class="ot">&lt;-</span> pa_dom <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">rend_mediana =</span> <span class="fu">survey_median</span>(V6531, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Join com geometria e mapa</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ap_bh <span class="sc">|&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(rend_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting)) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> rend_mediana), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"RdYlGn"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Renda mediana</span><span class="sc">\n</span><span class="st">(R$)"</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_dollar</span>(<span class="at">prefix =</span> <span class="st">"R$ "</span>, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bh-renda" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-bh-renda-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.9: Rendimento domiciliar per capita mediano por área de ponderação, Belo Horizonte (Censo 2010, R$ de julho de 2010).
+</figcaption>
+<div aria-describedby="fig-bh-renda-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-bh-renda-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>O padrão espacial é marcante, com áreas com rendimentos mais altos concentrando-se na região sudeste do município, enquanto os menores rendimentos predominam em regiões mais periféricas ao Sul e ao Norte. O mapa da <a href="#fig-bh-esgoto" class="quarto-xref">Figura&nbsp;<span>8.10</span></a> apresenta, para as mesmas unidades espaciais, a proporção de domicílios atendidos por esgotamento sanitário adequado. O procedimento é idêntico ao do mapa anterior, substituindo <code>survey_median()</code> por <code>survey_prop()</code> e criando uma variável indicadora antes do agrupamento.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estatística por área de ponderação</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>esg_ap <span class="ot">&lt;-</span> pa_dom <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">esg_rede =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(V0207 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'1'</span>,<span class="st">'2'</span>), <span class="st">'Adequado'</span>, <span class="st">'Inadequado'</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting, esg_rede) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(esg_rede <span class="sc">==</span> <span class="st">'Adequado'</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Join com geometria e mapa</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>ap_bh <span class="sc">|&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(esg_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting)) <span class="sc">|&gt;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> proporcao), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Proporção c/ Esg./n Sanitário Adequado"</span>,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bh-esgoto" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-bh-esgoto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.10: Proporção de domicílios atendidos por rede geral de esgoto ou pluvial por área de ponderação, Belo Horizonte (Censo 2010).
+</figcaption>
+<div aria-describedby="fig-bh-esgoto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-bh-esgoto-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Comparando os dois mapas, observa-se uma correlação positiva entre renda e cobertura de saneamento. As áreas com maior rendimento tendem a apresentar maior proporção de domicílios atendidos pela rede geral de esgoto. A relação, contudo, não é perfeita, e identificar onde o saneamento está aquém do esperado dado o nível de renda é exatamente o tipo de diagnóstico que os microdados da amostra viabilizam.</p>
+</section>
+</section>
+<section id="sec-ind" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="sec-ind"><span class="header-section-number">8.5</span> Analisando microdados de <em>indivíduos</em></h2>
+<section id="obtendo-e-preparando-os-dados-1" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="obtendo-e-preparando-os-dados-1"><span class="header-section-number">8.5.1</span> Obtendo e preparando os dados</h3>
+<p>O arquivo de pessoas do Censo segue a mesma lógica de acesso que o de domicílios, mas exige atenção especial na especificação do plano amostral. Como discutido na <a href="#sec-survey" class="quarto-xref"><span>Seção 8.3</span></a>, os indivíduos não foram sorteados diretamente. O que foi sorteado foi o domicílio, e todos os seus moradores foram entrevistados. Essa estrutura de <strong>amostragem estratificada e conglomerada</strong> precisa ser declarada explicitamente, como veremos adiante.</p>
+<p>Assim como no arquivo de domicílios, vale consultar o dicionário antes de iniciar a leitura.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>censobr<span class="sc">::</span><span class="fu">data_dictionary</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">dataset =</span> <span class="st">'population'</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O código a seguir seleciona as variáveis de interesse e lê os microdados de indivíduos de Belo Horizonte, aproveitando os códigos de área de ponderação já extraídos anteriormente.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Variáveis selecionadas do arquivo de pessoas</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>cols_ind <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0300'</span>,          <span class="co"># Identificador do domicílio (controle, usado como id do conglomerado)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0010'</span>,          <span class="co"># Peso amostral calibrado</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V1006'</span>,          <span class="co"># Situação do domicílio (urbano/rural)</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">'code_weighting'</span>, <span class="co"># Área de ponderação</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0601'</span>,          <span class="co"># Sexo</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0606'</span>,          <span class="co"># Cor ou raça</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V6036'</span>,          <span class="co"># Idade (em anos)</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V6400'</span>,          <span class="co"># Nível de instrução</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0661'</span>,          <span class="co"># Retorna do trabalho para casa diariamente?</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">'V0662'</span>           <span class="co"># Tempo habitual de deslocamento até o trabalho</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Leitura e filtragem para BH</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>md_ind_bh <span class="ot">&lt;-</span> censobr<span class="sc">::</span><span class="fu">read_population</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">columns =</span> cols_ind) <span class="sc">|&gt;</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_weighting <span class="sc">%in%</span> ap_bh_cods) <span class="sc">|&gt;</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="declarando-o-plano-amostral-1" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="declarando-o-plano-amostral-1"><span class="header-section-number">8.5.2</span> Declarando o plano amostral</h3>
+<p>O plano amostral de indivíduos difere do de domicílios em um aspecto fundamental, que é a declaração da conglomeração. No arquivo de pessoas, os moradores não chegaram à amostra de forma independente. Foram os domicílios que foram sorteados, e cada morador pertence a um conglomerado (seu domicílio). Dois moradores do mesmo domicílio tendem a ter características muito mais similares entre si do que dois indivíduos escolhidos ao acaso na população. Ignorar essa estrutura leva a erros-padrão subestimados, porque o <code>srvyr</code> contaria cada observação como se fosse independente, quando na verdade membros de uma mesma família contribuem com informação redundante.</p>
+<p>Para informar a conglomeração ao <code>srvyr</code>, usamos o argumento <code>ids = V0300</code>, em que <code>V0300</code> é o identificador do domicílio. Lembre-se que o argumento <code>ids</code> espera a unidade amostral sorteada que, no nosso caso, são os domicílios. Com isso, o pacote entende que todos os indivíduos com o mesmo <code>V0300</code> foram coletados juntos, como parte do mesmo conglomerado. Além disso, o <code>fpc</code> agora passa a ser o total expandido de pessoas por área de ponderação, conforme o código abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Total de indivíduos expandido por área de ponderação (para correção de finitude)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>pop_ap <span class="ot">&lt;-</span> md_ind_bh <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_ind =</span> <span class="fu">sum</span>(V0010))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Adiciona n_ind ao arquivo de pessoas</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>md_ind_bh <span class="ot">&lt;-</span> md_ind_bh <span class="sc">|&gt;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting))</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Observando os 6 primeiros resultados com a nova coluna n_ind</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(md_ind_bh)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  V0300 V0010 V1006 code_weighting V0601 V0606 V6036 V6400 V0661 V0662  n_ind
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;
+1   169  20.7 1     3106200005001  1     1        65 1     1     2     45869.
+2   169  20.7 1     3106200005001  1     1         0 1     &lt;NA&gt;  &lt;NA&gt;  45869.
+3   169  20.7 1     3106200005001  2     1        21 3     1     2     45869.
+4   169  20.7 1     3106200005001  1     1        27 3     1     2     45869.
+5 14998  23.4 1     3106200005001  1     2        47 3     &lt;NA&gt;  &lt;NA&gt;  45869.
+6 14998  23.4 1     3106200005001  2     2        17 1     &lt;NA&gt;  &lt;NA&gt;  45869.</code></pre>
+</div>
+</div>
+<p>Sendo assim, podemos então definir o plano amostral como:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Objeto de desenho amostral (srvyr)</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>pa_ind <span class="ot">&lt;-</span> md_ind_bh <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ids     =</span> V0300,           <span class="co"># domicílio = unidade de conglomeração</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">strata  =</span> code_weighting,  <span class="co"># estratos = áreas de ponderação</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">weights =</span> V0010,           <span class="co"># pesos calibrados</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fpc     =</span> n_ind            <span class="co"># total de pessoas em cada área (correção de população finita)</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="calculando-estatísticas" class="level3" data-number="8.5.3">
+<h3 data-number="8.5.3" class="anchored" data-anchor-id="calculando-estatísticas"><span class="header-section-number">8.5.3</span> Calculando estatísticas</h3>
+<p>Com o plano amostral de indivíduos configurado, podemos explorar variáveis que o Questionário Básico não cobre. Começamos com a distribuição por cor ou raça (<code>V0606</code>). O gráfico a seguir apresenta a proporção estimada para cada grupo, com intervalo de confiança de 95%.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pa_ind <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(V0606) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">V0606 =</span> <span class="fu">factor</span>(V0606,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"5"</span>),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Branca"</span>, <span class="st">"Preta"</span>, <span class="st">"Amarela"</span>, <span class="st">"Parda"</span>, <span class="st">"Indígena"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(V0606, <span class="sc">-</span>proporcao), <span class="at">y =</span> proporcao,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">ymin =</span> proporcao_low, <span class="at">ymax =</span> proporcao_upp)) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="at">width =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"gray30"</span>) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Proporção"</span>) <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-raca-bh" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-raca-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.11: Distribuição da população por cor ou raça, Belo Horizonte (Censo 2010). Barras de erro indicam IC 95%.
+</figcaption>
+<div aria-describedby="fig-raca-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-raca-bh-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>O tempo de deslocamento ao trabalho (<code>V0662</code>) é uma das poucas perguntas sobre mobilidade disponíveis no Censo. O gráfico a seguir restringe a análise às pessoas que retornavam diariamente para casa (<code>V0661 == '1'</code>) e compara a distribuição dos tempos de deslocamento entre os três principais grupos de cor ou raça, com intervalos de confiança de 95%. Focamos nos grupos Branca, Preta e Parda por concentrarem a quase totalidade da população de Belo Horizonte.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pa_ind <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(V0661 <span class="sc">==</span> <span class="st">'1'</span>, V0606 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"4"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">V0606 =</span> <span class="fu">factor</span>(V0606,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"4"</span>),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Branca"</span>, <span class="st">"Preta"</span>, <span class="st">"Parda"</span>))</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(V0606, V0662) <span class="sc">|&gt;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> V0662, <span class="at">y =</span> proporcao,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">ymin =</span> proporcao_low, <span class="at">ymax =</span> proporcao_upp,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> V0606)) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.9</span>),</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.25</span>, <span class="at">color =</span> <span class="st">"gray30"</span>) <span class="sc">+</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>, <span class="at">name =</span> <span class="st">"Cor ou raça"</span>) <span class="sc">+</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Tempo de deslocamento (código)"</span>, <span class="at">y =</span> <span class="st">"Proporção"</span>) <span class="sc">+</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-desloc-raca" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-desloc-raca-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.12: Distribuição do tempo de deslocamento ao trabalho por cor ou raça, Belo Horizonte, Censo 2010 (trabalhadores que retornam diariamente). Barras de erro indicam IC 95%.
+</figcaption>
+<div aria-describedby="fig-desloc-raca-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-desloc-raca-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dica</span>Interpretando os códigos das variáveis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Os valores numéricos de variáveis como <code>V0606</code> (cor ou raça) e <code>V0662</code> (tempo de deslocamento) correspondem a categorias descritas no dicionário de variáveis. Para interpretá-los corretamente, consulte <code>censobr::data_dictionary(year = 2010, dataset = 'population')</code> e localize a variável de interesse. A coluna de categorias lista os valores e seus rótulos. A conversão para rótulos legíveis pode ser feita com <code>factor(..., levels = ..., labels = ...)</code> após a leitura dos dados.</p>
+</div>
+</div>
+</section>
+<section id="produzindo-mapas-1" class="level3" data-number="8.5.4">
+<h3 data-number="8.5.4" class="anchored" data-anchor-id="produzindo-mapas-1"><span class="header-section-number">8.5.4</span> Produzindo mapas</h3>
+<p>Assim como nos domicílios, as estatísticas por pessoa podem ser desagregadas por área de ponderação e mapeadas. O mapa da <a href="#fig-bh-desloc" class="quarto-xref">Figura&nbsp;<span>8.13</span></a> apresenta, para cada área de ponderação de Belo Horizonte, a proporção de trabalhadores com tempo de deslocamento superior a 30 minutos entre casa e trabalho, um indicador do esforço cotidiano de mobilidade. As categorias da variável <code>V0662</code> com código maior ou igual a 3 correspondem a tempos superiores a 30 minutos (confirme com <code>data_dictionary()</code> se os códigos mudaram).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>desloc_ap <span class="ot">&lt;-</span> pa_ind <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(V0661 <span class="sc">==</span> <span class="st">'1'</span>, <span class="sc">!</span><span class="fu">is.na</span>(V0662)) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">desloc_longo =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(<span class="fu">as.integer</span>(V0662) <span class="sc">&gt;=</span> <span class="dv">3</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">'Mais de 30 min'</span>, <span class="st">'Até 30 min'</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting, desloc_longo) <span class="sc">|&gt;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(desloc_longo <span class="sc">==</span> <span class="st">'Mais de 30 min'</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>ap_bh <span class="sc">|&gt;</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(desloc_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting)) <span class="sc">|&gt;</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> proporcao), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"Oranges"</span>,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Proporção"</span>,</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bh-desloc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-bh-desloc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;8.13: Proporção de trabalhadores com tempo de deslocamento ao trabalho superior a 30 minutos por área de ponderação, Belo Horizonte (Censo 2010).
+</figcaption>
+<div aria-describedby="fig-bh-desloc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="8-microdados_files/figure-html/fig-bh-desloc-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>As maiores proporções de deslocamentos longos tendem a ocorrer nas áreas periféricas do município, onde a distância até os principais centros de emprego é maior e a oferta de transporte coletivo pode ser menos densa. Sobreposto ao mapa de renda da <a href="#fig-bh-renda" class="quarto-xref">Figura&nbsp;<span>8.9</span></a>, esse padrão sugere uma dupla desvantagem nas periferias, com menor renda e maior esforço cotidiano de mobilidade.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Combinando domicílios e indivíduos
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Os dois arquivos de microdados compartilham a variável <code>V0300</code>, o identificador do domicílio. Isso permite cruzar informações dos dois arquivos, por exemplo, associar características do domicílio (tipo de esgotamento, número de cômodos) às características dos moradores (cor ou raça, escolaridade). Esse cruzamento é feito com <code>left_join()</code> antes de montar o plano amostral e pode enriquecer consideravelmente a análise.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="exercícios" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="exercícios"><span class="header-section-number">8.6</span> Exercícios</h2>
+<ol type="1">
+<li><p>Utilizando os microdados de domicílios de Belo Horizonte (Censo 2010), calcule a densidade média de moradores por cômodo (<code>V6203</code>) em cada área de ponderação e produza um mapa. As áreas com maior densidade coincidem com as de menor renda per capita? Sobreponha os dois mapas ou construa um gráfico de dispersão para investigar essa relação.</p></li>
+<li><p>Utilizando os microdados de indivíduos de Belo Horizonte (Censo 2010), compare o nível de instrução médio (<code>V6400</code>) entre pessoas pardas, pretas e brancas, com intervalos de confiança. Repita a análise separando por sexo (<code>V0601</code>). Os padrões diferem entre homens e mulheres?</p></li>
+<li><p>Replique os mapas de renda domiciliar per capita mediana e de cobertura de esgoto por rede geral para outra capital brasileira à sua escolha. Compare os padrões encontrados com os de Belo Horizonte. Qual das duas cidades apresenta maior desigualdade intraurbana nas variáveis analisadas?</p></li>
+</ol>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-bankier1992" class="csl-entry" role="listitem">
+Bankier, M. D., Rathwell, S., &amp; Majkowski, M. (1992). <em>Two Step Generalized Least Squares Estimation in the 1991 <span>Canadian</span> Census</em>. Statistics Canada.
+</div>
+<div id="ref-ipea_ivs2015" class="csl-entry" role="listitem">
+Costa, M. A., &amp; Marguti, B. O. (Org.). (2015). <em>Atlas da Vulnerabilidade Social nos Municípios Brasileiros</em>. IPEA.
+</div>
+<div id="ref-deville1993" class="csl-entry" role="listitem">
+Deville, J.-C., Särndal, C.-E., &amp; Sautory, O. (1993). Generalized Raking Procedures in Survey Sampling. <em>Journal of the American Statistical Association</em>, <em>88</em>(423), 1013–1020. <a href="https://doi.org/10.2307/2290793">https://doi.org/10.2307/2290793</a>
+</div>
+<div id="ref-srvyr_pkg" class="csl-entry" role="listitem">
+Ellis, G. F., &amp; Schneider, B. (2023). <em>srvyr: ’<span>dplyr</span>’-Like Syntax for Summary Statistics of Survey Data</em>. <a href="https://CRAN.R-project.org/package=srvyr">https://CRAN.R-project.org/package=srvyr</a>
+</div>
+<div id="ref-ibge_metodologia2010" class="csl-entry" role="listitem">
+IBGE. (2016). <em>Metodologia do Censo Demográfico 2010</em> (2º ed., V. 41). IBGE. <a href="https://ftp.ibge.gov.br/Censos/Censo_Demografico_2010/metodologia/metodologia_censo_dem_2010.pdf">https://ftp.ibge.gov.br/Censos/Censo_Demografico_2010/metodologia/metodologia_censo_dem_2010.pdf</a>
+</div>
+<div id="ref-ibge_nota_am2022" class="csl-entry" role="listitem">
+IBGE. (2024). <em>Censo Demográfico 2022: Notas Metodológicas n. 07/2024 — Processo de expansão da amostra para os resultados preliminares</em>. IBGE. <a href="https://biblioteca.ibge.gov.br/visualizacao/livros/liv102149.pdf">https://biblioteca.ibge.gov.br/visualizacao/livros/liv102149.pdf</a>
+</div>
+<div id="ref-lumley2011" class="csl-entry" role="listitem">
+Lumley, T. (2011). <em>Complex Surveys: <span>A</span> Guide to Analysis Using <span>R</span></em>. John Wiley &amp; Sons.
+</div>
+<div id="ref-survey_pkg" class="csl-entry" role="listitem">
+Lumley, T. (2023). <em>survey: Analysis of Complex Survey Samples</em>. <a href="https://CRAN.R-project.org/package=survey">https://CRAN.R-project.org/package=survey</a>
+</div>
+<div id="ref-pessoa1998analise" class="csl-entry" role="listitem">
+Pessoa, D. G. C., &amp; Silva, P. L. do N. (1998). <em>Análise de dados amostrais complexos</em>. Associação Brasileira de Estatística. <a href="https://djalmapessoa.github.io/adac/index.html">https://djalmapessoa.github.io/adac/index.html</a>
+</div>
+<div id="ref-silva2021amostragem" class="csl-entry" role="listitem">
+Silva, P. L. do N., Bianchini, Z. M. de A., &amp; Dias, A. J. R. (2021). <em>Amostragem: Teoria e Prática Usando <span>R</span></em>. <a href="https://amostragemcomr.github.io/livro/index.html">https://amostragemcomr.github.io/livro/index.html</a>
+</div>
+<div id="ref-silva2017censo" class="csl-entry" role="listitem">
+Silva, P. L. do N., Cardoso, R. L., &amp; Oliveira, S. (2017). <em>Utilização de dados públicos dos Censos Demográficos brasileiros</em>.
+</div>
+<div id="ref-statisticscanada2009" class="csl-entry" role="listitem">
+Statistics Canada. (2009). <em>Statistics Canada Quality Guidelines</em> (12-539-X; 5º ed.). Statistics Canada. <a href="https://unstats.un.org/unsd/dnss/docs-nqaf/Canada-12-539-x2009001-eng.pdf">https://unstats.un.org/unsd/dnss/docs-nqaf/Canada-12-539-x2009001-eng.pdf</a>
+</div>
+<div id="ref-zimmer2024" class="csl-entry" role="listitem">
+Zimmer, S., Powell, R., &amp; Velásquez, I. (2024). <em>Exploring Complex Survey Data Analysis Using <span>R</span>: <span>A</span> Tidy Introduction with {srvyr} and {survey}</em>. CRC Press.
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>daí se origina a nomenclatura <em>microdados</em><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>início de Abril de 2026<!--Atualizar aqui--><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Lembre-se de instalá-los com <code>install.packages()</code> caso ainda não tenha feito por aí<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>No caso do pacote <code>survey</code>, essa função é a <code>svydesign()</code><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Esse fator é dado por <span class="math inline">\(\sqrt{\frac{N-n}{N-1}}\)</span>, em que <span class="math inline">\(n\)</span> é o tamanho da amostra e <span class="math inline">\(N\)</span> é o tamanho da população<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./7-agregados.html" class="pagination-link" aria-label="Agregados por Setor Censitário">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Agregados por Setor Censitário</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./9-grade-estatistica.html" class="pagination-link" aria-label="Grade Estatística">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

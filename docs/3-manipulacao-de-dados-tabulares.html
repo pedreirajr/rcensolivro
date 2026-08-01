@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Manipulação de Dados Tabulares – Censo Demográfico no R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./4-visualizacao-de-dados-tabulares.html" rel="next">
+<link href="./2-estatistica-descritiva.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1-introducao-ao-r.html">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</a></li><li class="breadcrumb-item"><a href="./3-manipulacao-de-dados-tabulares.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Censo Demográfico no R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prefácio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1-introducao-ao-r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introdução ao R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2-estatistica-descritiva.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3-manipulacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4-visualizacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Visualização de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5-dados-geograficos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dados Geográficos</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6-conceitos-e-metodos-censo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Censo Demográfico: Conceitos e Métodos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7-agregados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Agregados por Setor Censitário</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8-microdados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9-grade-estatistica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-cnefe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNEFE</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-entorno.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Características Urbanísticas do Entorno dos Domicílios</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Referências</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice do Capítulo</h2>
+   
+  <ul>
+  <li><a href="#aspectos-introdutórios" id="toc-aspectos-introdutórios" class="nav-link active" data-scroll-target="#aspectos-introdutórios"><span class="header-section-number">3.1</span> Aspectos Introdutórios</a>
+  <ul>
+  <li><a href="#o-tidyverse" id="toc-o-tidyverse" class="nav-link" data-scroll-target="#o-tidyverse"><span class="header-section-number">3.1.1</span> O tidyverse</a></li>
+  <li><a href="#leitura-de-arquivos-csv-com-read_csv" id="toc-leitura-de-arquivos-csv-com-read_csv" class="nav-link" data-scroll-target="#leitura-de-arquivos-csv-com-read_csv"><span class="header-section-number">3.1.2</span> Leitura de arquivos CSV com <code>read_csv()</code></a></li>
+  <li><a href="#leitura-de-arquivos-excel-com-readxl" id="toc-leitura-de-arquivos-excel-com-readxl" class="nav-link" data-scroll-target="#leitura-de-arquivos-excel-com-readxl"><span class="header-section-number">3.1.3</span> Leitura de arquivos Excel com <code>readxl</code></a></li>
+  <li><a href="#o-operador-pipe" id="toc-o-operador-pipe" class="nav-link" data-scroll-target="#o-operador-pipe"><span class="header-section-number">3.1.4</span> O operador pipe (<code>|&gt;</code>)</a></li>
+  <li><a href="#a-função-summary-e-variáveis-factor" id="toc-a-função-summary-e-variáveis-factor" class="nav-link" data-scroll-target="#a-função-summary-e-variáveis-factor"><span class="header-section-number">3.1.5</span> A função <code>summary()</code> e variáveis factor</a></li>
+  </ul></li>
+  <li><a href="#filtragem-de-observações" id="toc-filtragem-de-observações" class="nav-link" data-scroll-target="#filtragem-de-observações"><span class="header-section-number">3.2</span> Filtragem de Observações</a></li>
+  <li><a href="#seleção-de-colunas" id="toc-seleção-de-colunas" class="nav-link" data-scroll-target="#seleção-de-colunas"><span class="header-section-number">3.3</span> Seleção de Colunas</a></li>
+  <li><a href="#ordenação-de-linhas" id="toc-ordenação-de-linhas" class="nav-link" data-scroll-target="#ordenação-de-linhas"><span class="header-section-number">3.4</span> Ordenação de Linhas</a></li>
+  <li><a href="#transformação-e-criação-de-variáveis" id="toc-transformação-e-criação-de-variáveis" class="nav-link" data-scroll-target="#transformação-e-criação-de-variáveis"><span class="header-section-number">3.5</span> Transformação e Criação de Variáveis</a></li>
+  <li><a href="#sumarização-de-dados" id="toc-sumarização-de-dados" class="nav-link" data-scroll-target="#sumarização-de-dados"><span class="header-section-number">3.6</span> Sumarização de Dados</a></li>
+  <li><a href="#junção-de-tabelas" id="toc-junção-de-tabelas" class="nav-link" data-scroll-target="#junção-de-tabelas"><span class="header-section-number">3.7</span> Junção de Tabelas</a></li>
+  <li><a href="#fazendo-tudo-de-uma-só-vez" id="toc-fazendo-tudo-de-uma-só-vez" class="nav-link" data-scroll-target="#fazendo-tudo-de-uma-só-vez"><span class="header-section-number">3.8</span> Fazendo tudo de uma só vez</a></li>
+  <li><a href="#salvando-arquivos-em-formato-.rds" id="toc-salvando-arquivos-em-formato-.rds" class="nav-link" data-scroll-target="#salvando-arquivos-em-formato-.rds"><span class="header-section-number">3.9</span> Salvando Arquivos em Formato .rds</a></li>
+  <li><a href="#exercícios" id="toc-exercícios" class="nav-link" data-scroll-target="#exercícios"><span class="header-section-number">3.10</span> Exercícios</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1-introducao-ao-r.html">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</a></li><li class="breadcrumb-item"><a href="./3-manipulacao-de-dados-tabulares.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Para quem preferir esta aula em formato audiovisual, há uma <em>playlist</em> de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 4 a 13.</p>
+<p><a href="https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE">▶️ Abrir playlist no YouTube</a></p>
+<p>Neste capítulo, trabalharemos com dois conjuntos de dados: <code>escolha_modal.csv</code> e <code>velocidades.xlsx</code>. Faça o download de ambos pelos links abaixo e salve-os em uma pasta onde você irá criar o projeto no RStudio no qual executará esta aula. Assim que salvá-los, crie um novo script do R para iniciarmos o estudo.</p>
+<ul>
+<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
+<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx"><code>velocidades.xlsx</code></a></li>
+</ul>
+<section id="aspectos-introdutórios" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="aspectos-introdutórios"><span class="header-section-number">3.1</span> Aspectos Introdutórios</h2>
+<section id="o-tidyverse" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="o-tidyverse"><span class="header-section-number">3.1.1</span> O tidyverse</h3>
+<p>O <em>tidyverse</em> é uma coleção de pacotes do R desenvolvida principalmente pela equipe da <a href="https://posit.co/">Posit</a> e projetada para facilitar a análise de dados. Todos os pacotes compartilham uma filosofia de <em>design</em> comum e estruturas de dados coerentes, o que torna a experiência de trabalho mais fluída e previsível. A documentação completa está disponível em <a href="https://www.tidyverse.org/">tidyverse.org</a>.</p>
+<p>Ao instalar o tidyverse com <code>install.packages("tidyverse")</code>, você obtém um conjunto de pacotes para as principais etapas da análise de dados:</p>
+<ul>
+<li><strong><code>ggplot2</code>:</strong> criação de gráficos declarativos baseados na <em>Grammar of Graphics</em></li>
+<li><strong><code>dplyr</code>:</strong> manipulação de dados tabulares (filtrar, selecionar, transformar, sumarizar e combinar tabelas)</li>
+<li><strong><code>tidyr</code>:</strong> reestruturação de tabelas para o formato <em>tidy</em> (cada variável em uma coluna, cada observação em uma linha)</li>
+<li><strong><code>readr</code>:</strong> leitura de arquivos de texto (CSV, TSV etc.) de forma rápida e previsível</li>
+<li><strong><code>purrr</code>:</strong> programação funcional, facilitando a aplicação de funções a listas e vetores</li>
+<li><strong><code>tibble</code>:</strong> versão modernizada do <em>data frame</em>, com comportamento mais consistente e impressão mais legível</li>
+<li><strong><code>stringr</code>:</strong> manipulação de textos e expressões regulares</li>
+<li><strong><code>forcats</code>:</strong> manipulação de variáveis categóricas (<em>factors</em>)</li>
+<li><strong><code>lubridate</code>:</strong> manipulação de datas e horários</li>
+</ul>
+<p>Neste capítulo, o foco está nos pacotes <code>dplyr</code> e <code>readr</code>, que cobrem as operações mais frequentes na etapa de manipulação de dados tabulares.</p>
+</section>
+<section id="leitura-de-arquivos-csv-com-read_csv" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="leitura-de-arquivos-csv-com-read_csv"><span class="header-section-number">3.1.2</span> Leitura de arquivos CSV com <code>read_csv()</code></h3>
+<p>Conforme já vimos anteriormente, o R <em>base</em> oferece a função <code>read.csv()</code> para leitura de arquivos CSV. O pacote <code>readr</code>, parte do tidyverse, oferece a alternativa <code>read_csv()</code>. O código abaixo mostra como usar cada uma delas para ler o arquivo <code>escolha_modal.csv</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>em1 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"escolha_modal.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>em2 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"escolha_modal.csv"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Embora ambas façam a leitura do mesmo arquivo, o comportamento ao imprimir os objetos é diferente. <code>em1</code> é um <em>data frame</em> convencional e, caso a base de dados tenha muitas linhas, ao digitá-lo no console, o R imprimirá centenas delas, fazendo com que tenhamos de subir bastante a barra de rolagem à direita para verificar o nome das suas colunas. Já <code>em2</code> é do tipo <em>tibble</em>. Ao imprimi-lo, aparecem apenas as primeiras dez linhas e apenas as colunas que cabem na largura do console, além dos tipos de cada variável logo abaixo dos nomes das colunas (como <code>&lt;chr&gt;</code> para texto, <code>&lt;dbl&gt;</code> para número real e <code>&lt;int&gt;</code> para inteiro). Observe abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>em2</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,000 × 7
+   sexo  idade renda posse_auto modo_viagem    dist_viagem tempo_viagem
+   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;        &lt;dbl&gt;
+ 1 F        34  3797 N          "Carro ou App"        14.3           27
+ 2 F        43  3515 N          "Carro ou App"        36.1           55
+ 3 F        55  4791 S          "TP"                  26.9           64
+ 4 F        45  2749 N          "A p\xe9"              2.9           26
+ 5 M        45  2929 N          "Carro ou App"        20.6           44
+ 6 M        36  2011 N          "TP"                  22.6           58
+ 7 F        18  1084 N          "TP"                  29.6           83
+ 8 F        31  2338 N          "TP"                  26.9           63
+ 9 M        53  7473 S          "Carro ou App"        18.3           39
+10 M        40  2786 N          "Carro ou App"        36.8           57
+# ℹ 990 more rows</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Por padrão, <em>tibbles</em> imprimem apenas as 10 primeiras linhas e <em>data frames</em> imprimem até 1000 elementos. É possível alterar esses comportamentos com a função <code>options()</code>, que configura parâmetros globais da sessão R. As opções mais úteis são:</p>
+<ul>
+<li><code>options(max.print = n)</code> — define o número máximo de elementos impressos (<code>n</code>) para <em>data frames</em> e outros objetos R base. O padrão é 1000.</li>
+<li><code>options(tibble.print_max = n)</code> — define o número máximo de linhas exibidas em <em>tibbles</em>. Quando o objeto tem mais linhas do que esse valor, somente as primeiras <code>n</code> são impressas.</li>
+<li><code>options(tibble.print_min = n)</code> — define quantas linhas são exibidas quando o limite máximo é ultrapassado.</li>
+<li><code>options(tibble.width = Inf)</code> — exibe todas as colunas, mesmo que o <em>tibble</em> seja mais largo do que a janela do console.</li>
+</ul>
+<p>Para sempre exibir todas as linhas de um <em>tibble</em>, use <code>options(tibble.print_max = Inf)</code>. Para restaurar os padrões, use <code>options(max.print = 1000, tibble.print_max = 10, tibble.print_min = 10)</code>.</p>
+</div>
+</div>
+<p>Ao imprimir <code>em2</code>, a coluna <code>modo_viagem</code> pode exibir o valor <code>"A p\xe9"</code> no lugar de <code>"A pé"</code>. Isso ocorre porque o arquivo foi gravado com codificação <em>Latin-1</em> (também chamada de ISO-8859-1), enquanto o R, por padrão, tenta ler arquivos em UTF-8. O caractere <code>"é"</code> não ocupa o mesmo byte nos dois sistemas de codificação, resultando na sequência de escape <code>\xe9</code>.</p>
+<p>Para corrigir esse problema, é preciso informar a codificação do arquivo na leitura. Com <code>read.csv()</code>, usa-se o argumento <code>fileEncoding</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>em1 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"escolha_modal.csv"</span>, <span class="at">fileEncoding =</span> <span class="st">"Latin1"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Com <code>read_csv()</code>, usa-se o argumento <code>locale</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>em2 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"escolha_modal.csv"</span>, <span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">"Latin1"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Após essa correção, os acentos aparecerão corretamente. Podemos verificar a classe dos dois objetos com a função <code>class()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(em1)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(em2)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O resultado será <code>"data.frame"</code> para <code>em1</code> e <code>c("tbl_df", "tbl", "data.frame")</code> para <code>em2</code>, confirmando que o <em>tibble</em> é uma extensão do <em>data frame</em>.</p>
+</section>
+<section id="leitura-de-arquivos-excel-com-readxl" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="leitura-de-arquivos-excel-com-readxl"><span class="header-section-number">3.1.3</span> Leitura de arquivos Excel com <code>readxl</code></h3>
+<p>Para ler arquivos no formato Excel (<code>.xlsx</code> ou <code>.xls</code>), usamos o pacote <code>readxl</code>. Ele não faz parte do núcleo carregado por <code>library(tidyverse)</code>, mas é instalado junto com o tidyverse. Para usá-lo, instale-o (se ainda não estiver instalado) e depois carregue-o:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"readxl"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O pacote oferece as funções <code>read_excel()</code>, que detecta o formato automaticamente, e <code>read_xlsx()</code> e <code>read_xls</code>, específicas para <code>.xlsx</code> e <code>.xls</code>, respectivamente. Ambas opções abaixo valem para lermos nosso arquivo “velocidades.xlsx”:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"velocidades.xlsx"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">"velocidades.xlsx"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Outro aspecto interessante quando queremos utilizar funções de bibliotecas já instaladas, mas não carregadas com o <code>library()</code> no R, é que podemos executá-las usando a notação <code>pacote::função()</code>. Observe abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"velocidades.xlsx"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Essa notação é útil quando se quer usar uma função de um pacote de forma pontual, sem carregar o pacote inteiro na sessão.</p>
+</section>
+<section id="o-operador-pipe" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="o-operador-pipe"><span class="header-section-number">3.1.4</span> O operador pipe (<code>|&gt;</code>)</h3>
+<p>O operador <em>pipe</em> é uma das ferramentas mais úteis do ecossistema tidyverse. Ele permite encadear operações de forma legível, passando o resultado de uma expressão como o primeiro argumento da expressão seguinte.</p>
+<p>Durante muito tempo, o pipe mais usado no R foi o <code>%&gt;%</code>, proveniente do pacote <code>magrittr</code>. A partir do R 4.1.0, lançado em 2021, o R passou a oferecer um pipe nativo, <code>|&gt;</code>, que funciona de forma similar sem exigir nenhum pacote adicional. Neste livro, usamos o pipe nativo <code>|&gt;</code>.</p>
+<p>No RStudio, o atalho de teclado <strong>Ctrl+Shift+M</strong> (Windows e Linux) ou <strong>Cmd+Shift+M</strong> (Mac) insere o pipe automaticamente. Para garantir que o atalho insira <code>|&gt;</code> e não <code>%&gt;%</code>, vá em <strong>Tools &gt; Global Options &gt; Code</strong> e marque a opção <strong>Use native pipe operator</strong>.</p>
+<p>A lógica do pipe é simples: em vez de escrever <code>f(x)</code>, escrevemos <code>x |&gt; f()</code>. Veja alguns exemplos com a base <code>vel</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  faixa tipo_veic       velocidade
+  &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+1 Cen   Passeio                 54
+2 Cen   Caminhão/Ônibus         50
+3 Cen   Passeio                 56
+4 Dir   Moto                    43
+5 Esq   SUV/Pickup              57
+6 Cen   Caminhão/Ônibus         50</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>vel<span class="sc">$</span>velocidade <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 53.804</code></pre>
+</div>
+</div>
+<p>No primeiro exemplo, <code>vel</code> é passado como argumento para <code>head()</code>, que retorna as primeiras seis linhas. No segundo, o vetor <code>vel$velocidade</code> é passado para <code>mean()</code>, que calcula a média. O pipe se torna ainda mais poderoso quando encadeamos várias operações, como veremos nas seções mais adiante.</p>
+</section>
+<section id="a-função-summary-e-variáveis-factor" class="level3" data-number="3.1.5">
+<h3 data-number="3.1.5" class="anchored" data-anchor-id="a-função-summary-e-variáveis-factor"><span class="header-section-number">3.1.5</span> A função <code>summary()</code> e variáveis factor</h3>
+<p>Vamos agora fazer a leitura definitiva da base <code>escolha_modal.csv</code>, informando a codificação correta:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>em <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"escolha_modal.csv"</span>, <span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">"Latin1"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Podemos obter um resumo rápido de todas as variáveis com a função <code>summary()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     sexo               idade           renda        posse_auto       
+ Length:1000        Min.   :18.00   Min.   :  327   Length:1000       
+ Class :character   1st Qu.:32.00   1st Qu.: 2142   Class :character  
+ Mode  :character   Median :43.00   Median : 3017   Mode  :character  
+                    Mean   :42.84   Mean   : 3993                     
+                    3rd Qu.:54.00   3rd Qu.: 5398                     
+                    Max.   :80.00   Max.   :14049                     
+ modo_viagem         dist_viagem     tempo_viagem   
+ Length:1000        Min.   : 0.10   Min.   :  9.00  
+ Class :character   1st Qu.:10.70   1st Qu.: 34.00  
+ Mode  :character   Median :22.15   Median : 44.00  
+                    Mean   :19.65   Mean   : 45.96  
+                    3rd Qu.:27.80   3rd Qu.: 56.00  
+                    Max.   :45.20   Max.   :105.00  </code></pre>
+</div>
+</div>
+<p>Para variáveis numéricas, <code>summary()</code> retorna mínimo, primeiro quartil, mediana, média, terceiro quartil e máximo, além do número de valores ausentes. Para variáveis do tipo <em>character</em> (texto), porém, o resultado é pouco informativo, pois o R indica apenas o comprimento e a classe, sem qualquer informação sobre os valores que aparecem.</p>
+<p>Para variáveis categóricas, é mais adequado usar o tipo <em>factor</em>. Um <em>factor</em> é uma representação especial para variáveis categóricas no R que armazena os valores distintos como <strong>níveis</strong> (<em>levels</em>) e permite que o <code>summary()</code> mostre a contagem de cada categoria, entre outras vantagens que veremos mais adiante.</p>
+<p>Vamos transformar as variáveis <code>sexo</code>, <code>posse_auto</code> e <code>modo_viagem</code> em <em>factor</em>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>em <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">sexo        =</span> <span class="fu">factor</span>(sexo),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">posse_auto  =</span> <span class="fu">factor</span>(posse_auto),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">modo_viagem =</span> <span class="fu">factor</span>(modo_viagem)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Agora <code>summary()</code> mostrará a contagem de cada nível:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> sexo        idade           renda       posse_auto       modo_viagem 
+ F:478   Min.   :18.00   Min.   :  327   N:613      A pé        :150  
+ M:522   1st Qu.:32.00   1st Qu.: 2142   S:387      Bicicleta   :141  
+         Median :43.00   Median : 3017              Carro ou App:380  
+         Mean   :42.84   Mean   : 3993              TP          :329  
+         3rd Qu.:54.00   3rd Qu.: 5398                                
+         Max.   :80.00   Max.   :14049                                
+  dist_viagem     tempo_viagem   
+ Min.   : 0.10   Min.   :  9.00  
+ 1st Qu.:10.70   1st Qu.: 34.00  
+ Median :22.15   Median : 44.00  
+ Mean   :19.65   Mean   : 45.96  
+ 3rd Qu.:27.80   3rd Qu.: 56.00  
+ Max.   :45.20   Max.   :105.00  </code></pre>
+</div>
+</div>
+<p>Para verificar os níveis de um <em>factor</em>, usamos a função <code>levels()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(em<span class="sc">$</span>modo_viagem)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A pé"         "Bicicleta"    "Carro ou App" "TP"          </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(em<span class="sc">$</span>sexo)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "F" "M"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="filtragem-de-observações" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="filtragem-de-observações"><span class="header-section-number">3.2</span> Filtragem de Observações</h2>
+<p>A filtragem de observações consiste na seleção de um subconjunto de linhas de uma tabela com base em algum critério. O <code>dplyr</code> oferece duas funções principais para isso.</p>
+<p>A função <code>slice()</code> seleciona linhas por posição. Para obter as cinco primeiras linhas de <code>vel</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  faixa tipo_veic       velocidade
+  &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+1 Cen   Passeio                 54
+2 Cen   Caminhão/Ônibus         50
+3 Cen   Passeio                 56
+4 Dir   Moto                    43
+5 Esq   SUV/Pickup              57</code></pre>
+</div>
+</div>
+<p>A função <code>filter()</code> realiza a filtragem com base em condições lógicas. Os exemplos abaixo usam a base <code>vel</code> com diferentes operadores condicionais sobre a variável <code>velocidade</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(velocidade <span class="sc">&gt;=</span> <span class="dv">50</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 383 × 3
+   faixa tipo_veic       velocidade
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+ 1 Cen   Passeio                 54
+ 2 Cen   Caminhão/Ônibus         50
+ 3 Cen   Passeio                 56
+ 4 Esq   SUV/Pickup              57
+ 5 Cen   Caminhão/Ônibus         50
+ 6 Esq   Passeio                 55
+ 7 Esq   SUV/Pickup              64
+ 8 Esq   Passeio                 53
+ 9 Cen   Passeio                 58
+10 Esq   Passeio                 53
+# ℹ 373 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(velocidade <span class="sc">&lt;</span> <span class="dv">45</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 3
+   faixa tipo_veic       velocidade
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+ 1 Dir   Moto                    43
+ 2 Dir   Moto                    42
+ 3 Dir   Caminhão/Ônibus         42
+ 4 Dir   Caminhão/Ônibus         44
+ 5 Dir   Moto                    43
+ 6 Dir   Caminhão/Ônibus         41
+ 7 Dir   Caminhão/Ônibus         40
+ 8 Dir   Caminhão/Ônibus         44
+ 9 Dir   Moto                    43
+10 Dir   Caminhão/Ônibus         43
+# ℹ 22 more rows</code></pre>
+</div>
+</div>
+<p>Para combinar condições, usamos os operadores <code>&amp;</code> (E lógico) e <code>|</code> (OU lógico). O exemplo abaixo seleciona registros com velocidade acima de 50 km/h <strong>e</strong> do tipo de veículo “Moto”:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(velocidade <span class="sc">&gt;</span> <span class="dv">50</span> <span class="sc">&amp;</span> tipo_veic <span class="sc">==</span> <span class="st">"Moto"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 3
+  faixa tipo_veic velocidade
+  &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;
+1 Cen   Moto              51
+2 Cen   Moto              52
+3 Cen   Moto              55
+4 Esq   Moto              51
+5 Dir   Moto              55
+6 Cen   Moto              51
+7 Cen   Moto              54</code></pre>
+</div>
+</div>
+<p>Já o exemplo seguinte seleciona registros com velocidade entre 40 e 50 km/h:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(velocidade <span class="sc">&gt;</span> <span class="dv">40</span> <span class="sc">&amp;</span> velocidade <span class="sc">&lt;</span> <span class="dv">50</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 114 × 3
+   faixa tipo_veic       velocidade
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+ 1 Dir   Moto                    43
+ 2 Dir   Moto                    42
+ 3 Dir   Moto                    46
+ 4 Dir   Caminhão/Ônibus         48
+ 5 Dir   Caminhão/Ônibus         47
+ 6 Dir   Moto                    46
+ 7 Dir   Caminhão/Ônibus         42
+ 8 Dir   Moto                    46
+ 9 Dir   Passeio                 46
+10 Dir   Caminhão/Ônibus         47
+# ℹ 104 more rows</code></pre>
+</div>
+</div>
+<p>Na base <code>em</code>, podemos combinar filtros em variáveis diferentes. O exemplo abaixo seleciona viagens realizadas por pessoas do sexo feminino que usaram transporte público (“TP”) ou foram a pé. Note que o operador <code>%in%</code> verifica se o valor está contido em um vetor de opções, sendo uma alternativa mais limpa a múltiplas condições com <code>|</code> quando temos dados do tipo <code>character</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sexo <span class="sc">==</span> <span class="st">"F"</span> <span class="sc">&amp;</span> modo_viagem <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"TP"</span>, <span class="st">"A pé"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 277 × 7
+   sexo  idade renda posse_auto modo_viagem dist_viagem tempo_viagem
+   &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;      &lt;fct&gt;             &lt;dbl&gt;        &lt;dbl&gt;
+ 1 F        55  4791 S          TP                 26.9           64
+ 2 F        45  2749 N          A pé                2.9           26
+ 3 F        18  1084 N          TP                 29.6           83
+ 4 F        31  2338 N          TP                 26.9           63
+ 5 F        32  1170 N          TP                 33.7           79
+ 6 F        20  1292 N          TP                 31.8           70
+ 7 F        34  2695 N          A pé                2.7           29
+ 8 F        66  7295 S          TP                 28.4           62
+ 9 F        25  1963 N          TP                 28.2           62
+10 F        45  3037 N          TP                 23.7           67
+# ℹ 267 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="seleção-de-colunas" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="seleção-de-colunas"><span class="header-section-number">3.3</span> Seleção de Colunas</h2>
+<p>A seleção de colunas permite manter apenas as variáveis relevantes para a análise, facilitando a leitura do código e reduzindo o uso de memória. No <code>dplyr</code>, usamos a função <code>select()</code>.</p>
+<p>Para selecionar apenas as colunas <code>tipo_veic</code> e <code>velocidade</code> de <code>vel</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tipo_veic, velocidade)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 2
+   tipo_veic       velocidade
+   &lt;chr&gt;                &lt;dbl&gt;
+ 1 Passeio                 54
+ 2 Caminhão/Ônibus         50
+ 3 Passeio                 56
+ 4 Moto                    43
+ 5 SUV/Pickup              57
+ 6 Caminhão/Ônibus         50
+ 7 Passeio                 55
+ 8 SUV/Pickup              64
+ 9 Passeio                 53
+10 Passeio                 58
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Para remover uma coluna, basta preceder o nome com <code>-</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>velocidade)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 2
+   faixa tipo_veic      
+   &lt;chr&gt; &lt;chr&gt;          
+ 1 Cen   Passeio        
+ 2 Cen   Caminhão/Ônibus
+ 3 Cen   Passeio        
+ 4 Dir   Moto           
+ 5 Esq   SUV/Pickup     
+ 6 Cen   Caminhão/Ônibus
+ 7 Esq   Passeio        
+ 8 Esq   SUV/Pickup     
+ 9 Esq   Passeio        
+10 Cen   Passeio        
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>O <code>select()</code> também pode ser usado para reordenar colunas. Ao listar as colunas na nova ordem desejada, o resultado terá as colunas nessa sequência:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(velocidade, tipo_veic, faixa)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+   velocidade tipo_veic       faixa
+        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;
+ 1         54 Passeio         Cen  
+ 2         50 Caminhão/Ônibus Cen  
+ 3         56 Passeio         Cen  
+ 4         43 Moto            Dir  
+ 5         57 SUV/Pickup      Esq  
+ 6         50 Caminhão/Ônibus Cen  
+ 7         55 Passeio         Esq  
+ 8         64 SUV/Pickup      Esq  
+ 9         53 Passeio         Esq  
+10         58 Passeio         Cen  
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Eventualmente, nós podemos obter os nomes das variáveis de interesse a serem analisadas a partir de alguma operação anterior que as retorne em formato <code>character</code>. Como a função <code>select()</code> não aceita nomes de colunas nesse formato, podemos usamos a função auxiliar <code>all_of()</code>, conforme o exemplo abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>colunas <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"tipo_veic"</span>, <span class="st">"velocidade"</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(colunas))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 2
+   tipo_veic       velocidade
+   &lt;chr&gt;                &lt;dbl&gt;
+ 1 Passeio                 54
+ 2 Caminhão/Ônibus         50
+ 3 Passeio                 56
+ 4 Moto                    43
+ 5 SUV/Pickup              57
+ 6 Caminhão/Ônibus         50
+ 7 Passeio                 55
+ 8 SUV/Pickup              64
+ 9 Passeio                 53
+10 Passeio                 58
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="ordenação-de-linhas" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="ordenação-de-linhas"><span class="header-section-number">3.4</span> Ordenação de Linhas</h2>
+<p>A ordenação de linhas reordena as observações de uma tabela com base nos valores de uma ou mais colunas. No <code>dplyr</code>, usamos a função <code>arrange()</code>.</p>
+<p>Para ordenar <code>vel</code> pela velocidade em ordem crescente:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(velocidade)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+   faixa tipo_veic       velocidade
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+ 1 Dir   Caminhão/Ônibus         38
+ 2 Dir   Caminhão/Ônibus         40
+ 3 Dir   Moto                    40
+ 4 Dir   Caminhão/Ônibus         41
+ 5 Dir   Moto                    41
+ 6 Dir   Caminhão/Ônibus         41
+ 7 Dir   Moto                    42
+ 8 Dir   Caminhão/Ônibus         42
+ 9 Dir   Caminhão/Ônibus         42
+10 Dir   Moto                    42
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Para ordenar em ordem decrescente, usamos a função auxiliar <code>desc()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(velocidade))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+   faixa tipo_veic  velocidade
+   &lt;chr&gt; &lt;chr&gt;           &lt;dbl&gt;
+ 1 Esq   SUV/Pickup         66
+ 2 Esq   Passeio            65
+ 3 Esq   Passeio            65
+ 4 Esq   Passeio            65
+ 5 Esq   SUV/Pickup         64
+ 6 Esq   Passeio            64
+ 7 Esq   Passeio            64
+ 8 Esq   Passeio            63
+ 9 Esq   Passeio            63
+10 Esq   Passeio            63
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Para variáveis numéricas, uma alternativa mais compacta é usar o sinal de negação diretamente:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>velocidade)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+   faixa tipo_veic  velocidade
+   &lt;chr&gt; &lt;chr&gt;           &lt;dbl&gt;
+ 1 Esq   SUV/Pickup         66
+ 2 Esq   Passeio            65
+ 3 Esq   Passeio            65
+ 4 Esq   Passeio            65
+ 5 Esq   SUV/Pickup         64
+ 6 Esq   Passeio            64
+ 7 Esq   Passeio            64
+ 8 Esq   Passeio            63
+ 9 Esq   Passeio            63
+10 Esq   Passeio            63
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>O resultado é idêntico. Atente-se, no entanto, que a notação com <code>-</code> não funciona para variáveis de texto ou <em>factor</em>, situações em que <code>desc()</code> é obrigatório.</p>
+<p>A ordenação também é possível por múltiplas colunas. O código abaixo ordena primeiro por <code>tipo_veic</code> (em ordem alfabética) e, dentro de cada tipo, por <code>velocidade</code> em ordem decrescente:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(tipo_veic, <span class="fu">desc</span>(velocidade))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+   faixa tipo_veic       velocidade
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+ 1 Cen   Caminhão/Ônibus         56
+ 2 Cen   Caminhão/Ônibus         55
+ 3 Cen   Caminhão/Ônibus         54
+ 4 Cen   Caminhão/Ônibus         53
+ 5 Esq   Caminhão/Ônibus         53
+ 6 Cen   Caminhão/Ônibus         52
+ 7 Cen   Caminhão/Ônibus         52
+ 8 Dir   Caminhão/Ônibus         52
+ 9 Cen   Caminhão/Ônibus         52
+10 Cen   Caminhão/Ônibus         52
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Observe que a ordenação de <code>tipo_veic</code> segue a ordem alfabética, o que não reflete uma sequência lógica em termos de porte do veículo. A ordem natural seria Moto, Passeio, SUV/Pickup e Caminhão/Ônibus. Para impor essa ordem, convertemos <code>tipo_veic</code> em <em>factor</em> com os níveis na sequência desejada:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> vel <span class="sc">|&gt;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">tipo_veic =</span> <span class="fu">factor</span>(</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>      tipo_veic,</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Moto"</span>, <span class="st">"Passeio"</span>, <span class="st">"SUV/Pickup"</span>, <span class="st">"Caminhão/Ônibus"</span>)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Quando a variável categórica tem uma ordem intrínseca com significado (como o porte do veículo), podemos declará-la explicitamente com o argumento <code>ordered = TRUE</code>, fazendo com que esta se torne uma variável categórica <em>ordinal</em>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> vel <span class="sc">|&gt;</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">tipo_veic =</span> <span class="fu">factor</span>(</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>      tipo_veic,</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels  =</span> <span class="fu">c</span>(<span class="st">"Moto"</span>, <span class="st">"Passeio"</span>, <span class="st">"SUV/Pickup"</span>, <span class="st">"Caminhão/Ônibus"</span>),</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">ordered =</span> <span class="cn">TRUE</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Um <em>factor</em> ordenado permite comparações lógicas entre categorias. Por exemplo, <code>tipo_veic &gt; "Passeio"</code> retornará <code>TRUE</code> para “SUV/Pickup” e “Caminhão/Ônibus” e <code>FALSE</code> para “Moto” e “Passeio”. Ao ordenar novamente por <code>tipo_veic</code>, o resultado seguirá a ordem dos níveis definidos:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(tipo_veic)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+   faixa tipo_veic velocidade
+   &lt;chr&gt; &lt;fct&gt;          &lt;dbl&gt;
+ 1 Dir   Moto              43
+ 2 Dir   Moto              42
+ 3 Dir   Moto              46
+ 4 Dir   Moto              46
+ 5 Dir   Moto              46
+ 6 Cen   Moto              51
+ 7 Dir   Moto              43
+ 8 Dir   Moto              45
+ 9 Cen   Moto              48
+10 Dir   Moto              43
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Podemos confirmar os níveis com <code>levels()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(vel<span class="sc">$</span>tipo_veic)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Moto"            "Passeio"         "SUV/Pickup"      "Caminhão/Ônibus"</code></pre>
+</div>
+</div>
+</section>
+<section id="transformação-e-criação-de-variáveis" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="transformação-e-criação-de-variáveis"><span class="header-section-number">3.5</span> Transformação e Criação de Variáveis</h2>
+<p>A função <code>mutate()</code> do <code>dplyr</code> permite criar novas variáveis ou modificar variáveis existentes. Ela adiciona (ou substitui) colunas na tabela sem alterar o número de linhas.</p>
+<p>A variável <code>tempo_viagem</code> na base <code>em</code> está originalmente em minutos. Vamos convertê-la para horas, sobrescrevendo a coluna original:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>em <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tempo_viagem =</span> tempo_viagem <span class="sc">/</span> <span class="dv">60</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Com o tempo agora em horas, podemos criar uma nova variável com a velocidade média da viagem, dividindo a distância pelo tempo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>em <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vel_media_viagem =</span> dist_viagem <span class="sc">/</span> tempo_viagem)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Para criar variáveis dicotômicas, a função <code>ifelse()</code> é útil. O código abaixo cria uma variável lógica indicando se o veículo estava acima de 60 km/h:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> vel <span class="sc">|&gt;</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">acim60 =</span> <span class="fu">ifelse</span>(velocidade <span class="sc">&gt;</span> <span class="dv">60</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Para classificações com mais de duas categorias, costumamos utilizar o <code>ifelse()</code> de forma aninhada, ou, de maneira mais simples, usando a função <code>case_when()</code>. O exemplo abaixo cria a variável <code>veic_pesado</code>, listando explicitamente quais categorias pertencem a cada grupo por meio do operador <code>%in%</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> vel <span class="sc">|&gt;</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">veic_pesado =</span> <span class="fu">case_when</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>      tipo_veic <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Caminhão/Ônibus"</span>)               <span class="sc">~</span> <span class="st">"S"</span>,</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>      tipo_veic <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Moto"</span>, <span class="st">"Passeio"</span>, <span class="st">"SUV/Pickup"</span>) <span class="sc">~</span> <span class="st">"N"</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Quando nem todas as combinações precisam ser enumeradas, podemos usar <code>.default</code> para definir o valor dos casos restantes, tornando o código mais conciso:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> vel <span class="sc">|&gt;</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">veic_pesado =</span> <span class="fu">case_when</span>(</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>      tipo_veic <span class="sc">==</span> <span class="st">"Caminhão/Ônibus"</span> <span class="sc">~</span> <span class="st">"S"</span>,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> <span class="st">"N"</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A sintaxe do <code>case_when()</code> segue o padrão <code>condição ~ valor</code>, com <code>.default</code> definindo o valor para os casos que não atendem a nenhuma condição explícita. Uma alternativa equivalente ao <code>.default</code> é usar <code>TRUE ~ "N"</code>, notação mais antiga que ainda é amplamente encontrada em códigos R.</p>
+</section>
+<section id="sumarização-de-dados" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="sumarização-de-dados"><span class="header-section-number">3.6</span> Sumarização de Dados</h2>
+<p>A sumarização reduz uma tabela a um conjunto de estatísticas calculadas a partir dos valores das colunas. No <code>dplyr</code>, a combinação de <code>group_by()</code> e <code>summarize()</code> é o principal mecanismo para isso.</p>
+<p>Vamos calcular a velocidade média de viagem por modo de transporte na base <code>em</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(modo_viagem) <span class="sc">|&gt;</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">vel_media =</span> <span class="fu">mean</span>(vel_media_viagem, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  modo_viagem  vel_media
+  &lt;fct&gt;            &lt;dbl&gt;
+1 A pé              4.19
+2 Bicicleta        15.2 
+3 Carro ou App     35.0 
+4 TP               24.7 </code></pre>
+</div>
+</div>
+<p>O argumento <code>na.rm = TRUE</code> instrui a função a ignorar os valores ausentes (<code>NA</code>) no cálculo. Sem ele, qualquer <code>NA</code> na coluna faria com que o resultado fosse <code>NA</code> para o grupo inteiro.</p>
+<p>Podemos calcular várias estatísticas de uma vez no mesmo <code>summarize()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(modo_viagem) <span class="sc">|&gt;</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">vel_media   =</span> <span class="fu">mean</span>(vel_media_viagem,            <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vel_mediana =</span> <span class="fu">median</span>(vel_media_viagem,          <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">q1          =</span> <span class="fu">quantile</span>(vel_media_viagem, <span class="fl">0.25</span>,  <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">q3          =</span> <span class="fu">quantile</span>(vel_media_viagem, <span class="fl">0.75</span>,  <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">desvio_pad  =</span> <span class="fu">sd</span>(vel_media_viagem,              <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  modo_viagem  vel_media vel_mediana    q1    q3 desvio_pad
+  &lt;fct&gt;            &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+1 A pé              4.19        4.25  3.39  4.97       1.13
+2 Bicicleta        15.2        15.1  13.0  17.2        3.55
+3 Carro ou App     35.0        34.8  32.3  37.7        4.32
+4 TP               24.7        24.7  22.7  26.8        3.19</code></pre>
+</div>
+</div>
+<p>Um outro uso bastante interessante é o de contagem de observações em níveis diferentes de variáveis categóricas. Para tanto, usamos a função <code>n()</code> dentro de <code>summarize()</code>, que não recebe argumentos e conta o número de linhas em cada grupo. O exemplo abaixo conta o número de viagens por combinação de sexo e posse de automóvel:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sexo, posse_auto) <span class="sc">|&gt;</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">quant =</span> <span class="fu">n</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'sexo'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+# Groups:   sexo [2]
+  sexo  posse_auto quant
+  &lt;fct&gt; &lt;fct&gt;      &lt;int&gt;
+1 F     N            328
+2 F     S            150
+3 M     N            285
+4 M     S            237</code></pre>
+</div>
+</div>
+<p>Para esse tipo de contagem simples, o <code>dplyr</code> oferece a função <code>count()</code> como atalho conveniente:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(sexo, posse_auto)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  sexo  posse_auto     n
+  &lt;fct&gt; &lt;fct&gt;      &lt;int&gt;
+1 F     N            328
+2 F     S            150
+3 M     N            285
+4 M     S            237</code></pre>
+</div>
+</div>
+<p>Os valores são equivalentes aos do exemplo anterior, mas há uma diferença importante no objeto retornado. O <code>group_by()</code> seguido de <code>summarize()</code> retorna um <em>tibble</em> ainda agrupado, com o agrupamento por <code>sexo</code> permanecendo ativo após o <code>summarize()</code>. Já o <code>count()</code> retorna um <em>tibble</em> comum, sem agrupamento. Essa distinção é relevante quando se encadeiam operações após a contagem. Com o resultado do <code>group_by() |&gt; summarize()</code>, um <code>mutate()</code> subsequente opera dentro dos grupos remanescentes. Já com o resultado do <code>count()</code>, ele opera sobre o <em>tibble</em> inteiro.</p>
+<p>Esse é o caso de quando queremos analisar a proporção dentro de cada grupo, em vez de números absolutos, o que pode ser mais informativo. O código abaixo calcula a proporção de cada combinação dentro de cada sexo, encadeando um <code>mutate()</code> após o <code>summarize()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sexo, posse_auto) <span class="sc">|&gt;</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">quant =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> quant <span class="sc">/</span> <span class="fu">sum</span>(quant))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'sexo'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+# Groups:   sexo [2]
+  sexo  posse_auto quant  prop
+  &lt;fct&gt; &lt;fct&gt;      &lt;int&gt; &lt;dbl&gt;
+1 F     N            328 0.686
+2 F     S            150 0.314
+3 M     N            285 0.546
+4 M     S            237 0.454</code></pre>
+</div>
+</div>
+<p>O <code>mutate()</code> é aplicado com o agrupamento por <code>sexo</code> ainda ativo, então <code>sum(quant)</code> é calculado dentro de cada categoria de sexo, gerando proporções que somam 1 dentro de cada grupo.</p>
+<p>Para contrastar, veja o que acontece ao usar <code>count()</code> e encadear o mesmo <code>mutate()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(sexo, posse_auto) <span class="sc">|&gt;</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  sexo  posse_auto     n  prop
+  &lt;fct&gt; &lt;fct&gt;      &lt;int&gt; &lt;dbl&gt;
+1 F     N            328 0.328
+2 F     S            150 0.15 
+3 M     N            285 0.285
+4 M     S            237 0.237</code></pre>
+</div>
+</div>
+<p>Como <code>count()</code> retorna um <em>tibble</em> sem agrupamento, <code>sum(n)</code> é calculado sobre todas as linhas da tabela, gerando proporções em relação ao total geral, não dentro de cada sexo.</p>
+</section>
+<section id="junção-de-tabelas" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="junção-de-tabelas"><span class="header-section-number">3.7</span> Junção de Tabelas</h2>
+<p>Em muitas situações, as informações relevantes para uma análise estão distribuídas em tabelas diferentes, que precisam ser combinadas. Essa operação é chamada de <strong>junção</strong> (<em>join</em>) e é realizada com base em uma ou mais colunas que identificam a correspondência entre as linhas das tabelas.</p>
+<p>Suponha que, além dos dados de velocidade, tenhamos uma tabela com o peso médio de cada tipo de veículo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>pesos <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tipo_veic =</span> <span class="fu">c</span>(<span class="st">"Moto"</span>, <span class="st">"Passeio"</span>, <span class="st">"SUV/Pickup"</span>, <span class="st">"Caminhão/Ônibus"</span>),</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">peso_kg   =</span> <span class="fu">c</span>(<span class="dv">120</span>, <span class="dv">1300</span>, <span class="dv">2000</span>, <span class="dv">16000</span>)</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>pesos</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  tipo_veic       peso_kg
+  &lt;chr&gt;             &lt;dbl&gt;
+1 Moto                120
+2 Passeio            1300
+3 SUV/Pickup         2000
+4 Caminhão/Ônibus   16000</code></pre>
+</div>
+</div>
+<p>Para incorporar essa informação à base <code>vel</code>, usamos <code>left_join()</code>, função do <code>dplyr</code> que mantém todas as linhas da tabela à esquerda (<code>vel</code>) e adiciona as colunas da tabela à direita (<code>pesos</code>) para as linhas com correspondência:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pesos, <span class="at">by =</span> <span class="st">"tipo_veic"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 6
+   faixa tipo_veic       velocidade acim60 veic_pesado peso_kg
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt; &lt;lgl&gt;  &lt;chr&gt;         &lt;dbl&gt;
+ 1 Cen   Passeio                 54 FALSE  N              1300
+ 2 Cen   Caminhão/Ônibus         50 FALSE  S             16000
+ 3 Cen   Passeio                 56 FALSE  N              1300
+ 4 Dir   Moto                    43 FALSE  N               120
+ 5 Esq   SUV/Pickup              57 FALSE  N              2000
+ 6 Cen   Caminhão/Ônibus         50 FALSE  S             16000
+ 7 Esq   Passeio                 55 FALSE  N              1300
+ 8 Esq   SUV/Pickup              64 TRUE   N              2000
+ 9 Esq   Passeio                 53 FALSE  N              1300
+10 Cen   Passeio                 58 FALSE  N              1300
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>O argumento <code>by</code> indica a coluna usada como chave de junção. Neste caso, <code>tipo_veic</code> está presente nas duas tabelas e identifica cada tipo de veículo. Para cada linha de <code>vel</code>, o <code>left_join()</code> busca o peso correspondente em <code>pesos</code> e adiciona a coluna <code>peso_kg</code> ao resultado.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Dica
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>O <code>dplyr</code> oferece outros tipos de junção para diferentes situações. O <code>right_join()</code> mantém todas as linhas da tabela à direita. O <code>inner_join()</code> mantém apenas as linhas com correspondência nas duas tabelas. O <code>full_join()</code> mantém todas as linhas de ambas as tabelas.</p>
+</div>
+</div>
+<p>Na prática, é comum que as duas tabelas usem nomes diferentes para a mesma coluna-chave. Suponha que a tabela <code>pesos</code> tivesse a coluna chamada <code>veiculo</code> em vez de <code>tipo_veic</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>pesos2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">veiculo =</span> <span class="fu">c</span>(<span class="st">"Moto"</span>, <span class="st">"Passeio"</span>, <span class="st">"SUV/Pickup"</span>, <span class="st">"Caminhão/Ônibus"</span>),</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">peso_kg =</span> <span class="fu">c</span>(<span class="dv">120</span>, <span class="dv">1300</span>, <span class="dv">2000</span>, <span class="dv">16000</span>)</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Nesse caso, o argumento <code>by</code> recebe um vetor nomeado, onde o nome é a coluna da tabela da esquerda e o valor é a coluna da tabela da direita:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pesos2, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"tipo_veic"</span> <span class="ot">=</span> <span class="st">"veiculo"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 6
+   faixa tipo_veic       velocidade acim60 veic_pesado peso_kg
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt; &lt;lgl&gt;  &lt;chr&gt;         &lt;dbl&gt;
+ 1 Cen   Passeio                 54 FALSE  N              1300
+ 2 Cen   Caminhão/Ônibus         50 FALSE  S             16000
+ 3 Cen   Passeio                 56 FALSE  N              1300
+ 4 Dir   Moto                    43 FALSE  N               120
+ 5 Esq   SUV/Pickup              57 FALSE  N              2000
+ 6 Cen   Caminhão/Ônibus         50 FALSE  S             16000
+ 7 Esq   Passeio                 55 FALSE  N              1300
+ 8 Esq   SUV/Pickup              64 TRUE   N              2000
+ 9 Esq   Passeio                 53 FALSE  N              1300
+10 Cen   Passeio                 58 FALSE  N              1300
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>Uma sintaxe alternativa e mais legível é usar a função <code>join_by()</code>, disponível a partir do <code>dplyr</code> 1.1.0. Ela recebe uma expressão de igualdade entre os nomes das colunas:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pesos2, <span class="at">by =</span> <span class="fu">join_by</span>(tipo_veic <span class="sc">==</span> veiculo))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 6
+   faixa tipo_veic       velocidade acim60 veic_pesado peso_kg
+   &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt; &lt;lgl&gt;  &lt;chr&gt;         &lt;dbl&gt;
+ 1 Cen   Passeio                 54 FALSE  N              1300
+ 2 Cen   Caminhão/Ônibus         50 FALSE  S             16000
+ 3 Cen   Passeio                 56 FALSE  N              1300
+ 4 Dir   Moto                    43 FALSE  N               120
+ 5 Esq   SUV/Pickup              57 FALSE  N              2000
+ 6 Cen   Caminhão/Ônibus         50 FALSE  S             16000
+ 7 Esq   Passeio                 55 FALSE  N              1300
+ 8 Esq   SUV/Pickup              64 TRUE   N              2000
+ 9 Esq   Passeio                 53 FALSE  N              1300
+10 Cen   Passeio                 58 FALSE  N              1300
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>O resultado é idêntico. A vantagem do <code>join_by()</code> é que os nomes das colunas são tratados como variáveis, sem necessidade de aspas, tornando o código mais próximo da sintaxe usada no restante do <code>dplyr</code>.</p>
+</section>
+<section id="fazendo-tudo-de-uma-só-vez" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="fazendo-tudo-de-uma-só-vez"><span class="header-section-number">3.8</span> Fazendo tudo de uma só vez</h2>
+<p>Nas seções anteriores, cada operação foi apresentada de forma independente. Em uma análise real, essas operações quase sempre aparecem encadeadas, e é exatamente para isso que o operador pipe (<code>|&gt;</code>) foi projetado.</p>
+<p>Partindo do resultado do <code>left_join()</code> entre <code>vel</code> e <code>pesos</code>, queremos executar quatro operações em sequência. Primeiro, criaremos uma nova variável convertendo o peso de quilogramas para toneladas, o que torna os valores mais legíveis. Depois, filtraremos os registros para manter apenas veículos leves, excluindo caminhões e ônibus. Em seguida, selecionaremos apenas as colunas relevantes para a análise final. Por último, ordenaremos os registros pela velocidade em ordem decrescente.</p>
+<p>Sem o pipe, seria necessário criar um objeto intermediário a cada passo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>vel_com_peso <span class="ot">&lt;-</span> <span class="fu">left_join</span>(vel, pesos, <span class="at">by =</span> <span class="st">"tipo_veic"</span>)</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>vel_com_peso <span class="ot">&lt;-</span> <span class="fu">mutate</span>(vel_com_peso, <span class="at">peso_ton =</span> peso_kg <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>vel_com_peso <span class="ot">&lt;-</span> <span class="fu">filter</span>(vel_com_peso, tipo_veic <span class="sc">!=</span> <span class="st">"Caminhão/Ônibus"</span>)</span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>vel_com_peso <span class="ot">&lt;-</span> <span class="fu">select</span>(vel_com_peso, tipo_veic, velocidade, peso_ton)</span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>vel_com_peso <span class="ot">&lt;-</span> <span class="fu">arrange</span>(vel_com_peso, <span class="fu">desc</span>(velocidade))</span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a>vel_com_peso</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O resultado é correto, mas o código é repetitivo, com o nome <code>vel_com_peso</code> aparecendo dez vezes. Cada linha reatribui o objeto ao mesmo nome, e qualquer erro em uma etapa intermediária exige depurar toda a cadeia manualmente. Com o pipe, o mesmo resultado é obtido de forma muito mais clara:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>vel <span class="sc">|&gt;</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pesos, <span class="at">by =</span> <span class="st">"tipo_veic"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">peso_ton =</span> peso_kg <span class="sc">/</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tipo_veic <span class="sc">!=</span> <span class="st">"Caminhão/Ônibus"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tipo_veic, velocidade, peso_ton) <span class="sc">|&gt;</span></span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(velocidade))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 424 × 3
+   tipo_veic  velocidade peso_ton
+   &lt;chr&gt;           &lt;dbl&gt;    &lt;dbl&gt;
+ 1 SUV/Pickup         66      2  
+ 2 Passeio            65      1.3
+ 3 Passeio            65      1.3
+ 4 Passeio            65      1.3
+ 5 SUV/Pickup         64      2  
+ 6 Passeio            64      1.3
+ 7 Passeio            64      1.3
+ 8 Passeio            63      1.3
+ 9 Passeio            63      1.3
+10 Passeio            63      1.3
+# ℹ 414 more rows</code></pre>
+</div>
+</div>
+<p>O raciocínio é linear: começamos com <code>vel</code>, adicionamos o peso com <code>left_join()</code>, convertemos para toneladas com <code>mutate()</code>, excluímos os veículos pesados com <code>filter()</code>, mantemos apenas as colunas de interesse com <code>select()</code> e ordenamos os registros por velocidade decrescente com <code>arrange()</code>. Cada linha descreve um passo da análise, e a leitura de cima para baixo espelha a sequência lógica do raciocínio.</p>
+<p>Para armazenar o resultado em um novo objeto, basta atribuir a cadeia completa:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>vel_leve <span class="ot">&lt;-</span> vel <span class="sc">|&gt;</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pesos, <span class="at">by =</span> <span class="st">"tipo_veic"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">peso_ton =</span> peso_kg <span class="sc">/</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tipo_veic <span class="sc">!=</span> <span class="st">"Caminhão/Ônibus"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(tipo_veic, velocidade, peso_ton) <span class="sc">|&gt;</span></span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(velocidade))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="salvando-arquivos-em-formato-.rds" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="salvando-arquivos-em-formato-.rds"><span class="header-section-number">3.9</span> Salvando Arquivos em Formato .rds</h2>
+<p>O formato <code>.rds</code> é específico do R e permite salvar um único objeto com todos os seus metadados preservados. Isso inclui os tipos das variáveis e a ordem dos níveis de <em>factors</em>, características que se perderiam ao salvar em formatos como <code>.csv</code> ou <code>.xlsx</code>.</p>
+<p>Por exemplo, ao longo deste capítulo transformamos <code>tipo_veic</code> em um <em>factor</em> com os níveis na ordem “Moto”, “Passeio”, “SUV/Pickup” e “Caminhão/Ônibus”. Se salvarmos <code>vel</code> como <code>.csv</code> e depois lermos novamente o arquivo, essa ordem será perdida e <code>tipo_veic</code> voltará a ser uma variável <em>character</em>.</p>
+<p>Para salvar <code>vel</code> no formato <code>.rds</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(vel, <span class="st">"vel.rds"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Para carregar o arquivo em uma sessão futura:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>vel <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"vel.rds"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ao carregar com <code>readRDS()</code>, o objeto retorna exatamente no estado em que foi salvo, com todos os tipos e ordenamentos preservados. Isso torna o <code>.rds</code> especialmente útil para armazenar bases de trabalho intermediárias, evitando reprocessar as transformações a cada sessão.</p>
+</section>
+<section id="exercícios" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="exercícios"><span class="header-section-number">3.10</span> Exercícios</h2>
+<p>Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde você irá processá-los. Crie um projeto do R dentro dessa pasta e um novo script <code>.R</code> dentro desse projeto para responder às questões abaixo.</p>
+<ul>
+<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
+<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx"><code>velocidades.xlsx</code></a></li>
+</ul>
+<ol type="1">
+<li><p>Leia o arquivo <code>velocidades.xlsx</code> como um <code>tibble</code> e armazene-o em um objeto denominado <code>vel</code> e converta as variáveis <code>faixa</code> e <code>tipo_veic</code> para <em>factor</em>. Em seguida, obtenha as quantidades e proporções para cada combinação de níveis de <code>faixa</code> e <code>tipo_veic</code>. Na sequência filtre todas as observações com proporção acima de 0.1 e ordene-as de forma decrescente de acordo com a frequência absoluta de observações.</p></li>
+<li><p>Crie uma nova variável na base <code>vel</code> chamada <code>cat_vel</code> que classifique as velocidades em três níveis usando <code>case_when()</code>:</p>
+<ul>
+<li><code>"Lenta"</code>: velocidade menor que 40 km/h</li>
+<li><code>"Normal"</code>: velocidade entre 40 e 60 km/h (inclindo esses limites)</li>
+<li><code>"Alta"</code>: velocidade acima de 60 km/h</li>
+</ul></li>
+<li><p>Leia o arquivo <code>escolha_modal.csv</code> como um <code>tibble</code> (com a codificação de caracteres correta) e armazene-o em um objeto denominado <code>em</code>. Posteriormente, crie um dataframe com valores médios de emissão de CO2 por km rodado para cada um dos modos presentes na coluna <code>modo_viagem</code> (A pé = 0 g/km, Bicicleta = 0 g/km, Carro ou App = 120 g/km e TP = 50 g/km). Na sequência faça um left_join de <code>em</code> com essa nova tabela para incorporar os valores de emissão a <code>em</code>.</p></li>
+<li><p>Salve os objetos <code>vel</code> e <code>em</code> após todas as operações realizadas em formato .rds para entrega.</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./2-estatistica-descritiva.html" class="pagination-link" aria-label="Estatística Descritiva">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./4-visualizacao-de-dados-tabulares.html" class="pagination-link" aria-label="Visualização de Dados Tabulares">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Visualização de Dados Tabulares</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

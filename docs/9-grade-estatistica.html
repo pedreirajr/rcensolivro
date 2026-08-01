@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>9&nbsp; Grade Estatística – Censo Demográfico no R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./10-cnefe.html" rel="next">
+<link href="./8-microdados.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./6-conceitos-e-metodos-censo.html">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</a></li><li class="breadcrumb-item"><a href="./9-grade-estatistica.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Censo Demográfico no R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prefácio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1-introducao-ao-r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introdução ao R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2-estatistica-descritiva.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3-manipulacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4-visualizacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Visualização de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5-dados-geograficos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dados Geográficos</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6-conceitos-e-metodos-censo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Censo Demográfico: Conceitos e Métodos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7-agregados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Agregados por Setor Censitário</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8-microdados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9-grade-estatistica.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-cnefe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNEFE</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-entorno.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Características Urbanísticas do Entorno dos Domicílios</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Referências</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice do Capítulo</h2>
+   
+  <ul>
+  <li><a href="#sec-ge-intro" id="toc-sec-ge-intro" class="nav-link active" data-scroll-target="#sec-ge-intro"><span class="header-section-number">9.1</span> Introdução</a></li>
+  <li><a href="#sec-aspectos_metodologicos" id="toc-sec-aspectos_metodologicos" class="nav-link" data-scroll-target="#sec-aspectos_metodologicos"><span class="header-section-number">9.2</span> Aspectos metodológicos</a></li>
+  <li><a href="#sec-ge-vantagens" id="toc-sec-ge-vantagens" class="nav-link" data-scroll-target="#sec-ge-vantagens"><span class="header-section-number">9.3</span> Vantagens e limitações</a></li>
+  <li><a href="#sec-ge-dados" id="toc-sec-ge-dados" class="nav-link" data-scroll-target="#sec-ge-dados"><span class="header-section-number">9.4</span> Obtendo e mapeando os dados no R</a>
+  <ul>
+  <li><a href="#sec-ge-quadrantes" id="toc-sec-ge-quadrantes" class="nav-link" data-scroll-target="#sec-ge-quadrantes"><span class="header-section-number">9.4.1</span> O sistema de quadrantes</a></li>
+  <li><a href="#obtenção-da-grade-por-município" id="toc-obtenção-da-grade-por-município" class="nav-link" data-scroll-target="#obtenção-da-grade-por-município"><span class="header-section-number">9.4.2</span> Obtenção da grade por município</a></li>
+  <li><a href="#mapeando-os-resultados" id="toc-mapeando-os-resultados" class="nav-link" data-scroll-target="#mapeando-os-resultados"><span class="header-section-number">9.4.3</span> Mapeando os resultados</a></li>
+  </ul></li>
+  <li><a href="#sec-ge-maceio" id="toc-sec-ge-maceio" class="nav-link" data-scroll-target="#sec-ge-maceio"><span class="header-section-number">9.5</span> Variação populacional entre Censos: o caso de Maceió</a></li>
+  <li><a href="#sec-ge-exercicios" id="toc-sec-ge-exercicios" class="nav-link" data-scroll-target="#sec-ge-exercicios"><span class="header-section-number">9.6</span> Exercícios</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./6-conceitos-e-metodos-censo.html">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</a></li><li class="breadcrumb-item"><a href="./9-grade-estatistica.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-ge-intro" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="sec-ge-intro"><span class="header-section-number">9.1</span> Introdução</h2>
+<p>Nos capítulos anteriores, exploramos os dois principais produtos tabulares do Censo Demográfico: os Agregados por Setor Censitário e os Microdados da Amostra. Juntos, eles cobrem um amplo espectro de possibilidades analíticas, mas cada um com seus próprios limites. Os Agregados chegam ao nível do setor censitário com milhares de variáveis. Os Microdados oferecem uma riqueza temática ainda maior, porém com resolução espacial restrita às áreas de ponderação. Neste capítulo, apresentaremos um terceiro produto do Censo que ocupa uma posição singular nesse espectro, a <strong>Grade Estatística</strong>.</p>
+<p>A Grade Estatística é o produto do Censo de maior resolução espacial disponível ao público, com células de 200 x 200 metros nas áreas urbanas e 1 x 1 quilômetro nas áreas rurais. Essa granularidade espacial superior vem acompanhada, no entanto, de uma restrição temática significativa. A Grade disponibiliza apenas duas variáveis, a população total e o número de domicílios ocupados. A restrição existe por razões de sigilo estatístico, uma vez que células muito pequenas poderiam permitir a identificação de indivíduos. A <a href="#tbl-comparacao-produtos" class="quarto-xref">Tabela&nbsp;<span>9.1</span></a> resume o posicionamento da Grade em relação aos produtos do Censo já vistos até então.</p>
+<div class="cell">
+<div id="tbl-comparacao-produtos" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-comparacao-produtos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;9.1: Comparação entre os principais produtos do Censo Demográfico quanto à resolução espacial e à riqueza temática.
+</figcaption>
+<div aria-describedby="tbl-comparacao-produtos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Produto</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Resolução espacial</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variáveis disponíveis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Microdados da amostra</td>
+<td style="text-align: left;">Área de ponderação</td>
+<td style="text-align: left;">Todas os itens do Questionário da Amostra</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Agregados por setor</td>
+<td style="text-align: left;">Setor censitário</td>
+<td style="text-align: left;">Somente itens do Questionário Básico</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Grade Estatística</td>
+<td style="text-align: left;">200 x 200 m (urbano) / 1 x 1 km (rural)</td>
+<td style="text-align: left;">Totais de população e domicílios (2)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Apesar das poucas variáveis, a Grade possui um conjunto de características que a torna um produto analítico poderoso, especialmente para estudos de distribuição espacial da população e para comparações entre os Censos de 2010 e 2022.</p>
+<p>A distribuição de dados censitários em uma malha regular de células retangulares teve início no Japão em 1969, quando o Escritório de Estatística do país publicou dados do Censo de Tóquio nesse formato. Nos anos seguintes, países nórdicos como a Finlândia adotaram abordagens semelhantes para seus próprios Censos, e o modelo se difundiu gradualmente por outros países da Europa e da Ásia.</p>
+<p>No Brasil, a viabilização da Grade Estatística dependeu de um salto tecnológico significativo ocorrido no Censo 2010. Naquela edição, o IBGE introduziu a coleta eletrônica de dados com GPS e o Cadastro Nacional de Endereços para Fins Estatísticos (CNEFE), que geocodificou os endereços de todos os domicílios visitados. Essa infraestrutura de geocodificação permitiu, pela primeira vez, associar cada domicílio a uma posição geográfica precisa e, consequentemente, agregar a população a células de tamanho fixo. O produto foi publicado em 2016 com dados do Censo 2010 <span class="citation" data-cites="ibge_grade2016">(<a href="references.html#ref-ibge_grade2016" role="doc-biblioref">IBGE, 2016</a>)</span> e atualizado em 2024 com dados do Censo 2022 <span class="citation" data-cites="ibge_grade2025">(<a href="references.html#ref-ibge_grade2025" role="doc-biblioref">IBGE, 2025</a>)</span>. As próximas seções detalham as características metodológicas que sustentam essas possibilidades analíticas e mostram como trabalhar com a Grade no R.</p>
+</section>
+<section id="sec-aspectos_metodologicos" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="sec-aspectos_metodologicos"><span class="header-section-number">9.2</span> Aspectos metodológicos</h2>
+<p>As células da Grade são classificadas como urbanas ou rurais de acordo com a Malha de Setores Censitários. Células que intersectam setores urbanos recebem dimensões de 200 x 200 metros, enquanto as demais recebem 1 x 1 quilômetro. Todas as células são projetadas no sistema de referência SIRGAS 2000, utilizando a Projeção Cônica Equivalente de Albers com meridiano central em -54°, garantindo que áreas e densidades sejam comparáveis em todo o território nacional.</p>
+<p>Além da resolução básica, a Grade é disponibilizada em seis níveis hierárquicos: 200m/1km, 5km, 10km, 50km, 100km e 500km. Os níveis superiores resultam da agregação dos inferiores, e cada célula possui um identificador único que é preservado ao longo da hierarquia e entre as edições do Censo. A articulação das células no nível de maior agregação espacial (500km) pode ser vista na <a href="#fig-art_500km" class="quarto-xref">Figura&nbsp;<span>9.1</span></a>.</p>
+<div id="fig-art_500km" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-art_500km-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.1: Articulação 500 x 500 km da grade estatística. Fonte: <a href="https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/grade_estatistica/censo_2022/grade_estatistica/">FTP IBGE (2025)</a>
+</figcaption>
+<div aria-describedby="fig-art_500km-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/9-grade-estatistica/articulacao.jpg" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+<p>As estatísticas das células são derivadas dos microdados do universo do Censo Demográfico. Lembre-se que o universo compreende a totalidade dos domicílios visitados pelo recenseador, independentemente de terem respondido ao questionário básico ou ao da amostra. Esse ponto é relevante porque os microdados do universo não são disponibilizados ao público, uma vez que temos acesso apenas aos microdados da amostra, produto abordado no Capítulo 8. A vinculação entre os microdados do universo e as células da Grade é feita pelas coordenadas geográficas dos domicílios registradas no CNEFE.</p>
+<p>Os campos estatísticos disponíveis nos arquivos da Grade diferem entre as duas edições, como mostra a <a href="#tbl-dicionario-variaveis" class="quarto-xref">Tabela&nbsp;<span>9.2</span></a>. Os nomes dos campos da edição de 2022 constam no Quadro 4 das notas metodológicas do IBGE <span class="citation" data-cites="ibge_grade2025">(<a href="references.html#ref-ibge_grade2025" role="doc-biblioref">IBGE, 2025</a>)</span>. O documento metodológico de 2010 <span class="citation" data-cites="ibge_grade2016">(<a href="references.html#ref-ibge_grade2016" role="doc-biblioref">IBGE, 2016</a>)</span> não apresenta um dicionário de dados equivalente, mas os nomes e descrição dos campos dessa edição podem ser consultados em fontes como o OSM Wiki <span class="citation" data-cites="osmwiki_grade2010">(<a href="references.html#ref-osmwiki_grade2010" role="doc-biblioref">OpenStreetMap Wiki contributors, 2024</a>)</span>. Além disso, note que a versão de 2010 disponibiliza totais de população por sexo (<code>masc</code> e <code>fem</code>), variáveis ausentes na edição de 2022. Os nomes dos campos também mudaram entre as edições, o que exige atenção ao realizar junções por <code>ID_UNICO</code> entre as duas bases.</p>
+<div class="cell">
+<div id="tbl-dicionario-variaveis" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dicionario-variaveis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;9.2: Dicionário de variáveis dos arquivos da Grade Estatística nas edições de 2010 e 2022.
+</figcaption>
+<div aria-describedby="tbl-dicionario-variaveis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Campo (2010)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Campo (2022)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">ID_UNICO</td>
+<td style="text-align: center;">ID_UNICO</td>
+<td style="text-align: center;">Identificador único da célula</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">POP</td>
+<td style="text-align: center;">TOTAL</td>
+<td style="text-align: center;">Total de população</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">DOM_OCU</td>
+<td style="text-align: center;">TOTAL_DOM</td>
+<td style="text-align: center;">Total de domicílios ocupados (particular e coletivo)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">MASC</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">Total de pessoas do sexo masculino</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">FEM</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">Total de pessoas do sexo feminino</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">nome_1km ... nome_500km</td>
+<td style="text-align: center;">nome_1km ... nome_500KM</td>
+<td style="text-align: center;">Código da célula em cada nível hierárquico</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">QUADRANTE</td>
+<td style="text-align: center;">QUADRANTE</td>
+<td style="text-align: center;">Quadrante de articulação (500 x 500 km)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>É relevante mencionar que o número de células na resolução 200m/1km também muda entre os Censos. O Censo 2010 gerou 13,3 milhões de células na resolução básica, sendo 4.610.350 de 200m (34,7%) e 8.676.139 de 1km (65,3%). Em 2022, esse número cresceu para 14,1 milhões, um acréscimo de cerca de 841 mil células, com 5.486.725 células de 200m (38,84%) e 8.641.084 células de 1km (61,16%). Isso ocorre porque, ao se tornarem urbanizadas<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, algumas áreas que estavam em células de 1km são subdivididas em células de 200m. Cabe destacar que células de 200m que porventura tenham se tornado rurais não passam por um processo de agregação<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> para a resolução de 1km em um Censo posterior.</p>
+<p>Uma diferença metodológica importante separa as duas edições. No Censo 2010, a geocodificação dos endereços ainda era incompleta, de modo que parte dos domicílios precisou ser alocada às células por meio de uma metodologia híbrida que combinava agregação direta com desagregação proporcional por área. Esse processo introduziu alguma imprecisão na distribuição espacial da população e gerou uma perda de dados de até 5% em algumas áreas. No Censo 2022, a geocodificação foi realizada em seis níveis de qualidade posicional. Os níveis 5 e 6<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>, de maior incerteza, foram excluídos da Grade, mas eles representavam apenas 0,028% da população total, tornando a perda de dados praticamente nula <span class="citation" data-cites="ibge_grade2025">(<a href="references.html#ref-ibge_grade2025" role="doc-biblioref">IBGE, 2025</a>)</span>. Detalhes técnicos sobre a precisão das coordenadas do CNEFE serão melhor explicitados no próximo capítulo.</p>
+<p>A <a href="#tbl-diferencas-censos" class="quarto-xref">Tabela&nbsp;<span>9.3</span></a> sintetiza as principais diferenças metodológicas entre os Censos de 2010 e 2022.</p>
+<div class="cell">
+<div id="tbl-diferencas-censos" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-diferencas-censos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;9.3: Principais diferenças metodológicas na construção da Grade Estatística entre os Censos de 2010 e 2022. Fontes: <span class="citation" data-cites="ibge_grade2016">IBGE (<a href="references.html#ref-ibge_grade2016" role="doc-biblioref">2016</a>)</span>; <span class="citation" data-cites="ibge_grade2025">IBGE (<a href="references.html#ref-ibge_grade2025" role="doc-biblioref">2025</a>)</span>.
+</figcaption>
+<div aria-describedby="tbl-diferencas-censos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Aspecto</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Censo 2010</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Censo 2022</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Método de alocação</td>
+<td style="text-align: left;">Híbrido (agregação + desagregação proporcional por área)</td>
+<td style="text-align: left;">Agregação direta de endereços geocodificados</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geocodificação</td>
+<td style="text-align: left;">Incompleta, complementada por alocação por área</td>
+<td style="text-align: left;">Baseada nos 4 maiores níveis de qualidade; níveis inferiores (5 e 6) excluídos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Perda de dados</td>
+<td style="text-align: left;">Até 5% em algumas regiões</td>
+<td style="text-align: left;">0,028% da população</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Total de células (resolução básica)</td>
+<td style="text-align: left;">13,3 milhões</td>
+<td style="text-align: left;">14,1 milhões</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Com esse panorama metodológico em vista, a próxima seção examina as principais vantagens e limitações da Grade para fins analíticos.</p>
+</section>
+<section id="sec-ge-vantagens" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="sec-ge-vantagens"><span class="header-section-number">9.3</span> Vantagens e limitações</h2>
+<p>A Grade apresenta quatro vantagens analíticas que a distinguem dos demais produtos do Censo <span class="citation" data-cites="ibge_grade2016">(<a href="references.html#ref-ibge_grade2016" role="doc-biblioref">IBGE, 2016</a>)</span>. A primeira é a <strong>estabilidade espaço-temporal</strong>. Como o identificador único de cada célula é idêntico nas edições de 2010 e 2022, isso contrasta diretamente com os setores censitários e áreas de ponderação, cujas fronteiras e identificadores são redesenhados a cada Censo para acompanhar o crescimento urbano e as necessidades operacionais da coleta. Salvador, por exemplo, tinha 3.592 setores censitários em 2010 e 4.555 em 2022. Uma comparação direta setor a setor entre as duas edições seria inviável, pois a maioria dos setores de 2010 não tem correspondente exato em 2022. Com a Grade, a comparação é feita simplesmente por meio de uma junção de ambas as tabelas pelo identificador único, como veremos na <a href="#sec-ge-maceio" class="quarto-xref"><span>Seção 9.5</span></a>.</p>
+<p>A segunda vantagem é a <strong>adaptação a recortes espaciais personalizados</strong>. As células da Grade funcionam como blocos de construção que podem ser agregados, de forma aproximada, a qualquer geometria de interesse, como zonas de tráfego de pesquisas de mobilidade, distritos sanitários ou bacias hidrográficas. Ao somar as células que intersectam um recorte de interesse, obtém-se uma estimativa de população para esse recorte sem necessidade de microdados ou de técnicas de interpolação.</p>
+<p>A terceira é a <strong>hierarquia e flexibilidade</strong>. Os seis níveis de resolução de quadrículas disponíveis no mesmo sistema de referência permitem navegar entre escalas de análise com facilidade. Uma análise que começa na escala metropolitana (nível 50km) pode ser aprofundada progressivamente até a resolução máxima sem mudar de sistema de coordenadas ou de conjunto de dados.</p>
+<p>A quarta vantagem é a <strong>versatilidade de representação</strong>. A estrutura retangular regular da Grade permite tratar os dados tanto como vetor quanto como <em>raster</em>. Essa dualidade amplia o conjunto de ferramentas analíticas disponíveis, abrindo a possibilidade de aplicar métodos de processamento de imagem e análise espacial matricial.</p>
+<p>Todavia, há restrições importantes com relação ao uso da Grade. A principal delas é o <strong>reduzido número de variáveis</strong> disponíveis. Com apenas população total e domicílios ocupados, ela não permite análises de renda, escolaridade, raça, acesso a serviços ou qualquer outro atributo socioeconômico. Para essas análises, os Microdados e os Agregados continuam sendo indispensáveis.</p>
+<p>Uma segunda limitação diz respeito à geometria retangular das células. Como discutido no Capítulo 7 ao apresentar as grades hexagonais H3, células quadradas possuem dois tipos de vizinhança, os que compartilham aresta e os que compartilham apenas um vértice, com distância entre centros cerca de 41% maior neste último caso. Essa <strong>assimetria</strong> implica que análises de proximidade e acessibilidade, nas quais a equidistância entre vizinhos é uma propriedade desejável, produzem resultados geometricamente menos precisos em grades retangulares do que em grades hexagonais. Acrescenta-se ainda que anéis concêntricos de hexágonos aproximam círculos com mais fidelidade do que anéis quadrados, tornando a delimitação de zonas de influência e buffer mais natural naquele formato.</p>
+<p>Por fim, a <strong>forma de distribuição</strong> dos dados cria uma etapa adicional de trabalho antes do <em>download</em>. A Grade Estatística na sua melhor resolução (200m/1km) não é disponibilizada como um arquivo único para o país ou por município, mas em recortes por quadrantes de 500 x 500 km. Antes de baixar os dados, é preciso identificar quais quadrantes cobrem o município de interesse. A próxima seção explica como fazer isso.</p>
+</section>
+<section id="sec-ge-dados" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="sec-ge-dados"><span class="header-section-number">9.4</span> Obtendo e mapeando os dados no R</h2>
+<section id="sec-ge-quadrantes" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="sec-ge-quadrantes"><span class="header-section-number">9.4.1</span> O sistema de quadrantes</h3>
+<p>O IBGE distribui a Grade Estatística em recortes correspondentes às células do nível mais agregado da hierarquia, com os quadrantes de 500km de lado, conforme visto na <a href="#fig-art_500km" class="quarto-xref">Figura&nbsp;<span>9.1</span></a>. Cada quadrante possui um identificador numérico, e o primeiro passo para baixar a Grade de um município é identificar qual ou quais quadrantes o cobrem.</p>
+<p>Para identificar o código do quadrante de um município, o mapa interativo da <a href="#fig-mapa-quadrantes" class="quarto-xref">Figura&nbsp;<span>9.2</span></a> permite explorar a articulação dos quadrantes sobre o território nacional. Navegue até o município de interesse para verificar qual ou quais quadrantes o cobrem.</p>
+<div id="fig-mapa-quadrantes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-mapa-quadrantes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.2: Mapa interativo da articulação 500 × 500 km da Grade Estatística do IBGE. Fontes: <span class="citation" data-cites="ibge_grade2016">IBGE (<a href="references.html#ref-ibge_grade2016" role="doc-biblioref">2016</a>)</span>; <span class="citation" data-cites="ibge_grade2025">IBGE (<a href="references.html#ref-ibge_grade2025" role="doc-biblioref">2025</a>)</span>.
+</figcaption>
+<div aria-describedby="fig-mapa-quadrantes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<iframe src="img/9-grade-estatistica/articulacao_500x500_mun.html" width="100%" height="500px" frameborder="0"></iframe>
+</div>
+</figure>
+</div>
+<p>Ao localizar Salvador (BA), por exemplo, é possível perceber que a cidade está atravessada pela fronteira entre dois quadrantes: o ID 47, que cobre a porção Sul, e o ID 57, que cobre a porção Norte. Esse tipo de situação requer baixar e combinar os dois arquivos antes de recortar a Grade para os limites do município. O pacote <code>geobr</code> também disponibiliza o objeto <code>grid_state_correspondence_table</code>, uma tabela de correspondência entre estados e quadrantes que serve como ponto de partida quando a inspeção visual não é necessária. Os arquivos de cada quadrante estão disponíveis no FTP do IBGE, separados por edição do Censo.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Download da Grade via <code>geobr</code> e FTP do IBGE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>O pacote <code>geobr</code> disponibiliza a função <code>read_statistical_grid()</code> para download de cada quadrícula de 500km de resolução da Grade Estatística, mas apenas para a edição de 2010. Por exemplo, para baixar a quadrícula de ID 45, basta fazer <code>read_statistical_grid(code_grid = 45, year=2010)</code>. Todavia, a edição de 2022 ainda não está disponível no pacote. Sendo assim, os códigos desta seção utilizam o download direto do servidor FTP do IBGE, que disponibiliza os arquivos de ambas as edições organizados por quadrante:</p>
+<p><a href="https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/grade_estatistica/" class="uri">https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/grade_estatistica/</a></p>
+</div>
+</div>
+</section>
+<section id="obtenção-da-grade-por-município" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="obtenção-da-grade-por-município"><span class="header-section-number">9.4.2</span> Obtenção da grade por município</h3>
+<p>Definidos o(s) quadrante(s) a ser(em) utilizado(s), o fluxo de trabalho de forma programática envolve quatro etapas: (i) definir uma função auxiliar de <em>download</em>; (ii) obter a geometria do município; (iii) baixar os quadrantes; e (iv) recortar a(s) célula(s) aos limites municipais. Caso queira obter diretamenteCada etapa é apresentada a seguir.</p>
+<p><strong>(i) Função auxiliar de download</strong>:</p>
+<p>Como o IBGE distribui a Grade em arquivos ZIP contendo shapefiles, é conveniente encapsular as etapas repetitivas em uma função. A função <code>ler_quadrante()</code> recebe uma URL como argumento e retorna um objeto <code>sf</code> pronto para uso. Internamente, <code>tempfile()</code> cria caminhos temporários (um para o ZIP baixado e outro para o diretório de extração) sem gravar nada em disco de forma permanente. <code>download.file()</code> realiza o download com <code>mode = "wb"</code> (escrita binária), opção obrigatória no Windows para evitar corrupção de arquivos ZIP. <code>unzip()</code> extrai o conteúdo no diretório temporário, e <code>list.files()</code> com o padrão <code>"\\.shp$"</code> localiza o shapefile dentro da estrutura de subpastas resultante. Por fim, <code>sf::st_read()</code> lê o shapefile e retorna o objeto <code>sf</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geobr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ler_quadrante <span class="ot">&lt;-</span> <span class="cf">function</span>(url) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  tmp_zip <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".zip"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  tmp_dir <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">download.file</span>(url, tmp_zip, <span class="at">quiet =</span> <span class="cn">TRUE</span>, <span class="at">mode =</span> <span class="st">"wb"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unzip</span>(tmp_zip, <span class="at">exdir =</span> tmp_dir)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  shp <span class="ot">&lt;-</span> <span class="fu">list.files</span>(tmp_dir, <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.shp$"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_read</span>(shp[<span class="dv">1</span>], <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Os arquivos da Grade 2022 estão organizados no FTP do IBGE em um diretório fixo. Armazenamos esse caminho em um objeto para evitar inseri-lo como um texto longo ao construir as URLs de cada quadrante.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>base_2010 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"grade_estatistica/censo_2010/"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>base_2022 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"grade_estatistica/censo_2022/grade_estatistica/"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>(ii) Geometria do município</strong>:</p>
+<p>Para recortar a Grade aos limites de Salvador, precisamos do polígono oficial do município. <code>geobr::read_municipality()</code> faz o download diretamente do IBGE usando o código municipal do IBGE (2927408 para Salvador). O argumento <code>simplified = FALSE</code> solicita a geometria em resolução completa, sem simplificação topológica, o que é importante para um recorte espacial preciso.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ssa <span class="ot">&lt;-</span> geobr<span class="sc">::</span><span class="fu">read_municipality</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> <span class="dv">2927408</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplified =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2022</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>(iii) Download dos quadrantes</strong>:</p>
+<p>Com a função <code>ler_quadrante()</code> definida e a URL base armazenada, basta chamá-la uma vez para cada quadrante que cobre Salvador. Os nomes dos arquivos no FTP seguem o padrão <code>grade_idXX.zip</code>, onde <code>XX</code> é o identificador numérico do quadrante.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Grades 2010:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ge_id47_2010 <span class="ot">&lt;-</span> <span class="fu">ler_quadrante</span>(<span class="fu">paste0</span>(base_2010, <span class="st">"grade_id47.zip"</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ge_id57_2010 <span class="ot">&lt;-</span> <span class="fu">ler_quadrante</span>(<span class="fu">paste0</span>(base_2010, <span class="st">"grade_id57.zip"</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Grades 2022:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>ge_id47_2022 <span class="ot">&lt;-</span> <span class="fu">ler_quadrante</span>(<span class="fu">paste0</span>(base_2022, <span class="st">"grade_id47.zip"</span>))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ge_id57_2022 <span class="ot">&lt;-</span> <span class="fu">ler_quadrante</span>(<span class="fu">paste0</span>(base_2022, <span class="st">"grade_id57.zip"</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>(iv) Combinação e recorte espacial</strong></p>
+<p>Os dois objetos <code>sf</code> resultantes têm as mesmas colunas e podem ser empilhados com <code>rbind()</code>. Em seguida, <code>st_transform()</code> reprojeta a Grade para o mesmo sistema de referência do polígono de Salvador, etapa necessária sempre que dois objetos <code>sf</code> têm CRS distintos. Por fim, <code>st_intersection()</code> recorta as células aos limites do município, descartando tudo que está fora. O resultado, armazenado em <code>ge_ssa2022</code>, contém apenas as células da Grade de 2022 dentro de Salvador.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Grades 500km IDs 47 e 57, 2010:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ge_ssa2022 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(ge_id47_2010, ge_id57_2010) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(ssa)) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_filter</span>(ssa, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Grades 500km IDs 47 e 57, 2022:</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>ge_ssa2022 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(ge_id47_2022, ge_id57_2022) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(ssa)) <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_filter</span>(ssa, <span class="at">.predicate =</span> st_intersects)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="mapeando-os-resultados" class="level3" data-number="9.4.3">
+<h3 data-number="9.4.3" class="anchored" data-anchor-id="mapeando-os-resultados"><span class="header-section-number">9.4.3</span> Mapeando os resultados</h3>
+<p>Vamos primeiramente observar o formato destes arquivos de grade, relativo aos Censos de 2010 (<a href="#fig-grade-ssa-2010" class="quarto-xref">Figura&nbsp;<span>9.3</span></a>) e de 2022 (<a href="#fig-grade-ssa-2022" class="quarto-xref">Figura&nbsp;<span>9.4</span></a>), em que cada polígono corresponde a uma célula de 200m ou 1km, utilizando o <code>ggplot2</code>. Note como, em 2022, as poucas quadrículas do tipo rura de 2010 foram subdivididas em quadrículas do tipo urbano, de 200m<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ge_ssa2010 <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-grade-ssa-2010" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-grade-ssa-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.3: Resolução das células da Grade Estatística de 2010 em Salvador (BA).
+</figcaption>
+<div aria-describedby="fig-grade-ssa-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-grade-ssa-2010-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ge_ssa2022 <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-grade-ssa-2022" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-grade-ssa-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.4: Resolução das células da Grade Estatística de 2022 em Salvador (BA). Nota: observe que não há mais as quadrículas do tipo rural (resolução de 1km)
+</figcaption>
+<div aria-describedby="fig-grade-ssa-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-grade-ssa-2022-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>É igualmente interessante explorar as tabelas de dados que esses arquivos geográficos carregam consigo, visualizando seus primeiros registros:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ge_ssa2010)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 14 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -38.58608 ymin: -13.01352 xmax: -38.5784 ymax: -13.00976
+Geodetic CRS:  SIRGAS 2000
+          ID_UNICO      nome_1KM      nome_5KM      nome_10KM      nome_50KM
+1 200ME66462N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+2 200ME66464N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+3 200ME66466N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+4 200ME66468N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+5 200ME66462N98412 1KME6646N9841 5KME6645N9840 10KME6640N9840 50KME6600N9800
+6 200ME66464N98412 1KME6646N9841 5KME6645N9840 10KME6640N9840 50KME6600N9800
+       nome_100KM      nome_500KM QUADRANTE MASC FEM POP DOM_OCU  Shape_Leng
+1 100KME6600N9750 500KME6300N9350     ID_47    0   0   0       0 0.007304921
+2 100KME6600N9750 500KME6300N9350     ID_47    0   0   0       0 0.007304919
+3 100KME6600N9750 500KME6300N9350     ID_47    0   0   0       0 0.007304916
+4 100KME6600N9750 500KME6300N9350     ID_47    0   0   0       0 0.007304916
+5 100KME6600N9750 500KME6300N9350     ID_47    0   0   0       0 0.007304895
+6 100KME6600N9750 500KME6300N9350     ID_47    0   0   0       0 0.007304893
+    Shape_Area                           geom
+1 3.333020e-06 POLYGON ((-38.58588 -13.013...
+2 3.333018e-06 POLYGON ((-38.58401 -13.013...
+3 3.333016e-06 POLYGON ((-38.58214 -13.013...
+4 3.333016e-06 POLYGON ((-38.58027 -13.013...
+5 3.332998e-06 POLYGON ((-38.58598 -13.011...
+6 3.332995e-06 POLYGON ((-38.58411 -13.011...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ge_ssa2022)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 10 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: -38.58598 ymin: -13.01352 xmax: -38.37731 ymax: -12.95613
+Geodetic CRS:  SIRGAS 2000
+          ID_UNICO      nome_1km      nome_5KM      nome_10KM      nome_50KM
+1 200ME66684N98460 1KME6668N9845 5KME6665N9845 10KME6660N9840 50KME6650N9800
+2 200ME66686N98460 1KME6668N9845 5KME6665N9845 10KME6660N9840 50KME6650N9800
+3 200ME66462N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+4 200ME66464N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+5 200ME66466N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+6 200ME66468N98410 1KME6646N9840 5KME6645N9840 10KME6640N9840 50KME6600N9800
+       nome_100KM      nome_500KM QUADRANTE TOTAL TOTAL_DOM
+1 100KME6600N9750 500KME6300N9350     ID_47     0         0
+2 100KME6600N9750 500KME6300N9350     ID_47     0         0
+3 100KME6600N9750 500KME6300N9350     ID_47     0         0
+4 100KME6600N9750 500KME6300N9350     ID_47     0         0
+5 100KME6600N9750 500KME6300N9350     ID_47     0         0
+6 100KME6600N9750 500KME6300N9350     ID_47     0         0
+                            geom
+1 POLYGON ((-38.38105 -12.958...
+2 POLYGON ((-38.37918 -12.958...
+3 POLYGON ((-38.58588 -13.013...
+4 POLYGON ((-38.58401 -13.013...
+5 POLYGON ((-38.58214 -13.013...
+6 POLYGON ((-38.58027 -13.013...</code></pre>
+</div>
+</div>
+<p>Note que o campo <code>ID_UNICO</code> de cada célula permite identificar sua resolução. Aqueles que começam com <code>"200M"</code> correspondem a células de 200m (áreas urbanas), enquanto os que começam com <code>"1KM"</code> correspondem a células de 1km (áreas rurais).</p>
+<p>Entendida essa estrtura, podemos produzir alguns mapas coropléticos. Para o mapa de 2010 (<a href="#fig-grade-ssa-pop2010" class="quarto-xref">Figura&nbsp;<span>9.5</span></a>), observe que passamos a variável <code>POP</code> no mapeamento estético da cor de preenchimento dos polígonos (<code>fill</code>) e editamos essa coloração para a paleta “Reds” em <code>scale_fill_distiller()</code>. Neste caso, quanto mais intenso na cor vermelha, maior a polulação naquela quadrícula. No caso do mapa de 2022 (<a href="#fig-grade-ssa-pop2022" class="quarto-xref">Figura&nbsp;<span>9.6</span></a>), alteramos apenas a variável para <code>TOTAL</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ge_ssa2010) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> POP), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"Reds"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Pop. total"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.value =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text  =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-grade-ssa-pop2010" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-grade-ssa-pop2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.5: Distribuição da população total por célula da Grade Estatística de 2010 em Salvador (BA).
+</figcaption>
+<div aria-describedby="fig-grade-ssa-pop2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-grade-ssa-pop2010-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ge_ssa2022) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> TOTAL), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"Reds"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Pop. total"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.value =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text  =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-grade-ssa-pop2022" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-grade-ssa-pop2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.6: Distribuição da população total por célula da Grade Estatística de 2022 em Salvador (BA).
+</figcaption>
+<div aria-describedby="fig-grade-ssa-pop2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-grade-ssa-pop2022-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Os dois mapas de população revelam a distribuição espacial de Salvador com uma granularidade muito superior à dos setores censitários. Porém, a comparação visual entre eles para verificar onde houve crescimento ou retração entre as duas edições é mais difícil. A próxima seção explora esse potencial comparativo de forma sistemática, usando Maceió como caso de análise. Essa escolha não é acidental e revela o poder da Grade Estatística de mapear fenômenos importantes como deslocamentos populacionais significativos causados por desastres ambientais.</p>
+</section>
+</section>
+<section id="sec-ge-maceio" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="sec-ge-maceio"><span class="header-section-number">9.5</span> Variação populacional entre Censos: o caso de Maceió</h2>
+<p>A estabilidade do identificador <code>ID_UNICO</code> entre as edições do Censo é a vantagem mais distintiva da Grade Estatística. Ela permite comparar diretamente a população e os domicílios de cada célula entre 2010 e 2022, identificando onde houve crescimento, estagnação ou declínio com uma resolução espacial de 200 metros. Para ilustrar essa capacidade, analisaremos o caso de Maceió (AL), onde esse tipo de comparação revela um fenômeno de grande impacto social e urbano.</p>
+<p>Entre os dois Censos, a capital alagoana viveu os afundamentos do solo causados pela mineração de sal-gema, especialmente nos bairros de Pinheiro, Mutange, Bebedouro e Bom Parto. A subsidência progressiva do terreno, decorrente da dissolução das cavernas subterrâneas de onde o sal era extraído, tornou inabitáveis vastas áreas residenciais nesses bairros. A partir de 2018, o processo de evacuação compulsória de moradores se intensificou, resultando no deslocamento de dezenas de milhares de pessoas até o período do Censo 2022. O impacto desse fenômeno na distribuição espacial da população é precisamente o tipo de mudança que a comparação entre grades censitárias é capaz de revelar.</p>
+<p>Maceió está integralmente contida no quadrante ID 58. O código abaixo realiza o download das grades de 2010 e 2022 para esse quadrante e recorta as células para os limites do município, aproveitando o código que já havíamos produzido antes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geobr)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometria de Maceió</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>mcz <span class="ot">&lt;-</span> geobr<span class="sc">::</span><span class="fu">read_municipality</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> <span class="dv">2704302</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplified =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2022</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Grade nos dois anos para o quadrante 58</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>ge_id58_2010 <span class="ot">&lt;-</span> <span class="fu">ler_quadrante</span>(<span class="fu">paste0</span>(base_2010, <span class="st">"grade_id58.zip"</span>))</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>ge_id58_2022 <span class="ot">&lt;-</span> <span class="fu">ler_quadrante</span>(<span class="fu">paste0</span>(base_2022, <span class="st">"grade_id58.zip"</span>))</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>ge_mcz2010 <span class="ot">&lt;-</span> ge_id58_2010 <span class="sc">|&gt;</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(mcz)) <span class="sc">|&gt;</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_filter</span>(mcz, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>ge_mcz2022 <span class="ot">&lt;-</span> ge_id58_2022 <span class="sc">|&gt;</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(mcz)) <span class="sc">|&gt;</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_filter</span>(mcz, <span class="at">.predicate =</span> st_intersects)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Com os dados, é possível observar a grade de Maceió em ambos os anos em <a href="#fig-grade-mcz-2010" class="quarto-xref">Figura&nbsp;<span>9.7</span></a> e <a href="#fig-grade-mcz-2022" class="quarto-xref">Figura&nbsp;<span>9.8</span></a>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ge_mcz2010 <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-grade-mcz-2010" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-grade-mcz-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.7: Resolução das células da Grade Estatística de 2010 em Maceió (AL).
+</figcaption>
+<div aria-describedby="fig-grade-mcz-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-grade-mcz-2010-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ge_mcz2022 <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-grade-mcz-2022" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-grade-mcz-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.8: Resolução das células da Grade Estatística de 2022 em Maceió (AL).
+</figcaption>
+<div aria-describedby="fig-grade-mcz-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-grade-mcz-2022-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Com os objetos <code>ge_mcz2010</code> e <code>ge_mcz2022</code> carregados, é tentador comparar as células diretamente por <code>ID_UNICO</code>. Essa abordagem, porém, ignora a questão da subdivisão da grade decorrente da urbanização. Como resultado, há células que existem como 1 km em 2010 mas que, em 2022, foram substituídas por um conjunto de células menores com identificadores completamente diferentes. Um <em>join</em> direto produziria valores ausentes para toda essa área, distorcendo os mapas de variação.</p>
+<p>A solução passa por três etapas: (i) identificar as células afetadas; (ii) agregar as células de 2022 de volta ao nível de 1 km para essas áreas; e (iii) só então, realizar o <em>join</em> harmonizado.</p>
+<p><strong>(i) Identificar as células que mudaram de resolução:</strong></p>
+<p>Comparamos os identificadores das células de 1 km nas duas edições. O conjunto de <code>ids_1km_2010</code> contém todos os IDs de células de 1 km presentes em 2010. O conjunto <code>ids_1km_2022</code> contém os de 2022. Com a função <code>setdiff()</code>, podemos obter então os IDs que estão em 2010 mas não em 2022 (exatamente as células que foram subdivididas durante o período intercensitário).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ids_1km_2010 <span class="ot">&lt;-</span> ge_mcz2010 <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_starts</span>(ID_UNICO, <span class="st">"1KM"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(ID_UNICO)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>ids_1km_2022 <span class="ot">&lt;-</span> ge_mcz2022 <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_starts</span>(ID_UNICO, <span class="st">"1KM"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(ID_UNICO)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>ids_upgrade <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(ids_1km_2010, ids_1km_2022)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ids_upgrade)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1KME6971N10194" "1KME6972N10194"</code></pre>
+</div>
+</div>
+<p>Note como apenas estas duas células de 1km foram subdivididas de um período para o outro. Podemos visualizá-las com o mapa da <a href="#fig-upgrade-grade-mcz" class="quarto-xref">Figura&nbsp;<span>9.9</span></a> abaixo:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ge_mcz2022) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ge_mcz2010 <span class="sc">|&gt;</span> <span class="fu">filter</span>(ID_UNICO <span class="sc">%in%</span> ids_upgrade), </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="st">'tomato'</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">'tomato'</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-upgrade-grade-mcz" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-upgrade-grade-mcz-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.9: Grades de 1km subdivididas de 2010 para 2022 (vermelho)
+</figcaption>
+<div aria-describedby="fig-upgrade-grade-mcz-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-upgrade-grade-mcz-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>(ii) Agregar as células de 2022 de volta ao nível de 1 km:</strong></p>
+<p>Para cada célula de 1 km que foi subdividida, precisamos somar os valores das múltiplas células de 200 m correspondentes em 2022. O campo <code>nome_1km</code> da Grade de 2022 é justamente a chave para isso, já que ele registra o identificador da célula de 1 km à qual cada célula de 200 m pertence hierarquicamente. Filtramos apenas as células de 2022 cujo <code>nome_1km</code> consta em <code>ids_upgrade</code>, agrupamos por esse campo e somamos população e domicílios.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ge_mcz2022_agg <span class="ot">&lt;-</span> ge_mcz2022 <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(nome_1km <span class="sc">%in%</span> ids_upgrade) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(nome_1km) <span class="sc">|&gt;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">TOTAL     =</span> <span class="fu">sum</span>(TOTAL,     <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">TOTAL_DOM =</span> <span class="fu">sum</span>(TOTAL_DOM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">ID_UNICO =</span> nome_1km)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>(iii) Construir a Grade Estatística harmonizada:</strong></p>
+<p>Agora podemos montar a base de comparação em dois grupos. O primeiro reúne as células não afetadas pela mudança de resolução (tanto as de 200 m quanto as de 1 km que permaneceram como 1 km). Para essas, o <em>join</em> direto por identificador é válido. O segundo reúne as células de 1 km que foram subdivididas. Neste caso, usamos os valores agregados calculados na etapa anterior. <code>bind_rows()</code> empilha os dois grupos e <code>mutate()</code> calcula as variações de população e domicílios.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mcz_direto <span class="ot">&lt;-</span> ge_mcz2010 <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>ID_UNICO <span class="sc">%in%</span> ids_upgrade) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID_UNICO, POP, DOM_OCU) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    ge_mcz2022 <span class="sc">|&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(ID_UNICO, TOTAL, TOTAL_DOM),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">join_by</span>(ID_UNICO)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>mcz_upgrade <span class="ot">&lt;-</span> ge_mcz2010 <span class="sc">|&gt;</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ID_UNICO <span class="sc">%in%</span> ids_upgrade) <span class="sc">|&gt;</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID_UNICO, POP, DOM_OCU) <span class="sc">|&gt;</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(ge_mcz2022_agg, <span class="at">by =</span> <span class="fu">join_by</span>(ID_UNICO))</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>mcz_ge <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(mcz_direto, mcz_upgrade) <span class="sc">|&gt;</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">varpop =</span> <span class="fu">as.numeric</span>(TOTAL)     <span class="sc">-</span> <span class="fu">as.numeric</span>(POP),</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">vardom =</span> <span class="fu">as.numeric</span>(TOTAL_DOM) <span class="sc">-</span> <span class="fu">as.numeric</span>(DOM_OCU)</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Com <code>mcz_ge</code> pronto, podemos visualizar as variações de população e domicílios ocupados nos mapas interativos da <a href="#fig-mcz-varpop" class="quarto-xref">Figura&nbsp;<span>9.10</span></a> e <a href="#fig-mcz-vardom" class="quarto-xref">Figura&nbsp;<span>9.11</span></a>. Para que a escala de cores destaque tanto as perdas quanto os ganhos de forma simétrica, usamos a paleta divergente <code>"RdBu"</code> com limites iguais em valor absoluto nos dois extremos, calculados a partir de <code>max(abs(...))</code>. Assim, o branco central da paleta corresponde sempre ao zero, vermelho indica redução e azul indica aumento.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>lim_pop <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(mcz_ge<span class="sc">$</span>varpop), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mcz_ge) <span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> varpop), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette   =</span> <span class="st">"RdBu"</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits    =</span> <span class="fu">c</span>(<span class="sc">-</span>lim_pop, lim_pop),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">name      =</span> <span class="st">"Var. população"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.value  =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels    =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">style_positive =</span> <span class="st">"plus"</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text  =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-mcz-varpop" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-mcz-varpop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.10: Variação de população total entre os Censos de 2010 e 2022 em Maceió (AL). Vermelho indica redução; azul indica aumento.
+</figcaption>
+<div aria-describedby="fig-mcz-varpop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-mcz-varpop-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>lim_dom <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(mcz_ge<span class="sc">$</span>vardom), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mcz_ge) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> vardom), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette   =</span> <span class="st">"RdBu"</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits    =</span> <span class="fu">c</span>(<span class="sc">-</span>lim_dom, lim_dom),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">name      =</span> <span class="st">"Var. domicílios"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.value  =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels    =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">style_positive =</span> <span class="st">"plus"</span>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text  =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-mcz-vardom" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-mcz-vardom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.11: Variação de domicílios ocupados entre os Censos de 2010 e 2022 em Maceió (AL). Vermelho indica redução; azul indica aumento.
+</figcaption>
+<div aria-describedby="fig-mcz-vardom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="9-grade-estatistica_files/figure-html/fig-mcz-vardom-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Os mapas evidenciam de forma nítida o impacto dos afundamentos do solo. A mancha vermelha intensa localizada na porção central-oeste da cidade corresponde exatamente aos bairros de Pinheiro, Mutange, Bebedouro e Bom Parto, onde o processo de evacuação compulsória esvaziou centenas de células que em 2010 abrigavam milhares de moradores. Em algumas dessas células, a população foi reduzida a zero entre os dois Censos. O mapa de domicílios ocupados reforça a mesma leitura: a redução no número de residências habitadas acompanha o padrão espacial da perda populacional, sugerindo que os domicílios foram abandonados e não apenas temporariamente desocupados.</p>
+<p>Os mapas mostram também um padrão complementar de crescimento em azul em outras regiões da cidade, possivelmente relacionado ao reassentamento de parte das famílias evacuadas em bairros adjacentes ou em novas áreas de expansão urbana ao norte e ao sul. Esse tipo de leitura integrada, conectando as perdas em uma área às possíveis absorções em outras, só é possível porque a Grade cobre todo o município de forma contínua e com resolução suficiente para discriminar bairros vizinhos.</p>
+<p>É importante notar que essa análise não seria realizável com os outros produtos do Censo. Com os Agregados por Setor Censitário, a comparação temporal seria inviável porque os identificadores dos setores mudam entre edições. Com os Microdados, a resolução espacial seria insuficiente para isolar os bairros afetados, já que as áreas de ponderação agrupam populações muito maiores. A Grade Estatística, com sua estabilidade identificadora e resolução fina, é o único produto que permite essa leitura direta do impacto territorial.</p>
+</section>
+<section id="sec-ge-exercicios" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="sec-ge-exercicios"><span class="header-section-number">9.6</span> Exercícios</h2>
+<ol type="1">
+<li><p>Identifique o ou os quadrantes que cobrem o município de <strong>Fortaleza (CE)</strong> e baixe a Grade Estatística de 2022 para essa cidade. Calcule a densidade populacional de cada célula (habitantes por km²) e produza um mapa coropléfico com escala de cor contínua.</p></li>
+<li><p>Utilizando as grades de 2010 e 2022 para <strong>Recife (PE)</strong>, calcule a variação de domicílios ocupados por célula e produza um mapa com escala de cor divergente. Alguma área da cidade apresenta padrão de variação semelhante ao observado em Maceió?</p></li>
+<li><p>Agregue as células da Grade Estatística de 2022 de Salvador a um recorte espacial de sua escolha (por exemplo, bairros oficiais, zonas de tráfego ou distritos sanitários) somando a população de cada célula que intersecta o recorte. Compare o resultado com a estimativa obtida pela interpolação dasimétrica apresentada no Capítulo 7.</p></li>
+</ol>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-ibge_grade2016" class="csl-entry" role="listitem">
+IBGE. (2016). <em>Grade Estatística</em>. IBGE. <a href="https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/grade_estatistica/censo_2010/grade_estatistica.pdf">https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/grade_estatistica/censo_2010/grade_estatistica.pdf</a>
+</div>
+<div id="ref-ibge_grade2025" class="csl-entry" role="listitem">
+IBGE. (2025). <em>Censo Demográfico 2022: Notas metodológicas 01/2025 — <span>G</span>rade <span>E</span>statística</em>. IBGE. <a href="https://biblioteca.ibge.gov.br/visualizacao/livros/liv102184.pdf">https://biblioteca.ibge.gov.br/visualizacao/livros/liv102184.pdf</a>
+</div>
+<div id="ref-osmwiki_grade2010" class="csl-entry" role="listitem">
+OpenStreetMap Wiki contributors. (2024). <em>Brazil/<span>G</span>rade <span>E</span>statística <span>O</span>ficial</em>. <a href="https://wiki.openstreetmap.org/wiki/Brazil/Grade_Estat%C3%ADstica_Oficial">https://wiki.openstreetmap.org/wiki/Brazil/Grade_Estat%C3%ADstica_Oficial</a>
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>interceptarem setores censitários do tipo urbano no Censo mais recente<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><em>downgrade</em><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>5: mediana das coordenadas de endereços em mesmo logradouro, CEP e localidade; 6: Coordenadas do centroide do Setor Censitário no qual o endereço está contido<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Curiosidade: essa urbanização ocorreu na Ilha dos Frades, que pertence ao município de Salvador<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./8-microdados.html" class="pagination-link" aria-label="Microdados da Amostra">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./10-cnefe.html" class="pagination-link" aria-label="CNEFE">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNEFE</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
