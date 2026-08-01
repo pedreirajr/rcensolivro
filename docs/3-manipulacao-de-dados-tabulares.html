@@ -302,8 +302,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE">▶️ Abrir playlist no YouTube</a></p>
 <p>Neste capítulo, trabalharemos com dois conjuntos de dados: <code>escolha_modal.csv</code> e <code>velocidades.xlsx</code>. Faça o download de ambos pelos links abaixo e salve-os em uma pasta onde você irá criar o projeto no RStudio no qual executará esta aula. Assim que salvá-los, crie um novo script do R para iniciarmos o estudo.</p>
 <ul>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx"><code>velocidades.xlsx</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx"><code>velocidades.xlsx</code></a></li>
 </ul>
 <section id="aspectos-introdutórios" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="aspectos-introdutórios"><span class="header-section-number">3.1</span> Aspectos Introdutórios</h2>
@@ -446,20 +446,20 @@ Nota
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>em <span class="sc">|&gt;</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     sexo               idade           renda        posse_auto       
- Length:1000        Min.   :18.00   Min.   :  327   Length:1000       
- Class :character   1st Qu.:32.00   1st Qu.: 2142   Class :character  
- Mode  :character   Median :43.00   Median : 3017   Mode  :character  
-                    Mean   :42.84   Mean   : 3993                     
-                    3rd Qu.:54.00   3rd Qu.: 5398                     
-                    Max.   :80.00   Max.   :14049                     
- modo_viagem         dist_viagem     tempo_viagem   
- Length:1000        Min.   : 0.10   Min.   :  9.00  
- Class :character   1st Qu.:10.70   1st Qu.: 34.00  
- Mode  :character   Median :22.15   Median : 44.00  
-                    Mean   :19.65   Mean   : 45.96  
-                    3rd Qu.:27.80   3rd Qu.: 56.00  
-                    Max.   :45.20   Max.   :105.00  </code></pre>
+<pre><code>        sexo          idade           renda           posse_auto  
+ Length   :1000   Min.   :18.00   Min.   :  327   Length   :1000  
+ N.unique :   2   1st Qu.:32.00   1st Qu.: 2142   N.unique :   2  
+ N.blank  :   0   Median :43.00   Median : 3017   N.blank  :   0  
+ Min.nchar:   1   Mean   :42.84   Mean   : 3993   Min.nchar:   1  
+ Max.nchar:   1   3rd Qu.:54.00   3rd Qu.: 5398   Max.nchar:   1  
+                  Max.   :80.00   Max.   :14049                   
+    modo_viagem    dist_viagem     tempo_viagem   
+ Length   :1000   Min.   : 0.10   Min.   :  9.00  
+ N.unique :   4   1st Qu.:10.70   1st Qu.: 34.00  
+ N.blank  :   0   Median :22.15   Median : 44.00  
+ Min.nchar:   2   Mean   :19.65   Mean   : 45.96  
+ Max.nchar:  12   3rd Qu.:27.80   3rd Qu.: 56.00  
+                  Max.   :45.20   Max.   :105.00  </code></pre>
 </div>
 </div>
 <p>Para variáveis numéricas, <code>summary()</code> retorna mínimo, primeiro quartil, mediana, média, terceiro quartil e máximo, além do número de valores ausentes. Para variáveis do tipo <em>character</em> (texto), porém, o resultado é pouco informativo, pois o R indica apenas o comprimento e a classe, sem qualquer informação sobre os valores que aparecem.</p>
@@ -939,8 +939,12 @@ Nota
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sexo, posse_auto) <span class="sc">|&gt;</span></span>
 <span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">quant =</span> <span class="fu">n</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'sexo'. You can override using the
-`.groups` argument.</code></pre>
+<pre><code>`summarise()` has regrouped the output.
+ℹ Summaries were computed grouped by sexo and posse_auto.
+ℹ Output is grouped by sexo.
+ℹ Use `summarise(.groups = "drop_last")` to silence this message.
+ℹ Use `summarise(.by = c(sexo, posse_auto))` for per-operation grouping
+  (`?dplyr::dplyr_by`) instead.</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
@@ -975,8 +979,12 @@ Nota
 <span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">quant =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
 <span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> quant <span class="sc">/</span> <span class="fu">sum</span>(quant))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'sexo'. You can override using the
-`.groups` argument.</code></pre>
+<pre><code>`summarise()` has regrouped the output.
+ℹ Summaries were computed grouped by sexo and posse_auto.
+ℹ Output is grouped by sexo.
+ℹ Use `summarise(.groups = "drop_last")` to silence this message.
+ℹ Use `summarise(.by = c(sexo, posse_auto))` for per-operation grouping
+  (`?dplyr::dplyr_by`) instead.</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 4
@@ -1180,8 +1188,8 @@ Dica
 <h2 data-number="3.10" class="anchored" data-anchor-id="exercícios"><span class="header-section-number">3.10</span> Exercícios</h2>
 <p>Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde você irá processá-los. Crie um projeto do R dentro dessa pasta e um novo script <code>.R</code> dentro desse projeto para responder às questões abaixo.</p>
 <ul>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx"><code>velocidades.xlsx</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx"><code>velocidades.xlsx</code></a></li>
 </ul>
 <ol type="1">
 <li><p>Leia o arquivo <code>velocidades.xlsx</code> como um <code>tibble</code> e armazene-o em um objeto denominado <code>vel</code> e converta as variáveis <code>faixa</code> e <code>tipo_veic</code> para <em>factor</em>. Em seguida, obtenha as quantidades e proporções para cada combinação de níveis de <code>faixa</code> e <code>tipo_veic</code>. Na sequência filtre todas as observações com proporção acima de 0.1 e ordene-as de forma decrescente de acordo com a frequência absoluta de observações.</p></li>

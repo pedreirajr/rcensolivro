@@ -1151,13 +1151,13 @@ múltiplo do comprimento do objeto menor</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb163"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb163-1"><a href="#cb163-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     nome               idade          grad          
- Length:4           Min.   :19.0   Length:4          
- Class :character   1st Qu.:20.5   Class :character  
- Mode  :character   Median :23.0   Mode  :character  
-                    Mean   :23.0                     
-                    3rd Qu.:25.5                     
-                    Max.   :27.0                     </code></pre>
+<pre><code>        nome       idade             grad  
+ Length   :4   Min.   :19.0   Length   :4  
+ N.unique :4   1st Qu.:20.5   N.unique :4  
+ N.blank  :0   Median :23.0   N.blank  :0  
+ Min.nchar:4   Mean   :23.0   Min.nchar:3  
+ Max.nchar:7   3rd Qu.:25.5   Max.nchar:3  
+               Max.   :27.0                </code></pre>
 </div>
 </div>
 <p>Para acessar os valores de uma coluna específica como vetor, usamos o operador <code>$</code> seguido do nome da coluna. O resultado é um vetor simples com os valores daquela variável, sobre o qual podemos aplicar qualquer função que trabalhe com vetores:</p>
@@ -1207,11 +1207,11 @@ múltiplo do comprimento do objeto menor</code></pre>
 <h3 data-number="1.12.2" class="anchored" data-anchor-id="arquivos-de-dados-do-capítulo"><span class="header-section-number">1.12.2</span> Arquivos de dados do capítulo</h3>
 <p>Os arquivos utilizados nos exemplos deste capítulo estão disponíveis para download abaixo. Clique em cada link para baixar o arquivo e salve-o diretamente na pasta onde está o seu projeto do RStudio.</p>
 <ul>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.csv"><code>viagens_trabalho.csv</code></a></li>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.txt"><code>viagens_trabalho.txt</code></a></li>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.xlsx"><code>viagens_trabalho.xlsx</code></a></li>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho2.txt"><code>viagens_trabalho2.txt</code></a></li>
-<li><a href="https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho3.csv"><code>viagens_trabalho3.csv</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.csv"><code>viagens_trabalho.csv</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.txt"><code>viagens_trabalho.txt</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.xlsx"><code>viagens_trabalho.xlsx</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho2.txt"><code>viagens_trabalho2.txt</code></a></li>
+<li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho3.csv"><code>viagens_trabalho3.csv</code></a></li>
 </ul>
 <p>Todos os arquivos contêm dados fictícios sobre o deslocamento para o trabalho de uma amostra de trabalhadores. As variáveis incluem uma coluna de identificação dos indivíduos (<code>ID</code>), se o indivíduo possui veículo motorizado (<code>posse_veic</code>), o tamanho da família, em quantidade de membros (<code>tam_familia</code>), a distância da viagem em km (<code>dist_v_km</code>) e o tempo de deslocamento em minutos (<code>tempo_v_min</code>). As diferenças entre os arquivos são apenas de formato: cada um usa uma configuração diferente de separador de colunas e separador decimal, o que nos permitirá explorar as diferentes opções de leitura disponíveis no R.</p>
 </section>
@@ -1348,17 +1348,12 @@ múltiplo do comprimento do objeto menor</code></pre>
 </div>
 <p>O R <em>base</em> não possui uma função nativa para leitura de arquivos Excel. Para isso, usamos o pacote <code>readxl</code>, desenvolvido pela equipe do tidyverse. Após instalar e carregar o pacote, a função <code>read_excel()</code> funciona de forma análoga à <code>read.csv()</code>:</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'readxl' was built under R version 4.3.3</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb188"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb188-1"><a href="#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
-<span id="cb188-2"><a href="#cb188-2" aria-hidden="true" tabindex="-1"></a>df_excel <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"viagens_trabalho.xlsx"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb187"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb187-1"><a href="#cb187-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb187-2"><a href="#cb187-2" aria-hidden="true" tabindex="-1"></a>df_excel <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"viagens_trabalho.xlsx"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Usando <code>head()</code> para verificar as primeiras linhas:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb189"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb189-1"><a href="#cb189-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_excel)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb188"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb188-1"><a href="#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_excel)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 5
      ID posse_veic tam_familia dist_v_km tempo_v_min
@@ -1374,7 +1369,7 @@ múltiplo do comprimento do objeto menor</code></pre>
 <p>Uma diferença importante em relação ao CSV: o arquivo Excel armazena metadados sobre o tipo e o formato de cada coluna. Isso significa que o R já recebe a informação de quais colunas são numéricas e quais são texto, sem precisar inferir. Por isso, o argumento <code>dec</code> não se aplica à <code>read_excel()</code>: a separação decimal está definida internamente no arquivo, independentemente de como o Excel está configurado no seu computador.</p>
 <p>Para conhecer os demais argumentos disponíveis, execute <code>?read_excel</code> no Console. O mais útil no dia a dia é <code>sheet</code>, que permite especificar qual planilha ler quando o arquivo Excel contém mais de uma:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb191"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb191-1"><a href="#cb191-1" aria-hidden="true" tabindex="-1"></a>df_excel <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"viagens_trabalho.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"Sheet1"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb190"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb190-1"><a href="#cb190-1" aria-hidden="true" tabindex="-1"></a>df_excel <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"viagens_trabalho.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"Sheet1"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Depois de ler qualquer <em>data frame</em>, lembre-se de usar <code>View()</code> para inspecioná-lo visualmente no RStudio. Para bases de dados grandes, essa é sempre a forma mais prática de ter uma primeira impressão dos dados.</p>
 </section>
