@@ -1,0 +1,39 @@
+# Prefácio {.unnumbered}
+
+<!--
+RASCUNHO ADAPTADO a partir do prefácio do livro "Bases de Dados Institucionais Brasileiras" (repositório bdib).
+Texto a ser revisto pelo autor antes da submissão à editora.
+
+Notas do original:
+(1) Por que R: IBGE usa (calibração dos pesos e análises com a amostragem: ver arquivos das notas metodológicas dos microdados/áreas de ponderação); pacotes de institutos oficiais de pesquisa (os do IPEA: geobr, censobr).
+(2) Por que a capacitação inicial: explorar dados tabulares e geográficos com proficiência.
+-->
+
+Este livro nasceu de uma necessidade prática vivida ao longo de dez anos ministrando a disciplina [Levantamentos e Pesquisas em Engenharia de Transportes](https://alunoweb.ufba.br/SiacWWW/ExibirEmentaPublico.do?cdDisciplina=ENGR80&nuPerInicial=20251) (ENGR80, antiga [ENGJ66](https://alunoweb.ufba.br/SiacWWW/ExibirEmentaPublico.do?cdDisciplina=ENGJ66&nuPerInicial=20101)) na Universidade Federal da Bahia (UFBA). Ao longo desse período, ficou evidente a ausência de um material de referência em português que reunisse, de forma integrada, os produtos do Censo Demográfico brasileiro e demonstrasse como acessá-los, analisá-los e mapeá-los computacionalmente. Esta obra é a resposta a essa lacuna.
+
+O Censo Demográfico é a pesquisa de maior capilaridade territorial do país e a única fonte que descreve a população e os domicílios brasileiros até o nível do setor censitário. Essa granularidade abre um leque de possibilidades analíticas que raramente é explorado em sua totalidade, em boa medida porque os dados chegam ao usuário em formatos heterogêneos e volumosos, distribuídos entre agregados por setor, microdados da amostra, grade estatística, cadastro de endereços e registros do entorno dos domicílios. Trabalhar com esse material exige ferramentas capazes de lidar simultaneamente com tabelas extensas e com geometrias, e é justamente aí que o R se mostra uma escolha produtiva.
+
+O objetivo é oferecer um guia conceitualmente fundamentado e aplicado para estudantes e pesquisadores que precisam trabalhar com dados censitários, seja para dissertações, relatórios técnicos, projetos de pesquisa ou análises de políticas públicas. Cada capítulo combina a apresentação conceitual do produto censitário com exemplos reais de acesso, processamento, visualização e mapeamento em R.
+
+O livro está dividido em três partes, cada uma dedicada a um conjunto temático de conteúdos.
+
+A **Parte 1** é dedicada à **Análise Exploratória de Dados com R** e serve de base metodológica para todo o restante do livro. São cobertos a introdução à linguagem R, estatística descritiva, manipulação de dados tabulares, visualização de dados e manipulação de dados geográficos. O leitor que já tem experiência com R pode avançar diretamente para as partes seguintes, retornando a esta sempre que necessário.
+
+A **Parte 2** trata do **Censo Demográfico e seus produtos**. São abordados desde os conceitos e a estrutura metodológica do censo até formas de acesso a Agregados por Setor Censitário, Microdados da Amostra, a Grade Estatística do IBGE, o Cadastro Nacional de Endereços para Fins Estatísticos (CNEFE) e as Características Urbanísticas do Entorno dos Domicílios.
+
+<!-- VERIFICAR / A ESCREVER: descrição da Parte 3 depois que os capítulos de aplicação estiverem definidos. -->
+A **Parte 3** reúne **aplicações territoriais** construídas a partir dos produtos apresentados na Parte 2, mostrando como combiná-los para responder a perguntas concretas sobre o território brasileiro.
+
+O livro é razoavelmente autossuficiente em termos de ferramentas. A Parte 1 cobre os fundamentos de R necessários para acompanhar os demais capítulos, de modo que não se exige experiência prévia com a linguagem. Ao longo do texto, são utilizados pacotes do ecossistema *tidyverse*, o pacote `sf` para dados geográficos e soluções especializadas para acesso a dados brasileiros, como os pacotes `censobr`, `geobr` e `cnefetools`.
+
+<!--Para quem deseja aprofundar o uso de R com dados brasileiros, recomendo o canal do YouTube [Rocha Data in R](https://www.youtube.com/@RochaDatainR), mantido pelo pesquisador [Fábio Rocha](https://sites.google.com/view/fabio-rocha-economista). O canal oferece tutoriais práticos e atualizados sobre análise de dados com R, com foco em fontes de dados públicas brasileiras, e constitui um excelente complemento a este livro.-->
+
+## Uma nota sobre este livro
+
+Este material está em permanente construção. Bases de dados institucionais mudam, metodologias são revisadas, plataformas de acesso são reformuladas e novos pacotes surgem. O leitor é encorajado a verificar sempre a documentação oficial de cada fonte e a reportar eventuais desatualizações.
+
+<!--Agradecimentos:
+Patrícia, Vivian e Mauro: dados geográficos
+-->
+Jorge Ubirajara Pedreira Junior
+Salvador, 2026

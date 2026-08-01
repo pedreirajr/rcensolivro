@@ -1,0 +1,28 @@
+# Quarto
+/.quarto/
+/_freeze/
+/*_files/
+*.html
+!docs/*.html
+!docs/**/*.html
+!docs/*_files/
+!docs/**/*_files/
+**/*.quarto_ipynb
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sources (materiais de aula — não rastreados)
+sources/
+
+# Instruções do Claude (não rastreadas)
+CLAUDE.md
+.claude/
+data/

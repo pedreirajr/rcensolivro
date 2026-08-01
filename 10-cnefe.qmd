@@ -1,0 +1,389 @@
+---
+title: "CNEFE"
+execute:
+  freeze: true
+---
+
+## Introdução {#sec-cnefe-intro}
+
+Para o IBGE, saber onde as pessoas estão é condição para fazer pesquisas. É preciso localizar os informantes, controlar operações de campo, selecionar amostras e enviar questionários. Sem um cadastro de endereços atualizado e abrangente, essas atividades simplesmente não funcionam. O Cadastro Nacional de Endereços para Fins Estatísticos (CNEFE) é a resposta institucional do IBGE a esse problema.
+
+O CNEFE vai além de ser um instrumento interno do instituto. Governos, empresas e pesquisadores utilizam seus dados para planejar pesquisas amostrais, localizar serviços, avaliar a cobertura de equipamentos públicos, apoiar a defesa civil em emergências climáticas e subsidiar estudos científicos. Além de apoiar o planejamento das pesquisas amostrais do próprio IBGE (ex.: PNAD-C), tem sido bastante utilizado desde a década de 2010 como quadro amostral para seleção aleatória de residências em pesquisas domiciliares no contexto do planejamento de transportes, também conhecidas como Pesquisas Origem-Destino (OD). Vale salientar, por exemplo, o seu uso nas pesquisas OD das regiões metropolitanas de São Paulo (RMSP) e de Salvador (RMS). 
+
+Além disso, quando enchentes devastaram o Rio Grande do Sul em 2024, o CNEFE foi uma das ferramentas mobilizadas para identificar endereços em áreas alagadas e apoiar as ações de socorro. O mesmo ocorreu nas tragédias de Brumadinho-MG (2019) e São Sebastião-SP (2023). Nesses casos, é possível dimensionar os impactos nas regiões afetadas ao sobrepor as zonas atingidas às coordenadas dos estabelecimentos e domicílios.
+
+Reconhecendo a importância de mais esse produto do Censo, este capítulo apresenta o CNEFE resultante do Censo Demográfico 2022, a versão mais completa e precisa já publicada, com cerca de 111 milhões de espécies e coordenadas para praticamente todas elas. Veremos como o cadastro é construído, o que ele contém e como acessá-lo e analisá-lo com R por meio do pacote `cnefetools`.
+
+O CNEFE tem origem em 2005, quando o instituto formalizou o cadastro como produto permanente, criando um padrão unificado de registro e atribuindo à Gerência do Cadastro de Endereços a responsabilidade por sua manutenção. A partir daí, o CNEFE foi progressivamente aprimorado a cada operação censitária. Em 2007, serviu de insumo para a Contagem Populacional. Em 2010, passou por melhorias significativas, sendo associado pela primeira vez aos mapas digitais e tendo seus dados divulgados publicamente, apesar de com geocodificação restrita às áreas rurais. Em 2017, acompanhou o Censo Agropecuário e, em 2022, o cadastro deu um salto qualitativo importante, pois, pela primeira vez, todos os endereços registrados receberam coordenadas geográficas individuais, tornando o CNEFE 100% georreferenciado. A seção seguinte detalha como essa coleta foi conduzida e como as coordenadas foram validadas e corrigidas.
+
+## Aspectos metodológicos da coleta {#sec-cnefe-metodologia}
+
+O CNEFE de 2022 é resultado direto do trabalho dos cerca de 183 mil recenseadores que percorreram o território brasileiro durante a realização do Censo. Para cada setor censitário, o recenseador carregava em seu dispositivo móvel uma *lista prévia* de endereços, construída a partir de operações anteriores do IBGE. Essa lista continha cerca de 89 milhões de registros.
+
+Ao percorrer o setor, o recenseador tinha três tarefas em relação a cada endereço da lista prévia:
+
+- **Confirmar** os endereços que ainda existiam (81,5% dos registros prévios foram confirmados);
+- **Incluir** endereços novos que não constavam da lista (34 milhões de registros foram adicionados em campo, representando 31,8% da lista final);
+- **Excluir** endereços que deixaram de existir ou haviam sido incluídos indevidamente (18,5% dos registros prévios foram excluídos).
+
+O resultado final foi uma lista de 106 milhões de **endereços**, cobrindo a totalidade dos setores censitários do país. É importante frisar que a tabela do CNEFE consiste em registros por **espécie** (a finalidade de uso da unidade associada ao endereço), e não por endereço. Isso ocorre porque um mesmo endereço pode abrigar mais de uma espécie ao mesmo tempo. Por exemplo, um terreno com uma casa e uma edificação em construção nos fundos ou um domicílio e estabelecimento que coexistem numa mesma unidade. Por isso, o número total de espécies (111 milhões) é maior que o número de endereços (106 milhões).
+
+A novidade mais importante do CNEFE 2022 em relação às edições anteriores é que todos os endereços, não apenas os rurais, receberam coordenadas geográficas individuais. Isso foi possível graças ao uso de dispositivos móveis de coleta equipados com receptor GNSS (*Global Navigation Satellite System*). Para cada endereço confirmado ou incluído, o aplicativo de coleta exigia três tentativas de captura das coordenadas antes de permitir que o recenseador prosseguisse. As coordenadas eram registradas automaticamente pelo dispositivo e transmitidas ao sistema de acompanhamento do IBGE, o que permitia supervisionar a cobertura territorial em tempo real.
+
+A precisão das coordenadas depende das condições locais de coleta. Em situação ideal, onde não há qualquer tipo de obstáculo para obtenção do posicionamento, o erro quadrático médio (EQM) do receptor GNSS embarcado foi estimado em **5,84 metros**. Em condições normais de campo, com edificações horizontais e áreas rurais, o erro chegou a **11,71 metros**. Em condições adversas, como áreas com edificações verticais densas, vielas estreitas ou restrições de acesso (como condomínios fechados), o erro pode superar esse valor ou mesmo impossibilitar a captura.
+
+Após a coleta, as coordenadas passaram por um processo de validação, padronização e estimação. Os setores censitários foram agrupados em quatro categorias com critérios distintos de aceitação, refletindo diferenças na organização espacial e na densidade de edificações:
+
+- **Grupo 1:** setores urbanos com alta densidade de edificações ou núcleos urbanos
+- **Grupo 2:** setores urbanos com baixa densidade ou aglomerados rurais (exceto indígenas)
+- **Grupo 3:** setores rurais (exceto aglomerados rurais)
+- **Grupo 4:** aglomerados rurais do tipo agrupamento indígena
+
+Para cada grupo, foram definidas distâncias máximas de aceitação das coordenadas em relação ao contorno do setor censitário e, onde aplicável, à face de quadra associada ao endereço. Para os setores urbanos (Grupos 1 e 2), o limite foi de até 500 metros do contorno do setor. Já para setores rurais (Grupo 3), o limite em relação ao setor foi de 1.000 metros, enquanto para agrupamentos indígenas (Grupo 4) o limite chegou a 10.000 metros, dada a maior dificuldade de acesso e as imprecisões cartográficas nesses territórios. O Grupo 1 contou ainda com um critério complementar, no qual a coordenada não podia estar a mais de 1.000 metros da face de quadra do endereço. 
+
+Um tratamento especial foi aplicado aos apartamentos. Como unidades de um mesmo edifício geram coordenadas naturalmente próximas e com variação aleatória introduzida pelo GNSS, o IBGE substituiu as coordenadas individuais pela mediana do conjunto de unidades com coordenadas válidas no mesmo número e face de quadra. Para edifícios com blocos identificados no complemento, o agrupamento considerou também o bloco, de modo que diferentes torres do mesmo empreendimento recebessem coordenadas distintas. Esse procedimento gerou 6 milhões de coordenadas classificadas como "modificadas" (nível 2).
+
+Para as coordenadas inválidas ou ausentes, o IBGE aplicou uma cadeia de estimações em ordem decrescente de precisão, diferenciada por tipo de setor. Nos setores urbanos e de aglomerados rurais, as regras foram, em ordem de prioridade: (i) mediana das coordenadas capturadas pelo recenseador durante a aplicação do questionário naquele endereço; (ii) mediana das coordenadas de outros endereços do setor com mesmo número, mesmo logradouro e mesma face de quadra; (iii) coordenada registrada em operação censitária anterior para o mesmo endereço, desde que confirmado no Censo 2022; (iv) ponto médio da linha da face de quadra associada ao endereço; e (v) centroide do setor censitário. Nos setores rurais, onde não há organização por faces de quadra, as regras priorizaram a localização do recenseador durante a entrevista e coordenadas de endereços vizinhos no percurso. Ao final, 747 mil coordenadas foram estimadas e classificadas no nível 3, e apenas 358 mil (0,32% do total) ficaram em níveis inferiores ao endereço (face de quadra, localidade ou setor).
+
+O resultado desse processo é representado pelo campo `NV_GEO_COORD`, que classifica cada registro em um de seis níveis:
+
+```{r}
+#| label: tbl-geocod
+#| echo: false
+#| tbl-cap: "Níveis de geocodificação no CNEFE 2022"
+tibble::tibble(
+  Código = 1:6,
+  Descrição = c(
+    "Endereço (coordenada original do Censo 2022)",
+    "Endereço (coordenada modificada, apartamentos em mesmo número/face)",
+    "Endereço (coordenada estimada)",
+    "Face de quadra",
+    "Localidade",
+    "Setor censitário"
+  )
+) |>
+  knitr::kable(col.names = c("Código", "Descrição"),
+                align = c("c", "c")
+               )
+```
+
+Os resultados, em geral, confirmam a alta qualidade posicional do CNEFE 2022. De fato, 99,68% dos 111 milhões de registros foram geocodificados ao nível do endereço. Desses, 93,8% mantiveram a coordenada original coletada em campo, 5,5% receberam coordenada modificada pelo procedimento de padronização de apartamentos e apenas 0,7% foram estimados. Apenas 0,32% do total ficou em níveis de precisão menor (face de quadra, localidade ou setor). Maiores detalhes sobre esse processo podem ser encontrados no documento metodológico do CNEFE [@cnefe_metodologia2024]. Entendido o processo de obtenção e validação das coordenadas, o próximo passo é compreender o que o CNEFE contém e como seus campos se organizam.
+
+## Conteúdo e estrutura dos dados {#sec-cnefe-dados}
+
+A versão completa do CNEFE 2022 conta com 29 variáveis. Mencionaremos o significado de algumas delas nesta seção. Os campos se organizam em cinco grupos funcionais, conforme a @tbl-dicionario:
+
+```{r}
+#| label: tbl-dicionario
+#| echo: false
+#| tbl-cap: "Principais grupos de variáveis do CNEFE 2022"
+tibble::tibble(
+  Grupo = c(
+    "Localização geográfica",
+    "Endereço textual",
+    "Coordenadas",
+    "Espécie e uso",
+    "Identificador"
+  ),
+  Variáveis = c(
+    "COD_UF, COD_MUNICIPIO, COD_DISTRITO, COD_SUBDISTRITO, COD_SETOR, NUM_QUADRA, NUM_FACE",
+    "NOM_TIPO_SEGLOGR, NOM_SEGLOGR, NUM_ENDERECO, DSC_MODIFICADOR, NOM/VAL_COMP_ELEM1-5, CEP, DSC_LOCALIDADE",
+    "LATITUDE, LONGITUDE, NV_GEO_COORD",
+    "COD_ESPECIE, DSC_ESTABELECIMENTO, COD_TIPO_ESPECIE, COD_INDICADOR_ESTAB_ENDERECO, COD_INDICADOR_CONST_ENDERECO, COD_INDICADOR_FINALIDADE_CONST",
+    "COD_UNICO_ENDERECO"
+  )
+) |>
+  knitr::kable(col.names = c("Grupo", "Variáveis"),
+               align = c("c", "c"))
+```
+
+O **grupo de localização geográfica** vincula cada endereço à hierarquia territorial do IBGE. Os campos `COD_UF` a `COD_SETOR` identificam toda a hierarquia territorial, da unidade federativa ao setor censitário. `NUM_QUADRA` e `NUM_FACE` refinam essa localização dentro do setor, associando o endereço a uma quadra e a uma face específica, o trecho de logradouro entre duas esquinas consecutivas que pode ser percorrido pela calçada.
+
+O **grupo de endereço textual** codifica os componentes do Padrão de Registro de Endereços adotado pelo IBGE [@ibge2022recenseador]:
+
+- `DSC_LOCALIDADE`: nome da localidade onde o endereço está situado. Nas áreas urbanas corresponde ao bairro e, nas rurais, ao nome da região (povoado, assentamento, comunidade). Em territórios de povos tradicionais, inclui o prefixo de tradicionalidade, como "Aldeia Indígena" ou "Comunidade Quilombola".
+- `NOM_TIPO_SEGLOGR` e `NOM_SEGLOGR`: tipo e nome do logradouro. O tipo indica a natureza da via (Rua, Avenida, Travessa, Estrada etc.) e eventualmente o título do homenageado (Doutor, Santa, Coronel etc.). O nome é a denominação própria do logradouro.
+- `NUM_ENDERECO`: número que indica a posição da edificação no logradouro.
+- `DSC_MODIFICADOR`: sufixo alfanumérico associado ao número, usado para diferenciar unidades com a mesma numeração (ex.: 1367 A, 1367 B) ou para indicar sistemas de numeração não oficiais, como os de companhias de energia ou saúde. O valor "SN" indica que o endereço não possui nenhuma numeração conhecida.
+- `NOM_COMP_ELEM1` a `NOM_COMP_ELEM5` e `VAL_COMP_ELEM1` a `VAL_COMP_ELEM5`: até cinco pares de elemento e valor que individualizam a unidade dentro de uma edificação com múltiplas unidades. Os complementos seguem a hierarquia do mais abrangente ao mais específico (ex.: Bloco A, Apartamento 43; ou Quadra 7, Lote 37, Casa 2). Exemplos de elementos: bloco, apartamento, casa, sala, loja, fundos, sobrado.
+- `CEP`: código de endereçamento postal de oito dígitos mantido pelos Correios, que pode referenciar um bairro, um logradouro, um trecho de logradouro ou, em casos específicos, um único edifício.
+
+O **campo `COD_UNICO_ENDERECO`** é um identificador numérico único por endereço físico. Como um mesmo endereço pode gerar múltiplos registros no CNEFE (um por espécie), esse campo permite agrupar todas as espécies pertencentes a uma mesma localização.
+
+Uma das variáveis mais relevantes para análises temáticas do CNEFE é `COD_ESPECIE`, que classifica cada registro segundo a finalidade de uso do endereço. São oito categorias, cobrindo desde domicílios particulares até edificações em construção, como indicado na @tbl-especies:
+
+```{r}
+#| label: tbl-especies
+#| echo: false
+#| tbl-cap: "Espécies de endereço no CNEFE 2022 e seus totais"
+tibble::tibble(
+  Código = 1:8,
+  Espécie = c(
+    "Domicílio particular",
+    "Domicílio coletivo",
+    "Estabelecimento agropecuário",
+    "Estabelecimento de ensino",
+    "Estabelecimento de saúde",
+    "Estabelecimento de outras finalidades",
+    "Edificação em construção ou reforma",
+    "Estabelecimento religioso"
+  ),
+  Total = c(
+    "90,6 milhões",
+    "104 mil",
+    "4,1 milhões",
+    "264 mil",
+    "247,5 mil",
+    "11,7 milhões",
+    "3,5 milhões",
+    "579,8 mil"
+  )
+) |>
+  knitr::kable(col.names = c("Código", "Espécie", "Total"),
+               align = c("c", "c","c"))
+```
+
+O campo `DSC_ESTABELECIMENTO` registra o nome do estabelecimento tal como coletado pelo recenseador, em texto livre e sem padronização, para todos os registros que não são domicílios particulares. Apesar disso, é útil para identificar tipos específicos de equipamentos por busca de palavras-chave, como hospitais, escolas ou igrejas de determinadas denominações.
+
+O campo `COD_TIPO_ESPECIE` detalha o tipo de edificação dos domicílios particulares: casa (101), casa de vila ou em condomínio (102), apartamento (103) e outros (104). Para as edificações em construção, `COD_INDICADOR_FINALIDADE_CONST` indica o uso planejado: residencial (1), não residencial (2), misto (3) ou indeterminado (4). Já `COD_INDICADOR_CONST_ENDERECO` registra o número de unidades em construção no endereço, com categorias única, múltipla com até dez unidades, múltipla com mais de dez unidades e quantidade desconhecida.
+
+Para estabelecimentos de ensino, saúde, religiosos e de outras finalidades, o campo `COD_INDICADOR_ESTAB_ENDERECO` registra quantas vezes a mesma espécie ocorre em um mesmo endereço, como consultórios e lojas em uma galeria comercial. As categorias são as mesmas: único, múltiplo com até dez, múltiplo com mais de dez e quantidade desconhecida.
+
+Com os campos compreendidos, a seção seguinte mostra como acessar e explorar esses dados diretamente no R.
+
+## Explorando os dados do CNEFE em R {#sec-cnefe-r}
+
+### Leitura dos dados
+
+O pacote `cnefetools` foi desenvolvido para facilitar o acesso e a análise do CNEFE no R [@pedreira2026cnefetools]. Ele já foi utilizado anteriormente no capítulo 7, sobre Agregados por Setor Censitário, quando produzimos as informações dos Agregados em outras unidades espaciais que não o setor censitário, por meio de uma operação de interpolação dasimétrica com apoio dos domicílios do CNEFE. Se ainda não o instalou, lembre-se de executar:
+
+```r
+install.packages("cnefetools")
+```
+
+Para explorar os dados do CNEFE, utilizaremos duas funções principais. `read_cnefe()` baixa os dados por município e faz sua leitura para uso imediato no R, enquanto `cnefe_counts()`, além de baixar e ler os dados do CNEFE, conta os tipos de espécie de endereço (@tbl-especies) agregados em qualquer malha de polígonos de interesse. Algumas funções de apoio também acompanham o pacote, como `cnefe_dictionary()`, que abre o dicionário de dados em Excel, e `cnefe_doc()`, que abre a nota metodológica em PDF.
+
+Vamos começar carregando o pacote `cnefetools` e os demais pacotes auxiliares necessários:
+
+```{r, warning = F, message = F}
+library(cnefetools)
+library(geobr)
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(mapview)
+```
+
+A função `read_cnefe()` recebe o código IBGE do município e pode retornar dois tipos de objetos, a depender do argumento `output`. Caso `output = "arrow"` (*default*), será retornado um *Arrow Table*. Este formato é útil porque os arquivos do CNEFE costumam ser grandes nos municípios maiores (São Paulo-SP, por exemplo, possui mais de 5,6 milhões de coordenadas). Caso `output = "sf"`, a função retorna um objeto `sf` com todos os registros do CNEFE como pontos geográficos em SIRGAS 2000, pronto para análises espaciais. Uma outra praticidade da função é o parâmetro `cache = TRUE`, que baixa os arquivos uma única vez e os relê nas execuções seguintes sem novo download.
+
+Para carregar os dados de Porto Alegre-RS, como um arquivo geográfico, por exemplo, fazemos:
+
+```{r}
+#| label: load-poa
+#| cache: true
+#| message: false
+
+# Obtendo código IBGE de Porto Alegre com o geobr
+poa_ibge <- lookup_muni("Porto Alegre")$code_muni
+
+# Lendo o CNEFE de Porto Alegre:
+poa_cnefe <- read_cnefe(
+  code_muni = poa_ibge,
+  cache     = TRUE,
+  output    = "sf"
+)
+```
+
+Com os dados carregados, podemos fazer uma contagem sumarizada dos registros por espécie, por exemplo. Para tanto, lançamos mão da função `count()` do dplyr, conforme o código abaixo:
+
+```{r}
+#| label: tbl-especies-poa
+#| tbl-cap: "Registros do CNEFE 2022 em Porto Alegre por espécie"
+poa_cnefe |>
+  sf::st_drop_geometry() |> # Remove geometria para processamento ficar mais leve
+  count(COD_ESPECIE) |>
+  mutate(
+    especie = case_when(
+      COD_ESPECIE == 1 ~ "Domicílio particular",
+      COD_ESPECIE == 2 ~ "Domicílio coletivo",
+      COD_ESPECIE == 3 ~ "Est. agropecuário",
+      COD_ESPECIE == 4 ~ "Est. de ensino",
+      COD_ESPECIE == 5 ~ "Est. de saúde",
+      COD_ESPECIE == 6 ~ "Est. de outras finalidades",
+      COD_ESPECIE == 7 ~ "Edificação em construção",
+      COD_ESPECIE == 8 ~ "Est. religioso"
+    ),
+    perc_especie = round(100*(n/sum(n)),3)
+  ) |>
+  select(COD_ESPECIE, especie, n, perc_especie) |>
+  knitr::kable(
+    col.names = c("Código", "Espécie", "Nº Registros", "Perc. Registros (%)"),
+    align = c("c","c","c","c"),
+    format.args = list(decimal.mark = ",")
+  )
+```
+
+### Mapeando estabelecimentos específicos
+
+Podemos explorar o CNEFE de inúmeras formas, inclusive aproveitando a coluna em texto aberto `DSC_ESTABELECIMENTO` preenchida pelos recenseadores no caso de estabelecimentos. Na aplicação abaixo, filtramos os registros com `COD_ESPECIE == 5` (estabelecimentos de saúde) e, dentro deles, buscamos os que têm "hospital" no nome do estabelecimento por meio do campo `DSC_ESTABELECIMENTO`, com a ajuda da função `grepl()`. Na configuração abaixo, procuramos a palavra "hospital" em qualquer variação de maiúsculas e minúsculas, usando o argumento `ignore.case = TRUE`:
+
+```{r}
+#| label: filtra-saude
+poa_saude <- poa_cnefe |>
+  filter(COD_ESPECIE == 5)
+
+poa_hospitais <- poa_saude |>
+  filter(grepl("hospital", DSC_ESTABELECIMENTO, ignore.case = TRUE))
+```
+
+Para visualizar a distribuição espacial, usamos o limite municipal de Porto Alegre como camada de fundo e sobrepomos os dois conjuntos de pontos:
+
+```{r}
+#| label: fig-saude-poa
+#| cache: true
+#| message: false
+#| fig-cap: "Estabelecimentos de saúde em Porto Alegre segundo o CNEFE 2022. Os pontos vermelhos indicam os estabelecimentos com 'hospital' no nome do estabelecimento."
+poa_muni <- read_municipality(
+  code_muni  = 4314902,
+  year       = 2022,
+  simplified = FALSE
+)
+
+ggplot() +
+  geom_sf(data = poa_muni, fill = "grey95", color = "grey60", linewidth = 0.4) +
+  geom_sf(data = poa_saude, color = "steelblue", size = 0.6, alpha = 0.5) +
+  geom_sf(data = poa_hospitais, color = "firebrick", size = 1.5) +
+  theme_minimal() +
+  labs(
+    x = NULL, y = NULL,
+    caption = "Fonte: CNEFE 2022 (IBGE) | Pacote cnefetools"
+  )
+```
+
+:::{.callout-note}
+## Buscas por texto no DSC_ESTABELECIMENTO
+
+O campo `DSC_ESTABELECIMENTO` é texto livre coletado pelo recenseador. Isso significa que a mesma instituição pode aparecer grafada de formas diferentes em registros distintos (com abreviações, sem acentos ou com erros de digitação). Ao usar `grepl()` para filtrar por palavras-chave, vale testar variações da busca para não perder registros relevantes.
+:::
+
+### Agregando contagens espacialmente por tipo {#sec-cnefe-counts}
+
+Ao analisar a distribuição espacial de endereços, muitas vezes queremos trabalhar com recortes espaciais em vez de pontos individuais. A função `cnefe_counts()` resolve isso ao baixar os dados do CNEFE e agregá-los a células hexagonais H3 ou a polígonos fornecidos pelo usuário, retornando a contagem de registros por espécie em cada unidade espacial.
+
+Os principais argumentos são:
+
+- `code_muni`: código IBGE do município
+- `polygon_type`: `"hex"` para grade hexagonal H3 ou `"user"` para polígonos personalizados
+- `h3_resolution`: resolução da grade H3 (padrão 9, células de aproximadamente 0,1 km²)
+- `polygon`: objeto `sf` com os polígonos (obrigatório quando `polygon_type = "user"`)
+- `backend`: motor de processamento, que pode ser `"duckdb"` (mais rápido, *default*) ou `"r"` (sem dependências extras)
+
+O retorno é um objeto `sf` com oito colunas de contagem, uma por espécie (`addr_type1` a `addr_type8`), além da geometria das células ou polígonos.
+
+Para identificar padrões intra-urbanos de distribuição de equipamentos de ensino e religiosos em Porto Alegre, usamos a grade hexagonal H3 com resolução 8 (células de aproximadamente 0,7 km²). Antes de fazer os cálculos, precisamos agregar os dados:
+
+```{r}
+#| label: cnefe-counts-hex
+#| cache: true
+#| message: false
+poa_hex <- cnefe_counts(
+  code_muni     = 4314902,
+  polygon_type  = "hex",
+  h3_resolution = 8,
+  cache         = TRUE,
+  verbose       = FALSE
+)
+```
+
+Vamos visualizar nas figuras abaixo, por exemplo, as contagens de estabelecimentos de ensino (`addr_type1`) e estabelecimentos religiosos (`addr_type8`) geradas no código anterior e armazenadas em `poa_hex`:
+
+```{r}
+#| label: fig-ensino
+#| fig-cap: "Total de estabelecimentos de ensino por hexágono H3 (resolução 8)."
+
+poa_hex |> 
+  ggplot() +
+  geom_sf(aes(fill = addr_type4)) +
+  scale_fill_distiller(palette = "Blues", direction = 1) +
+  labs(fill = "# Estabelecimentos\nde Ensino") +
+  theme_minimal()
+
+```
+
+```{r}
+#| label: fig-religiao
+#| fig-cap: "Total de estabelecimentos religiosos por hexágono H3 (resolução 8)."
+
+poa_hex |> 
+  ggplot() + 
+  geom_sf(aes(fill = addr_type8)) +
+  scale_fill_distiller(palette = "Oranges", direction = 1) +
+  labs(fill = "# Estabelecimentos\nReligiosos") +
+  theme_minimal()
+
+```
+
+Observem que diversas análises podem ser realizadas com esses dados. Podemos, por exemplo, produzir índices comparativos entre usos distintos em determinadas regiões. No caso abaixo, calculamos a proporção de estabelecimentos de ensino em relação ao total de estabelecimentos de ensino e religiosos em cada célula. Células com valores próximos a 1 indicam predominância de ensino, já aquelas próximas a 0, predominância religiosa:
+
+```{r}
+#| label: fig-prop-ensino
+#| fig-cap: "Proporção de estabelecimentos de ensino em relação ao total de equipamentos de ensino e religiosos em Porto Alegre, por hexágono H3 (resolução 8). Valores próximos a 1 (amarelo) indicam predomínio de ensino e próximos a 0 (roxo), predomínio religioso."
+library(mapview)
+
+poa_hex_ratio <- poa_hex |>
+  # Filtra somente os hexágonos com pelo menos um estabelecimento (ensino ou religioso):
+  filter((addr_type4 + addr_type8) > 0) |> 
+  # Computa indicador de proporção de ensino:
+  mutate(prop_ensino = addr_type4 / (addr_type4 + addr_type8))
+
+mapview(
+  poa_hex_ratio,
+  zcol        = "prop_ensino",
+  layer.name  = "Predominância de Ensino",
+  legend      = TRUE
+)
+```
+
+Lembre-se de que é possível também produzir contagens para malhas espaciais além da H3 com a `cnefe_counts()`. No exemplo abaixo, utilizamos os bairros de Porto Alegre como unidades de contagem. Primeiro baixamos os bairros com `read_neighborhood()` do pacote `geobr`, filtrando pelo município:
+
+```{r}
+#| label: load-setores
+#| cache: true
+#| message: false
+
+poa_brr <- read_neighborhood(year = 2022, simplified = F) |> 
+  filter(name_muni == "Porto Alegre")
+```
+
+Posteriormente, usamos `polygon_type = "user"` e fornecemos o `sf` com os bairros como argumento `polygon`:
+
+```{r}
+#| label: cnefe-counts-setores
+#| cache: true
+#| message: false
+poa_brr_counts <- cnefe_counts(
+   code_muni    = 4314902,
+   polygon_type = "user",
+   polygon      = poa_brr
+ )
+```
+
+Mapeando o resultado:
+
+```{r}
+mapview(
+  poa_brr_counts,
+  zcol        = "addr_type1",
+  layer.name  = "# Domicílios particulares"
+)
+```
+
+
+
+## Exercícios {#sec-cnefe-exercicios}
+
+1. **Cobertura de saúde em Salvador:** Baixe os dados do CNEFE para Salvador (código 2927408) e filtre os estabelecimentos de saúde (`COD_ESPECIE == 5`). Use `cnefe_counts()` com hexágonos para mapear a densidade desses estabelecimentos. Quais regiões da cidade apresentam menor concentração de equipamentos de saúde?
+
+2. **Expansão imobiliária em Porto Alegre:** Usando `COD_ESPECIE == 7` (edificações em construção ou reforma), identifique as regiões de Porto Alegre com maior número de obras ativas. Filtre apenas as de finalidade residencial (`COD_INDICADOR_FINALIDADE_CONST == 1`) e mapeie sua distribuição. O padrão corresponde ao que você esperaria com base no conhecimento sobre a expansão urbana da cidade?
+
+3. **Comparação entre cidades:** Compare a razão entre estabelecimentos religiosos e de ensino em Belo Horizonte (3106200), Recife (2611606) e Porto Alegre (4314902). Use `cnefe_counts()` com hexágonos e calcule, para cada cidade, a mediana da proporção `addr_type8 / (addr_type4 + addr_type8)` entre os hexágonos com ao menos um estabelecimento de cada tipo. Qual das três cidades apresenta a maior proporção relativa de templos religiosos?

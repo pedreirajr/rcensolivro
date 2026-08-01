@@ -1,0 +1,122 @@
+/* Centraliza captions de figuras (coluna única e layout múltiplo) */
+.quarto-figure figcaption,
+.quarto-float-caption,
+.quarto-subfloat-caption {
+  text-align: center;
+}
+
+/* Centraliza captions de tabelas */
+caption {
+  text-align: center;
+}
+
+/* ========================================
+   FIGURAS FLUTUANTES À DIREITA
+   ======================================== */
+
+/* Tamanhos: sm (30%), md (45%), lg (60%) */
+.quarto-figure.float-right-sm,
+.quarto-figure:has(img.float-right-sm) {
+  float: right !important;
+  margin: 0 0 1em 1.5em !important;
+  max-width: 30% !important;
+}
+
+.quarto-figure.float-right-md,
+.quarto-figure:has(img.float-right-md),
+.quarto-figure.float-right,
+.quarto-figure:has(img.float-right) {
+  float: right !important;
+  margin: 0 0 1em 1.5em !important;
+  max-width: 45% !important;
+}
+
+.quarto-figure.float-right-lg,
+.quarto-figure:has(img.float-right-lg) {
+  float: right !important;
+  margin: 0 0 1em 1.5em !important;
+  max-width: 60% !important;
+}
+
+/* Estrutura interna para float-right (todos os tamanhos) */
+.quarto-figure[class*="float-right"] > figure,
+.quarto-figure:has(img[class*="float-right"]) > figure {
+  display: table;
+  margin: 0 auto;
+}
+
+.quarto-figure[class*="float-right"] img,
+.quarto-figure:has(img[class*="float-right"]) img {
+  float: none !important;
+  display: block;
+  margin: 0 auto;
+}
+
+.quarto-figure[class*="float-right"] figcaption,
+.quarto-figure:has(img[class*="float-right"]) figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+/* ========================================
+   FIGURAS FLUTUANTES À ESQUERDA
+   ======================================== */
+
+/* Tamanhos: sm (30%), md (45%), lg (60%) */
+.quarto-figure.float-left-sm,
+.quarto-figure:has(img.float-left-sm) {
+  float: left !important;
+  margin: 0 1.5em 1em 0 !important;
+  max-width: 30% !important;
+}
+
+.quarto-figure.float-left-md,
+.quarto-figure:has(img.float-left-md),
+.quarto-figure.float-left,
+.quarto-figure:has(img.float-left) {
+  float: left !important;
+  margin: 0 1.5em 1em 0 !important;
+  max-width: 45% !important;
+}
+
+.quarto-figure.float-left-lg,
+.quarto-figure:has(img.float-left-lg) {
+  float: left !important;
+  margin: 0 1.5em 1em 0 !important;
+  max-width: 60% !important;
+}
+
+/* Estrutura interna para float-left (todos os tamanhos) */
+.quarto-figure[class*="float-left"] > figure,
+.quarto-figure:has(img[class*="float-left"]) > figure {
+  display: table;
+  margin: 0 auto;
+}
+
+.quarto-figure[class*="float-left"] img,
+.quarto-figure:has(img[class*="float-left"]) img {
+  float: none !important;
+  display: block;
+  margin: 0 auto;
+}
+
+.quarto-figure[class*="float-left"] figcaption,
+.quarto-figure:has(img[class*="float-left"]) figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+/* ========================================
+   UTILITÁRIOS
+   ======================================== */
+
+/* Limpar float quando necessário */
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}

@@ -1,0 +1,798 @@
+---
+title: "Introdução ao R"
+---
+
+O R é a linguagem de programação central deste livro. Desenvolvido para análise estatística e visualização de dados, o R se tornou uma das ferramentas mais utilizadas em ciências sociais aplicadas, epidemiologia, economia e ciência de dados. Ao longo dos capítulos que se seguem, utilizaremos o R para explorar bases de dados institucionais brasileiras: desde os agregados por setor censitário do Censo Demográfico até pesquisas de mobilidade e saúde.
+
+Este capítulo cobre os fundamentos da linguagem: instalação, ambiente de desenvolvimento, tipos de dados, estruturas de dados e leitura de arquivos externos. O conteúdo é complementado por uma *playlist* de videoaulas no YouTube, que acompanha o mesmo roteiro deste capítulo. Recomenda-se assistir aos vídeos em paralelo à leitura, usando cada um para reforçar o outro.
+
+[▶ Abrir playlist no YouTube](https://www.youtube.com/watch?v=lS9-yrs51Ac&list=PL_v-tArg0FZjeQMDtbDTc5M88vH7DqK9_)
+
+## Instalação do R e do RStudio
+
+O R e o RStudio são dois programas distintos que funcionam em conjunto. O R é o interpretador da linguagem, o programa que de fato lê e executa o código. O RStudio é um ambiente de desenvolvimento integrado (*Integrated Development Environment*, IDE) que oferece uma interface amigável para escrever, organizar e executar código R. É possível usar o R sem o RStudio, mas não o contrário.
+
+::: {.callout-note}
+## Instalação passo a passo
+
+1. **Instalar o R:** acesse [cran.r-project.org](https://cran.r-project.org/), escolha o sistema operacional (Windows, macOS ou Linux) e baixe o instalador da versão mais recente. Execute o instalador com as opções padrão.
+
+2. **Instalar o RStudio:** acesse [posit.co/download/rstudio-desktop](https://posit.co/download/rstudio-desktop/) e baixe a versão gratuita do RStudio Desktop. Instale após o R.
+
+3. **Verificar:** abra o RStudio. Se a instalação correu bem, o painel *Console* (à esquerda) mostrará a versão do R instalada.
+
+Os números de versão mudam a cada atualização, mas o processo de instalação permanece o mesmo.
+:::
+
+## O ambiente do RStudio
+
+Ao abrir o RStudio pela primeira vez, você verá uma janela dividida em painéis. Cada painel tem uma função específica e juntos formam o ambiente de trabalho da linguagem. Abaixo nós mencionaremos os paineis com suas abas principais, mas sem explicarmos todas necessariamente, de modo que ganhemos tempo no entendimento do que é mais importante. Não se preocupe se você não entender um conceito agora, quando formos trabalhar com cada uma destas abas, seu entendimento virá naturalmente.
+
+### Painel 1: Console, Terminal e Background Jobs
+
+No Painel 1, a principal aba é o **Console**, onde podemos executar comandos de R e verificarmos seus resultados de forma imediata. Ao digitar uma expressão e pressionar Enter, o R responde na linha seguinte. O **Console** é útil para testes rápidos, mas não é o local indicado para escrever análises que você quer guardar. Tudo o que é digitado diretamente no **Console** se perde quando a sessão é encerrada.
+
+### Painel 2: Environment, History, Connections e Tutorial
+
+Neste painel, temos a importante aba **Environment** (*Ambiente*) exibe todos os objetos criados durante a sessão atual: vetores, tabelas, modelos e qualquer outra estrutura de dados carregada na memória. A aba **History** registra os comandos executados em ordem cronológica.
+
+### Painel 3: Files, Plots, Packages, Help, Viewer e Presentation
+
+Neste painel, temos algumas abas importantes durante a experimentação com o código. A aba **Files** funciona como um explorador de arquivos vinculado ao diretório de trabalho atual. A aba **Plots** exibe os gráficos gerados. A aba **Packages** lista os pacotes instalados e permite instalar novos. A aba **Help** exibe a documentação das funções do R. A aba **Viewer** renderiza, principalmente, conteúdo interativo, como gráficos, mapas e tabelas com essa propriedade.
+
+::: {.callout-tip}
+## Personalizando o RStudio
+
+Para ajustar o tema visual, o tamanho da fonte e outras preferências, acesse o menu **Tools > Global Options > Appearance**. O RStudio oferece temas claros e escuros. Escolha o que for mais confortável para sessões longas de análise.
+:::
+
+## Operações matemáticas
+
+Uma das funcionalidades mais básicas de uma linguagem de programação é funcionar como uma calculadora. No seu Console, logo após o símbolo `>`, vamos executar as seguintes operações aritméticas abaixo e conferir o resultado de saída:
+
+- Adição (`+`):
+```{r}
+2 + 3
+```
+
+- Subtração (`-`):
+```{r}
+10 - 4 
+```
+
+- Multiplicação (`*`):
+```{r}
+6 * 7 
+```
+
+- Divisão (`/`):
+```{r}
+15 / 4   
+```
+
+- Potenciação (`^`):
+```{r}
+2 ^ 3 
+```
+
+- Radiciação (`^`, com um número menor que 1 na potência):
+```{r}
+4 ^ (1/2)
+```
+
+Veja que acima estamos realizando uma operação de raiz quadrada ao elevar o 4 a 1/2. Neste caso, podemos também usar a função `sqrt(4)` (que vem do inglês *square root*).
+
+Obs.: O R respeita a hierarquia das operações matemáticas: potenciação primeiro, depois multiplicação e divisão, e por último adição e subtração. Essa ordem pode ser alterada como o usuário preferir, utilizando parênteses.
+
+Veja, por exemplo, abaixo que 2 + 3 * 4 não resulta em 20 (somar 2 + 3 primeiro e depois multiplicar por 4), mas em 14:
+
+```{r}
+2 + 3 * 4
+```
+
+Porém, se utilizarmos o parênteses na soma, ela será executada primeiro, resultando agora em 20:
+```{r}
+(2 + 3) * 4
+```
+
+::: {.callout-warning}
+## Atenção com frações
+
+Ao escrever expressões do tipo "numerador sobre denominador", use parênteses nos dois termos para garantir o resultado correto. Por exemplo, se quisermos escrever:
+
+$$\frac{8+4}{2+1}$$
+
+Não podemos desenvolver da forma abaixo, pois ele irá primeiro executar a divisão (4/2) e depois as somas:
+
+```{r}
+8 + 4 / 2 + 1
+```
+
+O correto então é fazer:
+```{r}
+(8 + 4) / (2 + 1)
+```
+
+:::
+
+## Scripts
+
+No R, um *script* é um arquivo com extensão `.R` que contém uma sequência de comandos de código a serem executados na ordem em que são escritos. Ao contrário do *Console*, o *script* pode ser salvo, revisado e executado novamente a qualquer momento.
+
+::: {.callout-note}
+## Por que usar scripts?
+
+O **Console** é prático para testes rápidos, mas análises reais precisam de *reprodutibilidade* (capacidade de ser replicado facilmente por qualquer outra pessoa com aquele código). Um *script* documenta exatamente o que foi feito, na ordem em que foi feito. Isso é essencial para verificar resultados, compartilhar código com outras pessoas e retomar o trabalho depois de alguns dias.
+:::
+
+Para criar um novo *script* no RStudio, use o menu **File > New File > R Script** ou o atalho `Ctrl + Shift + N`. Para executar uma linha, posicione o cursor nela e pressione `Ctrl + Enter`. Para executar uma seleção, selecione as linhas desejadas e pressione `Ctrl + Enter`. Para executar o *script* inteiro, use `Ctrl + Shift + Enter`.
+
+Uma utilidade bem interessante do script é ter partes do código que não devem ser executados e servem somente por propósito de documentação e organização da sequência de operações que você deseja realizar. A essa utilidade damos o nome de **Comentário** e para poder utilizá-los, precisamos somente inserir o símbolo `#` na linha em que queremos escrevê-lo. Tudo após o `#` na mesma linha é ignorado pelo R e serve apenas como anotação para o leitor:
+
+```{r}
+# Este é um comentário. O R ignora esta linha.
+2 + 2  # comentário no final de uma linha de código (somente o 2 + 2 será executado, pois não há um # antes)
+```
+
+## Objetos
+
+O R armazena informações em objetos. Um objeto é um nome que aponta para um valor ou estrutura de dados na memória RAM. Para criar um objeto, usamos o operador de atribuição `<-` ou `=`. Observe os exemplos abaixo onde estamos atribuindo alguns valores numéricos aos objetos que estamos chamando de `x` e `y`:
+
+```{r}
+x <- 10
+y = 20
+```
+
+Após esssa atribuição, podemos criar outros objetos com base em operação nos objetos existentes. Veja o caso do objeto `z` abaixo:
+```{r}
+z <- x + y
+
+z
+```
+
+Após executar essas linhas, note que os objetos `x`, `y` e `z` aparecem no painel *Environment* com seus respectivos valores.
+
+::: {.callout-tip}
+## Atalho para `<-`
+
+No RStudio, o atalho `Alt + -` (Alt e o sinal de menos) insere automaticamente o operador `<-` com espaços ao redor. Use-o para agilizar a escrita.
+:::
+
+**Atenção**: Ao nomear objetos no R, devemos obedecer algumas regras. Os nomes dos objetos podem conter letras, números, pontos (`.`) e sublinhados (`_`), mas devem começar com uma letra ou um ponto seguido de letra. O R diferencia maiúsculas de minúsculas: `resultado`, `Resultado` e `RESULTADO` são três objetos diferentes. Evite nomes com espaços, hífens ou caracteres especiais como `@`, `#` e `$`.
+
+```{r}
+# Nomes válidos
+meu_objeto <- 1
+meu.objeto <- 2
+objeto2 <- 3
+
+# Nomes inválidos (gerariam erro se executados):
+# 2objeto <- 1   # começa com número
+# meu-objeto <- 1  # hífen não é permitido
+```
+
+## Tipos de dados básicos
+
+Todo objeto em R tem um tipo. Os três tipos mais comuns no trabalho com dados são *numeric*, *character* e *logical*.
+
+### *numeric*
+
+O tipo *numeric* representa números, tanto inteiros quanto decimais. É o tipo padrão para qualquer valor numérico no R:
+
+```{r}
+peso <- 72.5
+altura <- 1.75
+idade <- 30
+```
+
+Note como no objeto altura (medida em metros), nós separamos a parte decimal com ponto (`.`), ao invés de vírgula. Esse é o separador que devemos utilizar sempre por aqui. Lembre-se disso.
+
+Para verificar um tipo de dado, uma função bastante útil é a `class()`. Dentro do parênteses devemos fornecer como **parâmetro** o objeto do qual queremos saber o resultado. Veja:
+
+```{r}
+class(peso)
+class(idade)
+```
+
+### *character*
+
+O tipo *character* representa texto. Valores do tipo *character* são sempre delimitados por aspas, simples ou duplas:
+
+```{r}
+nome <- "Maria"
+cidade <- 'São Paulo'
+numero_texto <- "42"  # número entre aspas é character, não numeric
+
+class(nome)
+class(numero_texto)
+```
+
+Note que `"42"` e `42` são valores diferentes no R. O primeiro é texto e não pode ser usado em cálculos aritméticos diretamente.
+
+### *logical*
+
+O tipo *logical* representa valores *booleanos* ou lógicos: `TRUE` ou `FALSE` (ou suas abreviações `T` e `F`). Observe que podemos também atribuí-los a objetos quaisquer:
+
+```{r}
+l1 <- TRUE
+l2 <- FALSE
+```
+
+Avaliando os resultados:
+```{r}
+l1
+l2
+class(l1)
+```
+
+Valores *logical* também podem advir de comparações lógicas. No contexto das comparações entre números, podemos checar entre dois valores se um é maior que o outro (`>`), menor (`<`), menor ou igual (`<=`), maior ou igual (`>=`), igual (`==`) ou diferente (`!=`), por exemplo:
+```{r}
+10 > 5    # maior que
+3 < 1     # menor que
+4 >= 4    # maior ou igual
+7 <= 6    # menor ou igual
+5 == 5    # igual a (dois sinais de igual)
+5 != 3    # diferente de
+```
+
+**Atenção**: observe que, no R, `=` e `==` não são a mesma coisa. O primeiro é um operador de atribuição ao passo que o segundo é um operador lógico. Importante se lembrar sempre disso! 
+
+## Vetores
+
+Um vetor é a estrutura de dados mais básica do R. É uma sequência ordenada de valores do mesmo tipo. Para criar um vetor com mais de um elemento, usamos a função `c()`:
+
+```{r}
+numeros    <- c(10, 25, 8, 43, 17)
+nomes      <- c("Ana", "Bruno", "Carlos")
+logicos    <- c(TRUE, FALSE, TRUE, TRUE)
+
+class(numeros)
+class(nomes)
+class(logicos)
+```
+
+Um atributo importante dos vetores é o seu tamanho, que podemos extrair a partir da função `length()`, conforme os exemplos abaixo:
+```{r}
+length(numeros) 
+length(nomes)
+length(logicos)
+```
+
+### Extraindo partes de um vetor (*subsetting*)
+
+Para acessar elementos específicos de um vetor, usamos colchetes `[]` com o índice (posição) desejado. No R, a indexação começa em 1. Veja os exemplos abaixo:
+
+```{r}
+numeros[1]       # primeiro elemento
+numeros[3]       # terceiro elemento
+numeros[c(1, 3)] # primeiro e terceiro elementos
+numeros[2:4]     # do segundo ao quarto elemento
+```
+
+Um operador bastante interessante nesse caso é o `:`, que cria uma sequência de inteiros consecutivos. Assim, `2:4` é equivalente a `c(2, 3, 4)`.
+
+Além disso, os valores que um vetor contém não são fixos e podemos substituí-los conforme nossa vontade. Para substituir um valor em uma posição específica, basta atribuir um novo valor ao elemento indexado:
+
+```{r}
+numeros[2] <- 99
+numeros # Veja que o 99 substituiu o 25 que estava na 2ª posição do vetor numeros
+```
+
+## Operações com vetores
+
+O R realiza operações aritméticas elemento a elemento em vetores de mesmo tamanho. Vamos, primeiro, criar os vetores `a` e `b` abaixo:
+
+```{r}
+a <- c(1, 2, 3, 4)
+b <- c(10, 20, 30, 40)
+```
+
+Agora observe como podemos criar novos vetores realizando as operações de adição, multiplicação e divisão abaixo, nas quais os elementos de cada posição são somados, multiplicados ou divididos, respectivamente. No caso da soma, o 1º elemento de `a` (`1`) será somado com o 1º elemento de `b` (`10`), o 2º de `a` (`2`) com o 2º de `b` (`20`), e assim por diante, formando um novo vetor de 4 posições, de acordo com os tamanhos (`length()`) de `a` e `b`:
+```{r}
+a + b
+a * b
+b / a
+```
+
+
+::: {.callout-warning}
+## Vetores de tamanhos diferentes
+
+Quando dois vetores têm tamanhos diferentes, o R "recicla" o menor vetor para completar a operação. Se o tamanho do maior não for um múltiplo do menor, o R executa mesmo assim e emite um aviso.
+
+```{r}
+c(1, 2, 3, 4) + c(10, 20)   # reciclagem sem aviso: c(10,20) se repete tornando-se c(10,20,10,20)
+c(1, 2, 3, 4, 5) + c(10, 20) # aviso: tamanhos incompatíveis, mas faz c(10,20) se tornar c(10,20,10,20,10)
+```
+
+Esse comportamento raramente é intencional. Sempre verifique se os vetores têm o mesmo tamanho antes de operar sobre eles.
+:::
+
+## Matrizes
+
+Uma matriz é uma estrutura de dados bidimensional, organizada em linhas e colunas. Assim como os vetores, todos os elementos de uma matriz devem ser do mesmo tipo. A função usada para criar matrizes no R é a `matrix()`. Como essa é a primeira função que encontramos com vários parâmetros, vale a pena conhecê-los antes de usá-la. Para isso, execute `?matrix` no seu Console:
+
+```{r, eval = F}
+?matrix
+```
+
+A documentação mostra que a `matrix()` possui a seguinte estrutura:
+
+`matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)`
+
+Os 4 primeiros parâmetros são os mais importantes:
+
+- `data`: o vetor de valores que vai preencher a matriz
+- `nrow`: número de linhas
+- `ncol`: número de colunas
+- `byrow`: se `FALSE` (padrão), preenche por coluna; se `TRUE`, preenche por linha
+
+### Criando uma matriz
+
+A forma mais simples de chamar `matrix()` é passar os valores e as dimensões diretamente, na ordem em que os parâmetros aparecem na documentação, sem precisar nomear os argumentos:
+
+```{r}
+M <- matrix(1:9, 3, 3)
+M
+```
+
+O R preencheu a matriz com os valores de 1 a 9 *por coluna* (pois o argumento `byrow`, do inglês *"por linha"* é, por padrão, **falso**; ou seja, o preenchimento da matriz será por coluna): a primeira coluna recebeu 1, 2, 3; a segunda recebeu 4, 5, 6; e a terceira recebeu 7, 8, 9. Os números entre colchetes na saída (`[1,]`,`[2,]` e `[3,]`, nas linhas, e `[,1]`, `[,2]` e `[,3]` nas colunas) indicam os índices de linha e coluna de cada posição.
+
+Quando nomeamos os argumentos explicitamente, a ordem deles na chamada da função não importa. Os três exemplos abaixo produzem o mesmo resultado que o código anterior:
+
+```{r, eval = F}
+matrix(data = 1:9, nrow = 3, ncol = 3)
+matrix(data = 1:9, nrow = 3)           # ncol pode ser omitido se nrow já define tudo
+matrix(ncol = 3, data = 1:9, nrow = 3) # ordem diferente, mesmo resultado
+```
+
+O que não funciona é passar os argumentos fora da ordem sem nomeá-los. Nesse caso, o R associa os valores a cada parâmetro pela posição, e o resultado seria incorreto ou geraria erro.
+
+### Extraindo partes de uma matriz (*subsetting*)
+
+O acesso a elementos de uma matriz usa dois índices separados por vírgula dentro dos colchetes, no formato `M[linha, coluna]`. Omitir um dos índices seleciona toda a linha ou toda a coluna:
+
+```{r}
+#| label: subsetting-matriz
+#| message: false
+
+M[2, 3]    # elemento da linha 2, coluna 3
+M[3, ]     # toda a terceira linha
+M[, 2]     # toda a segunda coluna
+M[2, 1:2]  # linha 2, colunas 1 e 2
+```
+
+### Preenchimento por linha
+
+Por padrão, o R preenche a matriz por coluna. Para preencher por linha, use o argumento `byrow = TRUE`:
+
+```{r}
+#| label: matriz-byrow
+#| message: false
+
+M2 <- matrix(data = 1:9, nrow = 3, ncol = 3, byrow = TRUE)
+M2
+```
+
+Compare com `M`: agora a primeira linha recebeu 1, 2, 3; a segunda linha recebeu 4, 5, 6; e a terceira recebeu 7, 8, 9.
+
+### Operações com matrizes
+
+Uma operação bastante simples de se realizar em matrizes é substituir um de seus valores por outro qualquer, seguindo a mesma lógica do vetor:
+
+```{r}
+M[1, 1] <- 10 # Substituindo o valor da 1ª linha e 1ª coluna
+M
+```
+
+Podemos também realizar operações aritméticas entre uma matriz e um determinado número. No caso abaixo estamos multiplicando um valor escalar (`3`) por todos os elementos da matriz `M`:
+
+```{r}
+M * 3
+```
+
+Também é possível somar duas matrizes de mesma dimensão, com a lógica elemento a elemento, similar ao vetor. Neste caso, o valor da posição `[1, 1]` de `M` será somado ao valor da posição `[1, 1]` de `M2`, e assim por diante:
+
+```{r}
+M + M2
+```
+
+Para a multiplicação, há duas possibilidades com significados distintos. O operador `*` multiplica elemento a elemento (cada posição de `M` pelo elemento correspondente de `M2`). O operador `%*%` realiza a multiplicação matricial no sentido da álgebra linear:
+
+```{r}
+M * M2    # elemento a elemento
+M %*% M2  # multiplicação matricial
+```
+
+Uma utilidade bastante interessante é a função `dim()`, que retorna as dimensões da matriz, ou seja, as suas quantidades de linhas e colunas:
+
+```{r}
+dim(M)
+```
+
+Além disso, é possível obter os valores da diagonal de uma matriz com `diag()`, das somas de suas linhas e colunas com `rowSums()` e `colSums()`, além da sua matriz transposta com `t()`:
+```{r}
+diag(M)
+rowSums(M)
+colSums(M)
+t(M)
+```
+
+
+## Listas
+
+Uma lista é uma estrutura de dados **heterogênea**. diferentemente dos vetores e matrizes, uma lista pode conter elementos de tipos diferentes, incluindo vetores, outras listas e qualquer outro objeto do R.
+
+### Coerção em vetores
+
+Quando se cria um vetor com elementos de tipos diferentes, o R converte todos os elementos para um tipo único. Essa conversão automática se chama *coerção*. A regra geral é que o R escolhe o tipo mais abrangente:
+
+- Se os elementos são do tipo *numeric* + *logical*, converte tudo para *numeri*c (`TRUE` vira `1`, `FALSE` vira `0`):
+
+```{r}
+c(1, 2, TRUE, FALSE)
+```
+
+- Se os elementos são do tipo *character* + qualquer outro tipo, converte tudo para *character* (`10` vira `"10"`, `TRUE` vira `"TRUE"` e `FALSE` vira `"FALSE"`):
+```{r}
+c(10, TRUE, FALSE, "texto")
+```
+
+Para preservar tipos diferentes, devemos utilizar uma estrutura do tipo **lista** em vez de um vetor.
+
+### Criando listas
+
+A função `list()` cria uma lista com os elementos fornecidos. Veja um exemplo simples com três elementos de tipos diferentes:
+
+```{r}
+lst <- list("a", 1, TRUE)
+lst
+```
+
+O output de uma lista é diferente do que vimos até agora. Cada elemento aparece numerado entre colchetes duplos (`[[1]]`, `[[2]]`, `[[3]]`), seguido do seu valor. Isso indica que cada posição da lista é um compartimento independente, que pode guardar qualquer tipo de objeto.
+
+Podemos verificar a classe e o tamanho da lista com `class()` e `length()`:
+
+```{r}
+class(lst)
+length(lst)
+```
+
+Listas também podem conter vetores inteiros em cada posição. Uma curiosidade útil aqui: o R possui dois vetores já embutidos na linguagem, `letters` e `LETTERS`, com as 26 letras do alfabeto em minúsculas e maiúsculas, respectivamente. 
+
+```{r}
+letters
+LETTERS
+```
+
+Podemos usar a notação `letters[1:5]` para selecionar os primeiros cinco elementos do alfabeto, por exemplo:
+```{r}
+letters[1:5]
+```
+
+
+Na lista `lst2` abaixo, temos 3 vetores de naturezas completamente diferentes (*numeric*, *character* e *logical*, respectivamente) numa mesma lista:
+
+```{r}
+lst2 <- list(1:5, letters[1:5], c(TRUE, TRUE, FALSE))
+lst2
+
+class(lst2)
+length(lst2)
+```
+
+Listas podem conter outras listas, e até matrizes, formando estruturas aninhadas. O exemplo abaixo cria uma lista que contém `lst` e uma matriz 2×2:
+
+```{r}
+lst3 <- list(lst, matrix(1:4, nrow = 2))
+lst3
+```
+
+O output mostra que `[[1]]` contém a lista `lst` (com seus três subelementos) e `[[2]]` contém a matriz. Essa capacidade de aninhar estruturas torna as listas muito flexíveis para armazenar dados complexos.
+
+### Extraindo partes de uma lista (*subsetting*)
+
+Aqui é importante entender a diferença entre colchetes simples `[]` e duplos `[[]]` na hora de extrair valores de uma lista. Colchetes simples retornam uma sublista: o resultado ainda é uma lista, com o elemento selecionado dentro dela. Colchetes duplos retornam o elemento em si, sem o invólucro de lista:
+
+```{r}
+lst2[1]    # retorna uma lista contendo o primeiro elemento
+lst2[[1]]  # retorna o vetor numérico diretamente
+
+class(lst2[1])   # "list"
+class(lst2[[1]]) # "integer"
+```
+
+Note que o primeiro elemento de `lst2` foi criado com o operador `:` (`1:5`), que gera uma sequência de inteiros. O R armazena esse tipo de dado como *integer* (inteiro), uma subcategoria de *numeric*. Quando criamos um número diretamente, como `1` ou `3.14`, o R o armazena como *double* (número de ponto flutuante), que também é *numeric*. Para fins práticos, a distinção raramente importa, mas ela explica por que `class(lst2[[1]])` retorna `"integer"` em vez de `"numeric"`.
+
+## Data frames
+
+O *data frame* é a estrutura de dados mais importante para o trabalho em ciência de dados com R. Toda base de dados que vamos analisar ao longo deste livro, seja o Censo Demográfico, a PNAD Contínua ou os dados de mercado de trabalho, será representada como um *data frame* dentro do R.
+
+Conceitualmente, um *data frame* é um tipo especial de lista em que todos os elementos têm o mesmo comprimento. Como cada elemento da lista corresponde a uma coluna, e todos têm o mesmo tamanho, o resultado é uma estrutura tabular: linhas e colunas, como uma planilha. Cada coluna é uma variável e cada linha é uma observação.
+
+### Criando um data frame
+
+Para criar um *data frame* do zero, primeiro criamos os vetores que vão compor as colunas e depois os combinamos com a função `data.frame()`. É fundamental que todos os vetores tenham o mesmo comprimento.
+
+```{r}
+nomes <- c("Maria", "Pedro", "João", "Roberta")
+idade <- c(21, 25, 27, 19)
+curso <- c("CIV", "PRO", "ARQ", "HIS")
+
+df <- data.frame(nome = nomes, idade = idade, grad = curso)
+df
+```
+
+Ao imprimir `df` no console, o R exibe o *data frame* em formato tabular, com os nomes das colunas no topo e os índices de linha à esquerda. Cada linha corresponde a um estudante e cada coluna a uma característica desse estudante.
+
+### Explorando o data frame
+
+Uma das primeiras coisas a fazer ao receber um novo *data frame* é inspecionar sua estrutura. A função `str()` é ideal para isso: ela mostra o número de linhas e colunas, o tipo de cada coluna e os primeiros valores de cada uma:
+
+```{r}
+str(df)
+```
+
+Para saber apenas as dimensões do *data frame*, usamos `nrow()` e `ncol()`:
+
+```{r}
+nrow(df)  # número de linhas (observações)
+ncol(df)  # número de colunas (variáveis)
+```
+
+A função `summary()` fornece um resumo estatístico de cada coluna. Para colunas numéricas, ela calcula mínimo, máximo, média, mediana e quartis. Para colunas de texto, ela conta as ocorrências de cada categoria:
+
+```{r}
+summary(df)
+```
+
+Para acessar os valores de uma coluna específica como vetor, usamos o operador `$` seguido do nome da coluna. O resultado é um vetor simples com os valores daquela variável, sobre o qual podemos aplicar qualquer função que trabalhe com vetores:
+
+```{r}
+df$nome
+df$idade
+```
+
+### Visualizando com View()
+
+Além de imprimir o *data frame* no console, o RStudio oferece a função `View()`, que abre o objeto em uma aba separada com uma visualização interativa similar a uma planilha. É possível ordenar as linhas clicando nos cabeçalhos das colunas e filtrar valores usando a barra de pesquisa. Para *data frames* grandes, essa visualização é muito mais prática do que a impressão no console.
+
+::: {.callout-note}
+## Por que vetores de tamanhos diferentes geram erro?
+
+Ao tentar criar um *data frame* com vetores de comprimentos diferentes, o R retorna um erro. Por exemplo:
+
+```{r}
+#| label: df-erro
+#| eval: false
+
+# Isto gera erro: curso tem 5 elementos, os demais têm 4
+data.frame(nome = nomes, idade = idade, grad = c(curso, "ADM"))
+```
+
+O motivo é a própria lógica do *data frame*: cada linha deve corresponder a uma observação completa, com um valor em cada coluna. Se os vetores tivessem tamanhos diferentes, algumas linhas ficariam sem valor em certas colunas, quebrando a estrutura tabular. Essa restrição é o que diferencia o *data frame* de uma lista comum, que aceita elementos de comprimentos diferentes sem problema.
+:::
+
+## Lendo arquivos para o R
+
+Na prática, raramente criamos *data frames* manualmente. O mais comum é ler dados tabulares a partir de arquivos externos, sejam eles planilhas, arquivos de texto separados por vírgulas ou outros formatos.
+
+### Projetos no RStudio
+
+Antes de ler arquivos, é importante entender o conceito de projeto no RStudio. Um projeto (`*.Rproj`) é um arquivo que define o diretório de trabalho da sessão. Quando você abre um projeto, o RStudio automaticamente define aquela pasta como o **diretório raiz**. Isso significa que se você tiver um arquivo qualquer denominado `arquivo.csv` na raiz da pasta onde está `*.Rproj`, você pode passar `"arquivo.csv"` no parâmetro principal nas funções de leitura (que veremos logo mais) para trazer esse conjunto de dados para o ambiente do R. Se este arquivo estiver dentro de uma subpasta `minha_pasta` dentro deste diretório onde está `*.Rproj`, por sua vez, você deve passar o argumento `"minha_pasta/arquivo.csv"` para fazer a leitura.
+
+Para criar um projeto, vá em **File > New Project**. Se você já tiver uma pasta no seu computador onde irá trabalhar, escolha **Existing Directory**. Caso contrário, vá para **New Directory > New Project** e depois escolha um nome para a pasta em **Directory name**, além do local onde esta pasta deverá estar em **Browse**. É nesta pasta que você irá salvar todos os arquivos de dados e *scripts* .
+
+### Arquivos de dados do capítulo
+
+Os arquivos utilizados nos exemplos deste capítulo estão disponíveis para download abaixo. Clique em cada link para baixar o arquivo e salve-o diretamente na pasta onde está o seu projeto do RStudio.
+
+- [`viagens_trabalho.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.csv)
+- [`viagens_trabalho.txt`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.txt)
+- [`viagens_trabalho.xlsx`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.xlsx)
+- [`viagens_trabalho2.txt`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho2.txt)
+- [`viagens_trabalho3.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho3.csv)
+
+Todos os arquivos contêm dados fictícios sobre o deslocamento para o trabalho de uma amostra de trabalhadores. As variáveis incluem uma coluna de identificação dos indivíduos (`ID`), se o indivíduo possui veículo motorizado (`posse_veic`), o tamanho da família, em quantidade de membros (`tam_familia`), a distância da viagem em km (`dist_v_km`) e o tempo de deslocamento em minutos (`tempo_v_min`). As diferenças entre os arquivos são apenas de formato: cada um usa uma configuração diferente de separador de colunas e separador decimal, o que nos permitirá explorar as diferentes opções de leitura disponíveis no R.
+
+### Lendo arquivos CSV
+
+Um arquivo CSV (*Comma-Separated Values*, ou valores separados por vírgulas) é um arquivo de texto simples em que cada linha representa uma observação e os valores de cada coluna são separados por vírgulas. A primeira linha costuma conter os nomes das colunas. Se você abrir o arquivo `viagens_trabalho.txt` em um editor de texto (geralmente o um Bloco de Notas), verá algo assim:
+
+```
+ID,posse_veic,tam_familia,dist_v_km,tempo_v_min
+1,1,3,12.5,28
+2,0,2,5.2,15
+...
+```
+
+Cada linha é uma observação (um trabalhador) e cada valor separado por vírgula é uma variável. Essa estrutura simples e universal é a razão pela qual o CSV é o formato de troca de dados mais comum na análise quantitativa.
+
+A função do R base para leitura de CSV é `read.csv()`. Passamos o nome do arquivo entre aspas como argumento e armazenamos o resultado em um objeto:
+
+```{r, echo = FALSE, message = FALSE}
+url <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.csv"
+df <- read.csv(url)
+```
+
+```{r, eval = FALSE}
+df <- read.csv("viagens_trabalho.csv")
+```
+
+Após a execução, `df` aparece no painel *Environment* com a indicação do número de linhas e colunas. Para inspecionar as primeiras linhas do *data frame*, usamos a função `head()`. Por padrão, ela exibe as 6 primeiras observações, o que é suficiente para verificar se a leitura ocorreu corretamente:
+
+```{r}
+head(df)
+```
+
+Podemos também usar `str()` para verificar o tipo de cada coluna e confirmar que o R interpretou corretamente os dados numéricos e as variáveis categóricas:
+
+```{r}
+str(df)
+```
+
+Note que as colunas `ID`, `dist_v_km` e `tempo_v_min` foram lidas como numéricas e as demais como texto em função das características dos dados que as compõem. O arquivo `viagens_trabalho.txt` tem exatamente a mesma estrutura que o CSV. A extensão `.txt` não altera o comportamento da função, pois o que importa é o conteúdo do arquivo, não o nome:
+
+```{r}
+#| label: leitura-txt-executa
+#| echo: false
+#| message: false
+
+url_txt <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.txt"
+df_txt <- read.csv(url_txt)
+```
+
+```{r}
+#| label: leitura-txt-exibe
+#| eval: false
+
+df_txt <- read.csv("viagens_trabalho.txt")
+```
+
+```{r}
+head(df_txt)
+```
+
+### Argumentos da `read.csv()`
+
+A leitura que fizemos acima funcionou com os valores padrão dos argumentos da função. Mas nem sempre isso ocorre: dependendo do arquivo, precisamos ajustar alguns parâmetros. Para conhecer todos os argumentos disponíveis, execute `?read.csv` no *Console*.
+
+Os três argumentos mais importantes são:
+
+- `header`: indica se a primeira linha do arquivo contém os nomes das colunas. O padrão é `TRUE`. Se o arquivo não tiver cabeçalho, use `header = FALSE`.
+- `sep`: define o caractere usado para separar os valores de cada coluna. O padrão de `read.csv()` é `","`.
+- `dec`: define o caractere usado como separador decimal. O padrão é `"."`, que é o padrão americano. Em arquivos com separação decimal por vírgula (padrão brasileiro), use `dec = ","`.
+
+A chamada abaixo é equivalente às anteriores, mas com todos os argumentos explícitos. Tornar os argumentos explícitos é uma boa prática, pois deixa o código mais legível e evita surpresas quando os padrões da função mudarem:
+
+```{r}
+#| label: read-csv-explicito
+#| eval: false
+
+df <- read.csv("viagens_trabalho.csv", header = TRUE, sep = ",", dec = ".")
+```
+
+### Variações de formato
+
+Nem todo arquivo de texto usa vírgula como separador de colunas. É comum encontrar arquivos com separação por espaço, por tabulação (`\t`) ou por ponto e vírgula. Nesses casos, basta ajustar o argumento `sep`.
+
+O arquivo `viagens_trabalho2.txt` usa espaço como separador de colunas e vírgula como separador decimal. O arquivo `viagens_trabalho3.csv` usa ponto e vírgula como separador de colunas e vírgula como separador decimal. Veja como ler cada um deles:
+
+```{r}
+#| label: leitura-variantes-executa
+#| echo: false
+#| message: false
+
+url2 <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho2.txt"
+url3 <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho3.csv"
+df2 <- read.csv(url2, sep = " ", dec = ",")
+df3 <- read.csv(url3, sep = ";", dec = ",")
+```
+
+```{r}
+#| label: leitura-variantes-exibe
+#| eval: false
+
+df2 <- read.csv("viagens_trabalho2.txt", sep = " ", dec = ",")
+df3 <- read.csv("viagens_trabalho3.csv", sep = ";", dec = ",")
+```
+
+```{r}
+head(df2)
+head(df3)
+```
+
+Arquivos com separador de ponto e vírgula e decimal por vírgula são muito comuns em contextos brasileiros, pois é o padrão de exportação de planilhas configuradas em português. Para esses casos, o R oferece a função `read.csv2()`, que é uma alternativa conveniente com os padrões `sep = ";"` e `dec = ","` já configurados:
+
+```{r}
+#| label: read-csv2-exibe
+#| eval: false
+
+df3 <- read.csv2("viagens_trabalho3.csv")
+```
+
+O resultado é idêntico ao da chamada anterior com `sep = ";"` e `dec = ","`.
+
+### Lendo arquivos Excel
+
+::: {.callout-note}
+## Pacotes no R
+
+O R *base*, isto é, o conjunto de funções disponíveis logo após a instalação do R, já oferece recursos poderosos para análise de dados. Mas grande parte da força do R vem de um ecossistema de pacotes desenvolvidos e mantidos pela comunidade e distribuídos gratuitamente. Um pacote é um conjunto de funções, dados e documentação empacotados de forma padronizada para uma finalidade específica: leitura de arquivos Excel, criação de gráficos, acesso a APIs, modelagem estatística, e muito mais.
+
+O repositório central de pacotes do R chama-se **CRAN** (*Comprehensive R Archive Network*). Atualmente, o CRAN abriga mais de 20.000 pacotes. Além do CRAN, muitos pacotes são distribuídos diretamente pelo GitHub, especialmente versões em desenvolvimento. Ao longo deste livro, usaremos pacotes como `censobr`, `geobr`, `PNADcIBGE`, entre outros.
+
+O ciclo de uso de um pacote envolve dois passos distintos:
+
+1. **Instalação** com `install.packages()`: baixa o pacote do CRAN e o instala no seu computador. Esse passo é feito uma única vez por máquina (ou quando você precisa atualizar o pacote para uma versão mais recente). Obs.: o nome do pacote deve ser passado **entre aspas** (").
+
+2. **Carregamento** com `library()`: torna as funções do pacote disponíveis na sessão atual do R. Como cada sessão começa do zero, esse passo precisa ser repetido toda vez que você abrir o RStudio e quiser usar o pacote. Obs.: o nome do pacote deve ser passado **sem aspas** dentro do `library()`.
+
+```{r}
+#| label: instalar-pacote
+#| eval: false
+
+install.packages("readxl")  # executar apenas uma vez
+library(readxl)             # executar no início de cada sessão
+```
+
+Uma analogia útil: instalar um pacote é como comprar um livro e guardá-lo na estante. Carregar com `library()` é como pegar o livro da estante e colocá-lo sobre a mesa. Você compra uma vez, mas precisa tirá-lo da estante sempre que quiser usá-lo.
+
+Uma boa prática é colocar todas as chamadas `library()` no início do *script*, antes de qualquer análise. Assim, quem for executar o código saberá de imediato quais pacotes são necessários e poderá instalá-los caso não os tenha.
+:::
+
+O R *base* não possui uma função nativa para leitura de arquivos Excel. Para isso, usamos o pacote `readxl`, desenvolvido pela equipe do tidyverse. Após instalar e carregar o pacote, a função `read_excel()` funciona de forma análoga à `read.csv()`:
+
+```{r}
+#| label: leitura-xlsx-executa
+#| echo: false
+#| message: false
+
+library(readxl)
+url_xlsx <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.xlsx"
+temp_xlsx <- tempfile(fileext = ".xlsx")
+download.file(url_xlsx, temp_xlsx, mode = "wb", quiet = TRUE)
+df_excel <- read_excel(temp_xlsx)
+```
+
+```{r}
+#| label: leitura-xlsx-exibe
+#| eval: false
+
+library(readxl)
+df_excel <- read_excel("viagens_trabalho.xlsx")
+```
+
+Usando `head()` para verificar as primeiras linhas:
+
+```{r}
+#| label: head-excel
+#| message: false
+
+head(df_excel)
+```
+
+Uma diferença importante em relação ao CSV: o arquivo Excel armazena metadados sobre o tipo e o formato de cada coluna. Isso significa que o R já recebe a informação de quais colunas são numéricas e quais são texto, sem precisar inferir. Por isso, o argumento `dec` não se aplica à `read_excel()`: a separação decimal está definida internamente no arquivo, independentemente de como o Excel está configurado no seu computador.
+
+Para conhecer os demais argumentos disponíveis, execute `?read_excel` no Console. O mais útil no dia a dia é `sheet`, que permite especificar qual planilha ler quando o arquivo Excel contém mais de uma:
+
+```{r}
+#| label: read-excel-sheet
+#| eval: false
+
+df_excel <- read_excel("viagens_trabalho.xlsx", sheet = "Sheet1")
+```
+
+Depois de ler qualquer *data frame*, lembre-se de usar `View()` para inspecioná-lo visualmente no RStudio. Para bases de dados grandes, essa é sempre a forma mais prática de ter uma primeira impressão dos dados.
+
+## Exercícios
+
+1. Crie um vetor numérico com os valores 5, 12, 8, 23, 17, 6 e 34. Calcule a soma, a média e o comprimento do vetor usando as funções `sum()`, `mean()` e `length()`. Em seguida, substitua o quarto elemento pelo valor 100 e recalcule a média.
+
+2. Crie um vetor *character* com os nomes de cinco cidades brasileiras. Usando subsetting com `[]`, acesse o segundo e o quarto elemento. Depois, acesse os três primeiros elementos usando o operador `:`.
+
+3. Crie uma matriz 4×3 preenchida com os números de 1 a 12, primeiro por coluna (padrão) e depois por linha. Acesse o elemento da linha 3 e coluna 2 em cada uma das matrizes. Acesse a segunda coluna inteira da matriz preenchida por linha.
+
+4. Crie uma lista com três elementos: um vetor numérico com 4 valores, uma string com seu nome e um valor lógico. Acesse cada elemento da lista usando `[[]]` e depois usando `$` (para isso, dê nomes aos elementos da lista). Mostre a diferença entre `lista[1]` e `lista[[1]]` observando o `class()` de cada resultado.
+
+5. Crie um *data frame* com quatro colunas e cinco linhas representando dados fictícios de estudantes: nome (character), idade (numeric), nota (numeric) e aprovado (logical). Use `str()` e `summary()` para explorar o *data frame*. Calcule a média da coluna `nota` usando o operador `$` para acessar a coluna.

@@ -1,0 +1,64 @@
+project:
+  type: book
+  output-dir: docs
+
+lang: pt-BR
+
+book:
+  title: "Censo Demográfico no R"
+  subtitle: "Conceitos e aplicações para a análise do território brasileiro"
+  author:
+    - name: "Jorge Ubirajara Pedreira Junior"
+      url: https://pedreirajr.github.io/website/
+  language: pt
+  page-navigation: true
+  search: true
+  chapters:
+    - index.qmd
+
+    - part: "PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R"
+      chapters:
+        - 1-introducao-ao-r.qmd
+        - 2-estatistica-descritiva.qmd
+        - 3-manipulacao-de-dados-tabulares.qmd
+        - 4-visualizacao-de-dados-tabulares.qmd
+        - 5-dados-geograficos.qmd
+
+    - part: "PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS"
+      chapters:
+        - 6-conceitos-e-metodos-censo.qmd
+        - 7-agregados.qmd
+        - 8-microdados.qmd
+        - 9-grade-estatistica.qmd
+        - 10-cnefe.qmd
+        - 11-entorno.qmd
+
+    # PARTE 3: APLICAÇÕES TERRITORIAIS — capítulos a definir
+
+    - references.qmd
+
+format:
+  html:
+    theme: default
+    css: custom.css
+    number-sections: true
+    toc: true
+    toc-depth: 4
+    toc-title: "Índice do Capítulo"
+    link-external-newwindow: true
+    fig-cap-location: top
+    tbl-cap-location: top
+
+bibliography: references.bib
+csl: apa.csl
+
+crossref:
+  fig-title: "Figura"
+  fig-prefix: "Figura"
+  tbl-title: "Tabela"
+  tbl-prefix: "Tabela"
+  eq-title: "Equação"
+  eq-prefix: "Equação"
+
+execute:
+  freeze: auto

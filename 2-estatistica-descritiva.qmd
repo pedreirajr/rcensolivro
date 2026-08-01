@@ -1,0 +1,453 @@
+---
+title: "Estatística Descritiva"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+```
+
+Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 02 e 03.
+
+[▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE)
+
+## Introdução
+
+Estatísticas descritivas são métricas que resumem determinadas características de um conjunto de dados em um único valor numérico. Quando calculamos estatísticas descritivas, nosso objetivo é transformar uma determinada variável da base de dados, potencialmente com centenas ou milhares de observações, em um punhado de indicadores que capturam estes atributos.
+
+Duas famílias de medidas são fundamentais. As **medidas de posição** (ou de tendência central) indicam onde os dados se concentram: qual é o valor "típico" de uma variável. As **medidas de dispersão** indicam o quanto os dados se afastam desse valor central: se as observações estão agrupadas em torno do mesmo ou mais espalhadas. Usadas em conjunto, essas medidas fornecem uma descrição concisa sobre as variáveis de qualquer base de dados.
+
+A escolha das medidas adequadas depende da escala de mensuração da variável, que podem ser do tipo **numérica** ou **categórica**. Para variáveis numéricas, dispõe-se de um amplo repertório. Média, mediana, moda, percentis e quartis são comuns como medidas de posição. Por sua vez, variância, desvio-padrão, amplitude e intervalo interquartil são bastante utilizadas para indicar o nível de dispersão. Para variáveis categóricas, nosso interesse é principalmente na proporção de cada categoria encontrada, que serve como uma métrica de posição. Medidas de dispersão são menos comum para este tipo de variável, apesar de haver propostas nesse sentido.
+
+## Medidas de Posição
+
+Para dados numéricos, as medidas de posição mais comuns são a média, a mediana, a moda e os percentis. Cada uma descreve um aspecto diferente de onde os dados se localizam na distribuição.
+
+### Média
+
+A média aritmética é a medida de posição mais usada. Ela representa o ponto de equilíbrio da distribuição: se todos os valores fossem redistribuídos igualmente entre os indivíduos, cada um receberia exatamente a média.
+
+O cálculo é direto. Para uma amostra de tamanho $n$, a média amostral $\bar{X}$ é dada por:
+
+$$
+\bar{X} = \frac{1}{n} \sum_{i=1}^{n} x_i
+$$
+
+**Exemplo.** Considere os tempos de espera (em minutos) em um ponto de ônibus, registrados para uma amostra de cinco moradores:
+
+```{r}
+#| label: media-bruta
+tempos <- c(4, 6, 8, 12, 15)
+
+# Cálculo "força bruta": soma dividida pelo número de observações
+sum(tempos) / length(tempos)
+```
+
+Note, entretanto, que não precisamos calcular a média na "força bruta" como realizado acima. No R *base*, temos uma função específica para cumprir este papel, a `mean()`, que recebe como principal argumento o vetor de dados numérico:
+```{r}
+#| label: media-funcao
+# Função predefinida
+mean(tempos)
+```
+
+Observe como os dois cálculos produzem o mesmo resultado: `r mean(tempos)` minutos.
+
+### Mediana
+
+A mediana é o valor central da distribuição quando os dados estão ordenados em ordem crescente. Ela divide a amostra em dois grupos iguais: metade das observações fica abaixo dela, metade fica acima.
+
+O procedimento de cálculo tem dois casos, dependendo se $n$ é ímpar ou par.
+
+**Caso 1 ($n$ ímpar):** Ordene os dados e selecione o valor na posição $(n + 1) / 2$. Verifique para produzir valores de um determinado vetor de forma crescente, podemos utilizar a função `sort()`^[A função `sort()` possui um argumento `decreasing` que tem, por padrão, o valor `FALSE`, ou seja, o ordenamento é crescente. Caso queiramos ordenamento decrescente, poderíamos reajustá-lo para `decreasing = TRUE`]:
+
+```{r}
+#| label: mediana-bruta-impar
+tempos_crescente <- sort(tempos)
+tempos_crescente
+```
+
+Com este vetor com valores crescentes, podemos então encontrar qual valor está na posição $(n+1)/2$ da seguinte maneira:
+
+```{r}
+# Quantidade de valores (tamanho do vetor)
+n <- length(tempos_crescente)
+
+# Posição central
+pos <- (n + 1) / 2
+tempos_crescente[pos]
+```
+
+Note que com cinco observações, o valor central está na posição 3. Deste modo, e a mediana desta base de dados é `r median(tempos)` minutos.
+
+**Caso 2 ($n$ par):** Ordene os dados e calcule a média entre os dois valores centrais, nas posições $n/2$ e $n/2 + 1$.
+
+```{r}
+#| label: mediana-bruta-par
+tempos2 <- c(4, 6, 8, 10, 12, 15)
+tempos2_crescente <- sort(tempos2)
+n2 <- length(tempos2_crescente)
+
+# Duas posições centrais
+pos1 <- n2 / 2
+pos2 <- n2 / 2 + 1
+(tempos2_crescente[pos1] + tempos2_crescente[pos2]) / 2
+```
+
+Veja que o procedimento para calcular a mediana na "força bruta" envolve uma quantidade razoável de código, pois primeiro temos que ordenar, depois encontrar a posição e, por fim, achar o valor daquela posição no vetor. Felizmente, no R *base* podemos obter esse resultado com uma linha de código utilizando a função `median()`:
+
+```{r}
+#| label: mediana-funcao
+median(tempos)    # n ímpar → mediana = 8
+median(tempos2)   # n par  → mediana = (8 + 10) / 2 = 9
+```
+
+### Moda {#sec-moda}
+
+A moda é o valor de uma variável numérica (ou categoria de uma variável categórica) que ocorre com maior frequência no conjunto de dados. Em variáveis contínuas, representadas por números racionais ($\mathbb{Q}$) ou reais ($\mathbb{R}$), geralmente há valores com mais de uma casa decimal, fazendo com que raramente haja repetições destes valores. Isso faz com que a moda seja pouco informativa nestes casos. Ela é mais útil quando temos variáveis numéricas inteiras ($\mathbb{Z}$) com bastante repetição de valores, a exemplo da *quantidade de automóveis presentes no domicílio*, ou variáveis categóricas, como o *número de automóveis por domicílio* ou o *modo de transporte escolhido para as viagens a trabalho*.
+
+O R *base* não possui uma função adequada para calcular a moda estatística. O comando `mode()` retorna o *tipo* de objeto em R (como `"numeric"` ou `"character"`), não a moda da distribuição. A forma mais direta é combinar `table()`, para produzir uma tabela de frequências, juntamente com a função `which.max()`, que retorna a posição do elemento de maior frequência em um determinado vetor. Comecemos primeiro gerando um vetor com dados de número de automóveis por domicílio em um conjunto de 10 residências:
+
+```{r}
+#| label: moda-bruta
+# Número de automóveis por domicílio em dez residências
+autos <- c(0, 1, 1, 2, 1, 3, 0, 1, 2, 1)
+
+# Tabela de frequências
+tb <- table(autos)
+tb
+```
+
+Para interpretar o resultado de uma objeto produzido por uma função `table()`, devemos sempre entender que a primeira linha indicam os níveis/categorias possíveis da base de dados e a segunda linha a quantidade de vezes que esses níveis/categorias aparecem. Observe para o caso acima que temos o valor **`r names(table(autos))[4]`** automóveis com frequência igual a **`r table(autos)[4]`** (última coluna).
+
+Um fato interessante sobre o objeto criado por esta função `table()` é que podemos obter os valores dos níveis/categorias passando-o como argumento na expressão `names()`, ao passo que o valor das frequências pode ser gerado convertendo esse objeto para um vetor numérico com a função `as.numeric()`. Observe abaixo:
+
+```{r}
+# Níveis/categorias possíveis de quantidade de automóveis em casa:
+names(tb)
+
+# Frequências observadas para cada um desses níveis/categorias:
+as.numeric(tb)
+```
+
+Entendido este funcionamento, podemos determinar este valor de maior frequência (**moda**) com:
+
+```{r}
+# Posição de tb com o valor de maior frequência
+pos_max <- which.max(tb)
+
+# Obtenção do valor de maior frequência
+as.numeric(tb[pos_max])
+```
+
+Neste exemplo, o valor **`r names(tb[pos_max])`** aparece **cinco** vezes e é a moda da distribuição. Isso significa que é muito comum encontrar residências com somente um automóvel em casa nessa base de dados!
+
+### Percentis e Quartis
+
+O percentil $P$ é o valor abaixo do qual uma proporção $P/100$ dos dados se encontra. O percentil 50 ($P_{50}$) coincide com a mediana os percentis 25 ($P_{25}$) e 75 ($P_{75}$) são chamados de primeiro quartil ($Q_1$) e terceiro quartil ($Q_3$), respectivamente.
+
+Existem várias formas de calcular percentis, que seguem uma lógica bastante parecida com a da mediana, mostrada anteriromente. Uma maneira bem simples de produzir o resultado de percentil pode ser de acordo com o seguinte conjunto de etapas:
+
+1. Ordenar os dados em ordem crescente.
+2. Calcular a posição $R = (P / 100) \times n$.
+3. Se $R$ for inteiro, o percentil é o valor que está nesta posição $R$ dos dados ordenados. Caso não seja inteiro, arredonda-se $R$ para cima e usa-se o valor nessa posição.
+
+Suponha dados de distância de viagem (em metros) de 10 indivíduos abaixo, sobre o qual queiramos calcular o percentil 85 ($P_{85}$):
+
+```{r}
+dist <- c(2000, 1500, 3800, 4000, 800, 9000, 15000, 100, 2000, 7100)
+```
+
+Vamos obter inicialmente estes valores ordenados de forma crescente (Passo **1**):
+```{r}
+dist_crescente <- sort(dist)
+dist_crescente
+```
+
+Na sequência, vamos calcular a posição do percentil 85 (Passo **2**):
+```{r}
+P <- 85
+n <- length(dist_crescente)
+
+# Posição
+R <- (P / 100) * n
+R
+```
+
+Note que $R = `r R`$ não é inteiro, logo temos que obter o seu valor inteiro superior (ou seja, na posição **`r ceiling(R)`**). No R *base*, podemos extrair esse valor por meio da função `ceiling()`^[Curiosidade: *ceiling*, em inglês, significa **teto**. Do mesmo modo, podemos obter o valor inteiro inferior por meio da função `floor()`, nome que pode ser traduzido como **piso/chão**] (Passo **3**):
+
+```{r}
+pos <- ceiling(R)
+pos
+```
+
+Sendo assim, passando essa posição no vetor de distâncias ordenado crescentemente, temos que $P_{85}$ é:
+```{r}
+dist_crescente[pos]
+```
+
+
+Assim como nos outros casos, não precisamos obter valores de percentis com essa quantidade de código. Para tanto, utilizamos a função `quantile()` que permite calcular simultaneamente mais de um percentil com seu parâmetro `probs`:
+
+```{r}
+#| label: quartis-funcao
+quantile(dist, probs = c(0.25, 0.50, 0.75, 0.85, 0.90))
+```
+
+
+:::{.callout-note}
+## Métodos de cálculo de quantis no R
+
+Observe que o valor do percentil 85 gerado pela função `quantile()` (*`r quantile(dist, 0.85)`*) é diferente daquele que geramos pelo método de 3 passos sugerido inicialmente (*`r dist_crescente[pos]`*). Isso ocorre porque o R implementa 9 métodos diferentes de cálculo de quantis, selecionáveis pelo argumento `type` de `quantile()`. O método padrão da função `quantile()` é o `type = 7`, que usa interpolação linear. O método que utilizamos é o `type = 1`, vale a pena reproduzir com este parâmetro e testar por aí. Para uma comparação entre os métodos, veja @hyndman1996.
+:::
+
+## Medidas de Dispersão
+
+A média e as demais medidas de posição descrevem onde os dados estão centrados, mas não revelam o quanto eles variam. Considere os dados abaixo sobre atrasos (em minutos) de um ônibus ao longo do dia, registrados em três paradas diferentes (A, B e C):
+
+```{r}
+#| label: paradas-dados
+parada_a <- c(3, 4, 5, 6, 7)
+parada_b <- c(1, 3, 5, 7, 9)
+parada_c <- c(0, 1, 5, 9, 10)
+```
+
+Vamos calcular as médias em cada uma destas paradas:
+```{r}
+mean(parada_a)
+mean(parada_b)
+mean(parada_c)
+```
+
+Observe como os valores do atraso médio são idênticos (5 minutos). Note, entretanto, que as experiências dos passageiros nas três paradas são muito diferentes. Enquanto na parada A os atrasos variam pouco, na parada C eles oscilam entre zero e dez minutos, uma diferença não capturada pela média. Podemos avaliar essa diferença no gráfico abaixo, onde cada ponto representa uma parada (eixo y) e seu respectivo valor de atraso (eixo x). No [Capítulo 4](4-visualizacao-de-dados-tabulares.qmd), entenderemos como produzir visualizações como esta no R. 
+
+```{r, echo = F}
+#| label: fig-paradas-dotplot
+#| fig-cap: "Atrasos de ônibus em três paradas com a mesma média (5 min). A linha tracejada indica a média comum. As paradas diferem no grau de dispersão dos valores."
+paradas <- tibble(
+  parada = rep(c("A", "B", "C"), each = 5),
+  atraso = c(parada_a, parada_b, parada_c)
+)
+
+ggplot(paradas, aes(x = atraso, y = parada, color = parada)) +
+  geom_vline(xintercept = 5, linetype = "dashed", color = "firebrick", linewidth = 0.8) +
+  geom_point(size = 6, alpha = 0.9) +
+  scale_color_manual(values = c('#4a6e5e','#e0a05f','#b8503a')) + 
+  scale_x_continuous(breaks = 0:10) +
+  labs(x = "Atraso (min)", color = 'Parada', y = NULL) +
+  theme_minimal()
+```
+
+As medidas de dispersão quantificam essa variação em torno da média. Abordaremos aqui as medidas de **Variância**, **Desvio-padrão**, **Amplitude** e **Intervalo Interquartil**.
+
+### Variância
+
+Em essência, a variância dimensiona o quanto os valores de uma determinada variável se encontram longe da sua média. Para tanto, variância calcula *a média dos desvios quadráticos em relação à média dos dados*. Se essa descrição não te parece intuitiva, vamos entender, passo a passo, como o cálculo da variância funciona:
+
+**Passo 1:** calcule os desvios de cada observação $i$ ($d_i$) em relação à média, fazendo $d_i = x_i - \bar{X}$. Observe que o conceito de *desvio* é simplesmente a diferença numérica entre um valor específico de uma observação $i$ ($x_i$) e a sua média.
+
+**Passo 2:** eleve cada desvio ao quadrado, $(x_i - \bar{X})^2$.
+
+**Passo 3:** calcule a média dos desvios quadráticos. Para uma amostra, divide-se por $n - 1$ (e não por $n$) para obter aquilo que chamamos de um estimador *não-viesado* da variância populacional em Estatística. Não se preocupe com isto agora, pois é tema para o futuro.
+
+Neste momento, você pode estar se perguntando "por que elevar os desvios ao quadrado, ao invés de tomar a sua média diretamente?". Note que a soma desses desvios $\sum_{i=1}^{n} d_i$ é sempre zero, pois os desvios positivos e negativos se cancelam, o que faz com que a média desses desvios, ou seja $\bar{d_i}=\frac{1}{n} \sum_{i=1}^{n} d_i$, seja também zero. Uma maneira de contornar essa situação é elevar os desvios ao quadrado antes de calcular a média, pois isso tornam positivos os valores negativos de desvio.
+
+Se quisermos representar os passos 1 a 3 do cálculo variância amostral (dada por $s^2$) em uma única fórmula, fazemos então:
+
+$$
+s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{X})^2
+$$
+
+Vamos calcular a variância amostral na "força bruta". Começamos primeiro produzindo os desvios:
+
+```{r}
+#| label: variancia-bruta
+x <- parada_b
+n <- length(x)
+
+# Desvios em relação à média
+desvios <- x - mean(x)
+desvios
+```
+
+Na sequência obtemos os desvios quadráticos e calculamos sua média com o denonimador $n-1$ ao invés de $n$:
+``` {r}
+# Desvios quadráticos
+desvios^2
+
+# Variância amostral
+sum(desvios^2) / (n - 1)
+```
+
+Obviamente, há uma maneira mais direta, que pode ser realizada com a função `var()`:
+
+```{r}
+#| label: variancia-funcao
+# Função predefinida
+var(x)
+```
+
+Uma limitação da variância é que sua unidade de medida é o quadrado da unidade original. Por exemplo, se os tempos são medidos em minutos, a variância é expressa em minutos ao quadrado ($min^2$, o que dificulta sua interpretação direta. Para tanto, temos uma alternativa interessante denominada **Desvio-padrão**.
+
+### Desvio-padrão
+
+O desvio-padrão resolve a limitação da variância ao tomar sua raiz quadrada, devolvendo o resultado à unidade de medida original dos dados. Representado por $s$, o desvio-padrão possui a seguinte formulação:
+
+$$
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{X})^2}
+$$
+
+Calculando, na "força bruta", temos:
+```{r}
+#| label: dp-bruto
+sqrt(sum((x - mean(x))^2) / (n - 1))
+
+# Ou equivalentemente
+sqrt(var(x))
+```
+
+Porém, temos a função `sd()`^[do inglês, *standard deviation*], preconcebida para esta função:
+```{r}
+#| label: dp-funcao
+sd(x)
+```
+
+Aplicando às três paradas, o desvio-padrão confirma o que o gráfico mostrava:
+
+```{r}
+#| label: dp-paradas
+sd(parada_a)
+sd(parada_b)
+sd(parada_c)
+```
+
+A parada C tem o maior desvio-padrão (`r round(sd(parada_c), 2)` min), indicando maior variabilidade nos atrasos. A parada A tem o menor (`r round(sd(parada_a), 2)` min).
+
+### Amplitude
+
+A amplitude é uma medida de dispersão mais simples, refletindo meramente a diferença entre o maior e o menor valor do conjunto de dados, que podem ser obtidos pelas funções `max()` e `min()`:
+
+```{r}
+#| label: amplitude-bruta
+max(parada_c) - min(parada_c)
+```
+
+Uma outra maneira de obter esses resultados é por meio das funções `range()`  e `diff()`. Enquanto a primeira retorna um vetor com os valores mínimo e máximo da base de dados, a segunda calcula a diferença entre a segunda e a primeira observação desse vetor^[A função `diff()`, na verdade, calcula as diferenças entre os valores consecutivos de um vetor. Por exemplo, seja um vetor `v` dado por `v <- c(2, 5, 10)`, a operação `diff(v)` retornará o vetor `c(3,5)`, isto é, as diferenças entre os valores 5 e 2 e entre 10 e 5].
+
+```{r}
+#| label: amplitude-funcao
+min_max <- range(parada_b)
+min_max
+
+amp <- diff(min_max)
+amp
+```
+
+A principal limitação da amplitude é sua sensibilidade extrema a valores extremos. Um único valor atípico, muito alto ou muito baixo, pode inflar consideravelmente a amplitude, sem que isso reflita o comportamento da maioria dos dados. É aí que entra em cena o **Intervalo Interquartil**.
+
+### Intervalo Interquartil (IQR)
+
+O intervalo interquartil (IQR, do inglês *interquartile range*) mede a amplitude do "meio" da distribuição: a diferença entre o terceiro e o primeiro quartil.
+
+$$
+\text{IQR} = Q_3 - Q_1
+$$
+
+Como ele cobre apenas os 50% centrais dos dados, é muito mais robusto a valores extremos do que a amplitude. Para obtê-lo manualmente, fazemos:
+
+```{r}
+#| label: iqr-bruto
+q1 <- quantile(parada_c, 0.25)
+q1
+
+q3 <- quantile(parada_c, 0.75)
+q3
+
+iqr <- q3 - q1
+iqr # Veja que aparece um 75% acima do valor 8 (herdado de q3), mas que deve ser desconsiderado.
+```
+
+Assim como as demais estatísticas, também é possível calcular o IQR por meio de uma função pré-definida no R *base*:
+```{r}
+#| label: iqr-funcao
+IQR(parada_c)
+```
+
+## Medidas para Variáveis Categóricas
+
+Para variáveis categóricas, as medidas de posição baseadas em operações aritméticas (como média e mediana) não fazem sentido. Não é possível calcular a "média" de uma variável que represente o modo de transporte que a pessoa utiliza na viagem ao trabalho, por exemplo. O que importa, nesse caso, é conhecer quais categorias existem, com que frequência cada uma aparece e qual delas é a mais comum.
+
+Considere uma amostra de 20 pessoas pesquisadas sobre o modo de transporte principal utilizado nas viagens ao trabalho:
+
+```{r}
+#| label: modo-dados
+modo <- c(
+  "onibus", "automovel", "caminhada", "automovel", "bicicleta",
+  "onibus", "automovel", "motocicleta", "onibus", "automovel",
+  "caminhada", "onibus", "automovel", "bicicleta", "onibus",
+  "automovel", "motocicleta", "onibus", "automovel", "caminhada"
+)
+```
+
+Com a função `unique()`, é possível listar as categorias distintas presentes na variável, sem repetição:
+
+```{r}
+#| label: modo-unique
+unique(modo)
+```
+
+Vimos anteriormente (@sec-moda) que a função `table()` nos ajudou a calcular a moda de uma variável relativa à quantidade de automóveis em cada residência de uma pesquisa. De maneira análoga, vamos utilizá-la aqui para identificar a frequência absoluta de cada nível/categoria da variável categórica `modo` que criamos acima:
+
+```{r}
+#| label: modo-table
+tab_modo <- table(modo)
+```
+
+Para obter as proporções (frequências relativas), aplica-se `prop.table()` sobre o resultado de `table()`:
+
+```{r}
+#| label: modo-prop
+prop.table(tab_modo)
+```
+
+Multiplicando por 100, obtemos os percentuais:
+
+```{r}
+prop.table(tab_modo) * 100
+```
+
+Nesse conjunto de dados, o automóvel é o modo mais frequente, com `r round(prop.table(table(modo))["automovel"] * 100, 1)`% das respostas. Esse é exatamente o conceito de **moda** aplicado a variáveis categóricas: a categoria com maior frequência. Conforme visto anteriormente na seção sobre moda, o R não possui uma função nativa para isso, mas a combinação `which.max(table())` resolve o caso:
+
+```{r}
+names(which.max(table(modo)))
+```
+
+## Exercícios
+
+**1.** Dado o vetor de salários mensais (em R$): `c(1800, 2200, 1500, 3100, 2800, 1900, 4500, 2100)`:
+
+a. Calcule a média e a mediana usando "força bruta" e funções pré-definidas em R.
+b. Calcule o percentil 25, 50, 75 e 90 manualmente e com uma função pré-definida em R.
+c. Calcule o IQR manualmente e com uma função pré-definida em R.
+
+**2.** Considere dois grupos de estudantes com as seguintes notas:
+
+- Grupo 1: `c(6, 6, 7, 7, 7, 8, 8, 9)`
+- Grupo 2: `c(3, 4, 6, 7, 8, 9, 10, 10)`
+
+a. Calcule a média de cada grupo. O que você observa?
+b. Calcule a variância e o desvio-padrão de cada grupo usando "força bruta" e funções pré-definidas. Qual grupo apresenta maior homogeneidade nas notas?
+
+**3.** O vetor abaixo registra o grau de instrução de 15 entrevistados em uma pesquisa domiciliar:
+
+```r
+instrucao <- c(
+  "fundamental", "medio", "superior", "medio", "fundamental",
+  "medio", "superior", "medio", "fundamental", "medio",
+  "superior", "medio", "sem instrucao", "fundamental", "medio"
+)
+```
+
+a. Quais são as categorias distintas presentes na variável?
+b. Monte a tabela de frequências absolutas e relativas. Qual é a categoria mais frequente?
+d. Identifique a moda dessa variável.

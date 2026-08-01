@@ -1,0 +1,619 @@
+---
+title: "Manipulação de Dados Tabulares"
+---
+
+Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 4 a 13.
+
+[▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE)
+
+Neste capítulo, trabalharemos com dois conjuntos de dados: `escolha_modal.csv` e `velocidades.xlsx`. Faça o download de ambos pelos links abaixo e salve-os em uma pasta onde você irá criar o projeto no RStudio no qual executará esta aula. Assim que salvá-los, crie um novo script do R para iniciarmos o estudo.
+
+- [`escolha_modal.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv)
+- [`velocidades.xlsx`](https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx)
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(readxl)
+```
+
+## Aspectos Introdutórios
+
+### O tidyverse
+
+O *tidyverse* é uma coleção de pacotes do R desenvolvida principalmente pela equipe da [Posit](https://posit.co/) e projetada para facilitar a análise de dados. Todos os pacotes compartilham uma filosofia de *design* comum e estruturas de dados coerentes, o que torna a experiência de trabalho mais fluída e previsível. A documentação completa está disponível em [tidyverse.org](https://www.tidyverse.org/).
+
+Ao instalar o tidyverse com `install.packages("tidyverse")`, você obtém um conjunto de pacotes para as principais etapas da análise de dados:
+
+- **`ggplot2`:** criação de gráficos declarativos baseados na *Grammar of Graphics*
+- **`dplyr`:** manipulação de dados tabulares (filtrar, selecionar, transformar, sumarizar e combinar tabelas)
+- **`tidyr`:** reestruturação de tabelas para o formato *tidy* (cada variável em uma coluna, cada observação em uma linha)
+- **`readr`:** leitura de arquivos de texto (CSV, TSV etc.) de forma rápida e previsível
+- **`purrr`:** programação funcional, facilitando a aplicação de funções a listas e vetores
+- **`tibble`:** versão modernizada do *data frame*, com comportamento mais consistente e impressão mais legível
+- **`stringr`:** manipulação de textos e expressões regulares
+- **`forcats`:** manipulação de variáveis categóricas (*factors*)
+- **`lubridate`:** manipulação de datas e horários
+
+Neste capítulo, o foco está nos pacotes `dplyr` e `readr`, que cobrem as operações mais frequentes na etapa de manipulação de dados tabulares.
+
+### Leitura de arquivos CSV com `read_csv()`
+
+Conforme já vimos anteriormente, o R *base* oferece a função `read.csv()` para leitura de arquivos CSV. O pacote `readr`, parte do tidyverse, oferece a alternativa `read_csv()`. O código abaixo mostra como usar cada uma delas para ler o arquivo `escolha_modal.csv`:
+
+```{r}
+#| eval: false
+em1 <- read.csv("escolha_modal.csv")
+em2 <- read_csv("escolha_modal.csv")
+```
+
+Embora ambas façam a leitura do mesmo arquivo, o comportamento ao imprimir os objetos é diferente. `em1` é um *data frame* convencional e, caso a base de dados tenha muitas linhas, ao digitá-lo no console, o R imprimirá centenas delas, fazendo com que tenhamos de subir bastante a barra de rolagem à direita para verificar o nome das suas colunas. Já `em2` é do tipo *tibble*. Ao imprimi-lo, aparecem apenas as primeiras dez linhas e apenas as colunas que cabem na largura do console, além dos tipos de cada variável logo abaixo dos nomes das colunas (como `<chr>` para texto, `<dbl>` para número real e `<int>` para inteiro). Observe abaixo:
+
+```{r}
+#| echo: false
+#| cache: true
+#| message: false
+#| warning: false
+em2 <- read_csv("https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv")
+```
+
+```{r}
+em2
+```
+
+:::{.callout-note}
+Por padrão, *tibbles* imprimem apenas as 10 primeiras linhas e *data frames* imprimem até 1000 elementos. É possível alterar esses comportamentos com a função `options()`, que configura parâmetros globais da sessão R. As opções mais úteis são:
+
+- `options(max.print = n)` — define o número máximo de elementos impressos (`n`) para *data frames* e outros objetos R base. O padrão é 1000.
+- `options(tibble.print_max = n)` — define o número máximo de linhas exibidas em *tibbles*. Quando o objeto tem mais linhas do que esse valor, somente as primeiras `n` são impressas.
+- `options(tibble.print_min = n)` — define quantas linhas são exibidas quando o limite máximo é ultrapassado.
+- `options(tibble.width = Inf)` — exibe todas as colunas, mesmo que o *tibble* seja mais largo do que a janela do console.
+
+Para sempre exibir todas as linhas de um *tibble*, use `options(tibble.print_max = Inf)`. Para restaurar os padrões, use `options(max.print = 1000, tibble.print_max = 10, tibble.print_min = 10)`.
+:::
+
+Ao imprimir `em2`, a coluna `modo_viagem` pode exibir o valor `"A p\xe9"` no lugar de `"A pé"`. Isso ocorre porque o arquivo foi gravado com codificação *Latin-1* (também chamada de ISO-8859-1), enquanto o R, por padrão, tenta ler arquivos em UTF-8. O caractere `"é"` não ocupa o mesmo byte nos dois sistemas de codificação, resultando na sequência de escape `\xe9`.
+
+Para corrigir esse problema, é preciso informar a codificação do arquivo na leitura. Com `read.csv()`, usa-se o argumento `fileEncoding`:
+
+```{r}
+#| eval: false
+em1 <- read.csv("escolha_modal.csv", fileEncoding = "Latin1")
+```
+
+Com `read_csv()`, usa-se o argumento `locale`:
+
+```{r}
+#| eval: false
+em2 <- read_csv("escolha_modal.csv", locale = locale(encoding = "Latin1"))
+```
+
+Após essa correção, os acentos aparecerão corretamente. Podemos verificar a classe dos dois objetos com a função `class()`:
+
+```{r}
+#| eval: false
+class(em1)
+class(em2)
+```
+
+O resultado será `"data.frame"` para `em1` e `c("tbl_df", "tbl", "data.frame")` para `em2`, confirmando que o *tibble* é uma extensão do *data frame*.
+
+### Leitura de arquivos Excel com `readxl`
+
+Para ler arquivos no formato Excel (`.xlsx` ou `.xls`), usamos o pacote `readxl`. Ele não faz parte do núcleo carregado por `library(tidyverse)`, mas é instalado junto com o tidyverse. Para usá-lo, instale-o (se ainda não estiver instalado) e depois carregue-o:
+
+```{r}
+#| eval: false
+install.packages("readxl")
+library(readxl)
+```
+
+O pacote oferece as funções `read_excel()`, que detecta o formato automaticamente, e `read_xlsx()` e `read_xls`, específicas para `.xlsx` e `.xls`, respectivamente. Ambas opções abaixo valem para lermos nosso arquivo "velocidades.xlsx":
+
+```{r}
+#| eval: false
+vel <- read_excel("velocidades.xlsx")
+vel <- read_xlsx("velocidades.xlsx")
+```
+
+Outro aspecto interessante quando queremos utilizar funções de bibliotecas já instaladas, mas não carregadas com o `library()` no R, é que podemos executá-las usando a notação `pacote::função()`. Observe abaixo:
+
+```{r}
+#| label: read-vel
+#| echo: false
+#| cache: true
+#| message: false
+url_vel <- "https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx"
+temp_vel <- tempfile(fileext = ".xlsx")
+download.file(url_vel, temp_vel, mode = "wb", quiet = TRUE)
+vel <- readxl::read_xlsx(temp_vel)
+```
+
+```{r}
+#| eval: false
+vel <- readxl::read_xlsx("velocidades.xlsx")
+```
+
+Essa notação é útil quando se quer usar uma função de um pacote de forma pontual, sem carregar o pacote inteiro na sessão.
+
+### O operador pipe (`|>`)
+
+O operador *pipe* é uma das ferramentas mais úteis do ecossistema tidyverse. Ele permite encadear operações de forma legível, passando o resultado de uma expressão como o primeiro argumento da expressão seguinte.
+
+Durante muito tempo, o pipe mais usado no R foi o `%>%`, proveniente do pacote `magrittr`. A partir do R 4.1.0, lançado em 2021, o R passou a oferecer um pipe nativo, `|>`, que funciona de forma similar sem exigir nenhum pacote adicional. Neste livro, usamos o pipe nativo `|>`.
+
+No RStudio, o atalho de teclado **Ctrl+Shift+M** (Windows e Linux) ou **Cmd+Shift+M** (Mac) insere o pipe automaticamente. Para garantir que o atalho insira `|>` e não `%>%`, vá em **Tools > Global Options > Code** e marque a opção **Use native pipe operator**.
+
+A lógica do pipe é simples: em vez de escrever `f(x)`, escrevemos `x |> f()`. Veja alguns exemplos com a base `vel`:
+
+```{r}
+vel |>
+  head()
+```
+
+```{r}
+vel$velocidade |>
+  mean()
+```
+
+No primeiro exemplo, `vel` é passado como argumento para `head()`, que retorna as primeiras seis linhas. No segundo, o vetor `vel$velocidade` é passado para `mean()`, que calcula a média. O pipe se torna ainda mais poderoso quando encadeamos várias operações, como veremos nas seções mais adiante.
+
+### A função `summary()` e variáveis factor
+
+Vamos agora fazer a leitura definitiva da base `escolha_modal.csv`, informando a codificação correta:
+
+```{r}
+#| label: read-em
+#| echo: false
+#| cache: true
+#| message: false
+em <- read_csv(
+  "https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv",
+  locale = locale(encoding = "Latin1")
+)
+```
+
+```{r}
+#| eval: false
+em <- read_csv("escolha_modal.csv", locale = locale(encoding = "Latin1"))
+```
+
+Podemos obter um resumo rápido de todas as variáveis com a função `summary()`:
+
+```{r}
+em |>
+  summary()
+```
+
+Para variáveis numéricas, `summary()` retorna mínimo, primeiro quartil, mediana, média, terceiro quartil e máximo, além do número de valores ausentes. Para variáveis do tipo *character* (texto), porém, o resultado é pouco informativo, pois o R indica apenas o comprimento e a classe, sem qualquer informação sobre os valores que aparecem.
+
+Para variáveis categóricas, é mais adequado usar o tipo *factor*. Um *factor* é uma representação especial para variáveis categóricas no R que armazena os valores distintos como **níveis** (*levels*) e permite que o `summary()` mostre a contagem de cada categoria, entre outras vantagens que veremos mais adiante.
+
+Vamos transformar as variáveis `sexo`, `posse_auto` e `modo_viagem` em *factor*:
+
+```{r}
+em <- em |>
+  mutate(
+    sexo        = factor(sexo),
+    posse_auto  = factor(posse_auto),
+    modo_viagem = factor(modo_viagem)
+  )
+```
+
+Agora `summary()` mostrará a contagem de cada nível:
+
+```{r}
+em |>
+  summary()
+```
+
+Para verificar os níveis de um *factor*, usamos a função `levels()`:
+
+```{r}
+levels(em$modo_viagem)
+levels(em$sexo)
+```
+
+## Filtragem de Observações
+
+A filtragem de observações consiste na seleção de um subconjunto de linhas de uma tabela com base em algum critério. O `dplyr` oferece duas funções principais para isso.
+
+A função `slice()` seleciona linhas por posição. Para obter as cinco primeiras linhas de `vel`:
+
+```{r}
+vel |>
+  slice(1:5)
+```
+
+A função `filter()` realiza a filtragem com base em condições lógicas. Os exemplos abaixo usam a base `vel` com diferentes operadores condicionais sobre a variável `velocidade`:
+
+```{r}
+vel |>
+  filter(velocidade >= 50)
+```
+
+```{r}
+vel |>
+  filter(velocidade < 45)
+```
+
+Para combinar condições, usamos os operadores `&` (E lógico) e `|` (OU lógico). O exemplo abaixo seleciona registros com velocidade acima de 50 km/h **e** do tipo de veículo "Moto":
+
+```{r}
+vel |>
+  filter(velocidade > 50 & tipo_veic == "Moto")
+```
+
+Já o exemplo seguinte seleciona registros com velocidade entre 40 e 50 km/h:
+
+```{r}
+vel |>
+  filter(velocidade > 40 & velocidade < 50)
+```
+
+Na base `em`, podemos combinar filtros em variáveis diferentes. O exemplo abaixo seleciona viagens realizadas por pessoas do sexo feminino que usaram transporte público ("TP") ou foram a pé. Note que o operador `%in%` verifica se o valor está contido em um vetor de opções, sendo uma alternativa mais limpa a múltiplas condições com `|` quando temos dados do tipo `character`.
+
+```{r}
+em |>
+  filter(sexo == "F" & modo_viagem %in% c("TP", "A pé"))
+```
+
+## Seleção de Colunas
+
+A seleção de colunas permite manter apenas as variáveis relevantes para a análise, facilitando a leitura do código e reduzindo o uso de memória. No `dplyr`, usamos a função `select()`.
+
+Para selecionar apenas as colunas `tipo_veic` e `velocidade` de `vel`:
+
+```{r}
+vel |>
+  select(tipo_veic, velocidade)
+```
+
+Para remover uma coluna, basta preceder o nome com `-`:
+
+```{r}
+vel |>
+  select(-velocidade)
+```
+
+O `select()` também pode ser usado para reordenar colunas. Ao listar as colunas na nova ordem desejada, o resultado terá as colunas nessa sequência:
+
+```{r}
+vel |>
+  select(velocidade, tipo_veic, faixa)
+```
+
+Eventualmente, nós podemos obter os nomes das variáveis de interesse a serem analisadas a partir de alguma operação anterior que as retorne em formato `character`. Como a função `select()` não aceita nomes de colunas nesse formato, podemos usamos a função auxiliar `all_of()`, conforme o exemplo abaixo:
+
+```{r}
+colunas <- c("tipo_veic", "velocidade")
+vel |>
+  select(all_of(colunas))
+```
+
+## Ordenação de Linhas
+
+A ordenação de linhas reordena as observações de uma tabela com base nos valores de uma ou mais colunas. No `dplyr`, usamos a função `arrange()`.
+
+Para ordenar `vel` pela velocidade em ordem crescente:
+
+```{r}
+vel |>
+  arrange(velocidade)
+```
+
+Para ordenar em ordem decrescente, usamos a função auxiliar `desc()`:
+
+```{r}
+vel |>
+  arrange(desc(velocidade))
+```
+
+Para variáveis numéricas, uma alternativa mais compacta é usar o sinal de negação diretamente:
+
+```{r}
+vel |>
+  arrange(-velocidade)
+```
+
+O resultado é idêntico. Atente-se, no entanto, que a notação com `-` não funciona para variáveis de texto ou *factor*, situações em que `desc()` é obrigatório.
+
+A ordenação também é possível por múltiplas colunas. O código abaixo ordena primeiro por `tipo_veic` (em ordem alfabética) e, dentro de cada tipo, por `velocidade` em ordem decrescente:
+
+```{r}
+vel |>
+  arrange(tipo_veic, desc(velocidade))
+```
+
+Observe que a ordenação de `tipo_veic` segue a ordem alfabética, o que não reflete uma sequência lógica em termos de porte do veículo. A ordem natural seria Moto, Passeio, SUV/Pickup e Caminhão/Ônibus. Para impor essa ordem, convertemos `tipo_veic` em *factor* com os níveis na sequência desejada:
+
+```{r}
+vel <- vel |>
+  mutate(
+    tipo_veic = factor(
+      tipo_veic,
+      levels = c("Moto", "Passeio", "SUV/Pickup", "Caminhão/Ônibus")
+    )
+  )
+```
+
+Quando a variável categórica tem uma ordem intrínseca com significado (como o porte do veículo), podemos declará-la explicitamente com o argumento `ordered = TRUE`, fazendo com que esta se torne uma variável categórica *ordinal*:
+
+```{r}
+#| eval: false
+vel <- vel |>
+  mutate(
+    tipo_veic = factor(
+      tipo_veic,
+      levels  = c("Moto", "Passeio", "SUV/Pickup", "Caminhão/Ônibus"),
+      ordered = TRUE
+    )
+  )
+```
+
+Um *factor* ordenado permite comparações lógicas entre categorias. Por exemplo, `tipo_veic > "Passeio"` retornará `TRUE` para "SUV/Pickup" e "Caminhão/Ônibus" e `FALSE` para "Moto" e "Passeio". Ao ordenar novamente por `tipo_veic`, o resultado seguirá a ordem dos níveis definidos:
+
+```{r}
+vel |>
+  arrange(tipo_veic)
+```
+
+Podemos confirmar os níveis com `levels()`:
+
+```{r}
+levels(vel$tipo_veic)
+```
+
+## Transformação e Criação de Variáveis
+
+A função `mutate()` do `dplyr` permite criar novas variáveis ou modificar variáveis existentes. Ela adiciona (ou substitui) colunas na tabela sem alterar o número de linhas.
+
+A variável `tempo_viagem` na base `em` está originalmente em minutos. Vamos convertê-la para horas, sobrescrevendo a coluna original:
+
+```{r}
+em <- em |>
+  mutate(tempo_viagem = tempo_viagem / 60)
+```
+
+Com o tempo agora em horas, podemos criar uma nova variável com a velocidade média da viagem, dividindo a distância pelo tempo:
+
+```{r}
+em <- em |>
+  mutate(vel_media_viagem = dist_viagem / tempo_viagem)
+```
+
+Para criar variáveis dicotômicas, a função `ifelse()` é útil. O código abaixo cria uma variável lógica indicando se o veículo estava acima de 60 km/h:
+
+```{r}
+vel <- vel |>
+  mutate(acim60 = ifelse(velocidade > 60, TRUE, FALSE))
+```
+
+Para classificações com mais de duas categorias, costumamos utilizar o `ifelse()` de forma aninhada, ou, de maneira mais simples, usando a função `case_when()`. O exemplo abaixo cria a variável `veic_pesado`, listando explicitamente quais categorias pertencem a cada grupo por meio do operador `%in%`:
+
+```{r}
+#| eval: false
+vel <- vel |>
+  mutate(
+    veic_pesado = case_when(
+      tipo_veic %in% c("Caminhão/Ônibus")               ~ "S",
+      tipo_veic %in% c("Moto", "Passeio", "SUV/Pickup") ~ "N"
+    )
+  )
+```
+
+Quando nem todas as combinações precisam ser enumeradas, podemos usar `.default` para definir o valor dos casos restantes, tornando o código mais conciso:
+
+```{r}
+vel <- vel |>
+  mutate(
+    veic_pesado = case_when(
+      tipo_veic == "Caminhão/Ônibus" ~ "S",
+      .default = "N"
+    )
+  )
+```
+
+A sintaxe do `case_when()` segue o padrão `condição ~ valor`, com `.default` definindo o valor para os casos que não atendem a nenhuma condição explícita. Uma alternativa equivalente ao `.default` é usar `TRUE ~ "N"`, notação mais antiga que ainda é amplamente encontrada em códigos R.
+
+## Sumarização de Dados
+
+A sumarização reduz uma tabela a um conjunto de estatísticas calculadas a partir dos valores das colunas. No `dplyr`, a combinação de `group_by()` e `summarize()` é o principal mecanismo para isso.
+
+Vamos calcular a velocidade média de viagem por modo de transporte na base `em`:
+
+```{r}
+em |>
+  group_by(modo_viagem) |>
+  summarize(vel_media = mean(vel_media_viagem, na.rm = TRUE))
+```
+
+O argumento `na.rm = TRUE` instrui a função a ignorar os valores ausentes (`NA`) no cálculo. Sem ele, qualquer `NA` na coluna faria com que o resultado fosse `NA` para o grupo inteiro.
+
+Podemos calcular várias estatísticas de uma vez no mesmo `summarize()`:
+
+```{r}
+em |>
+  group_by(modo_viagem) |>
+  summarize(
+    vel_media   = mean(vel_media_viagem,            na.rm = TRUE),
+    vel_mediana = median(vel_media_viagem,          na.rm = TRUE),
+    q1          = quantile(vel_media_viagem, 0.25,  na.rm = TRUE),
+    q3          = quantile(vel_media_viagem, 0.75,  na.rm = TRUE),
+    desvio_pad  = sd(vel_media_viagem,              na.rm = TRUE)
+  )
+```
+
+Um outro uso bastante interessante é o de contagem de observações em níveis diferentes de variáveis categóricas. Para tanto, usamos a função `n()` dentro de `summarize()`, que não recebe argumentos e conta o número de linhas em cada grupo. O exemplo abaixo conta o número de viagens por combinação de sexo e posse de automóvel:
+
+```{r}
+em |>
+  group_by(sexo, posse_auto) |>
+  summarize(quant = n())
+```
+
+Para esse tipo de contagem simples, o `dplyr` oferece a função `count()` como atalho conveniente:
+
+```{r}
+em |>
+  count(sexo, posse_auto)
+```
+
+Os valores são equivalentes aos do exemplo anterior, mas há uma diferença importante no objeto retornado. O `group_by()` seguido de `summarize()` retorna um *tibble* ainda agrupado, com o agrupamento por `sexo` permanecendo ativo após o `summarize()`. Já o `count()` retorna um *tibble* comum, sem agrupamento. Essa distinção é relevante quando se encadeiam operações após a contagem. Com o resultado do `group_by() |> summarize()`, um `mutate()` subsequente opera dentro dos grupos remanescentes. Já com o resultado do `count()`, ele opera sobre o *tibble* inteiro.
+
+Esse é o caso de quando queremos analisar a proporção dentro de cada grupo, em vez de números absolutos, o que pode ser mais informativo. O código abaixo calcula a proporção de cada combinação dentro de cada sexo, encadeando um `mutate()` após o `summarize()`:
+
+```{r}
+em |>
+  group_by(sexo, posse_auto) |>
+  summarize(quant = n()) |>
+  mutate(prop = quant / sum(quant))
+```
+
+O `mutate()` é aplicado com o agrupamento por `sexo` ainda ativo, então `sum(quant)` é calculado dentro de cada categoria de sexo, gerando proporções que somam 1 dentro de cada grupo.
+
+Para contrastar, veja o que acontece ao usar `count()` e encadear o mesmo `mutate()`:
+
+```{r}
+em |>
+  count(sexo, posse_auto) |>
+  mutate(prop = n / sum(n))
+```
+
+Como `count()` retorna um *tibble* sem agrupamento, `sum(n)` é calculado sobre todas as linhas da tabela, gerando proporções em relação ao total geral, não dentro de cada sexo.
+
+## Junção de Tabelas
+
+Em muitas situações, as informações relevantes para uma análise estão distribuídas em tabelas diferentes, que precisam ser combinadas. Essa operação é chamada de **junção** (*join*) e é realizada com base em uma ou mais colunas que identificam a correspondência entre as linhas das tabelas.
+
+Suponha que, além dos dados de velocidade, tenhamos uma tabela com o peso médio de cada tipo de veículo:
+
+```{r}
+pesos <- tibble(
+  tipo_veic = c("Moto", "Passeio", "SUV/Pickup", "Caminhão/Ônibus"),
+  peso_kg   = c(120, 1300, 2000, 16000)
+)
+pesos
+```
+
+Para incorporar essa informação à base `vel`, usamos `left_join()`, função do `dplyr` que mantém todas as linhas da tabela à esquerda (`vel`) e adiciona as colunas da tabela à direita (`pesos`) para as linhas com correspondência:
+
+```{r}
+vel |>
+  left_join(pesos, by = "tipo_veic")
+```
+
+O argumento `by` indica a coluna usada como chave de junção. Neste caso, `tipo_veic` está presente nas duas tabelas e identifica cada tipo de veículo. Para cada linha de `vel`, o `left_join()` busca o peso correspondente em `pesos` e adiciona a coluna `peso_kg` ao resultado.
+
+::: {.callout-tip}
+O `dplyr` oferece outros tipos de junção para diferentes situações. O `right_join()` mantém todas as linhas da tabela à direita. O `inner_join()` mantém apenas as linhas com correspondência nas duas tabelas. O `full_join()` mantém todas as linhas de ambas as tabelas.
+:::
+
+Na prática, é comum que as duas tabelas usem nomes diferentes para a mesma coluna-chave. Suponha que a tabela `pesos` tivesse a coluna chamada `veiculo` em vez de `tipo_veic`:
+
+```{r}
+pesos2 <- tibble(
+  veiculo = c("Moto", "Passeio", "SUV/Pickup", "Caminhão/Ônibus"),
+  peso_kg = c(120, 1300, 2000, 16000)
+)
+```
+
+Nesse caso, o argumento `by` recebe um vetor nomeado, onde o nome é a coluna da tabela da esquerda e o valor é a coluna da tabela da direita:
+
+```{r}
+vel |>
+  left_join(pesos2, by = c("tipo_veic" = "veiculo"))
+```
+
+Uma sintaxe alternativa e mais legível é usar a função `join_by()`, disponível a partir do `dplyr` 1.1.0. Ela recebe uma expressão de igualdade entre os nomes das colunas:
+
+```{r}
+vel |>
+  left_join(pesos2, by = join_by(tipo_veic == veiculo))
+```
+
+O resultado é idêntico. A vantagem do `join_by()` é que os nomes das colunas são tratados como variáveis, sem necessidade de aspas, tornando o código mais próximo da sintaxe usada no restante do `dplyr`.
+
+## Fazendo tudo de uma só vez
+
+Nas seções anteriores, cada operação foi apresentada de forma independente. Em uma análise real, essas operações quase sempre aparecem encadeadas, e é exatamente para isso que o operador pipe (`|>`) foi projetado.
+
+Partindo do resultado do `left_join()` entre `vel` e `pesos`, queremos executar quatro operações em sequência. Primeiro, criaremos uma nova variável convertendo o peso de quilogramas para toneladas, o que torna os valores mais legíveis. Depois, filtraremos os registros para manter apenas veículos leves, excluindo caminhões e ônibus. Em seguida, selecionaremos apenas as colunas relevantes para a análise final. Por último, ordenaremos os registros pela velocidade em ordem decrescente.
+
+Sem o pipe, seria necessário criar um objeto intermediário a cada passo:
+
+```{r}
+#| eval: false
+vel_com_peso <- left_join(vel, pesos, by = "tipo_veic")
+vel_com_peso <- mutate(vel_com_peso, peso_ton = peso_kg / 1000)
+vel_com_peso <- filter(vel_com_peso, tipo_veic != "Caminhão/Ônibus")
+vel_com_peso <- select(vel_com_peso, tipo_veic, velocidade, peso_ton)
+vel_com_peso <- arrange(vel_com_peso, desc(velocidade))
+vel_com_peso
+```
+
+O resultado é correto, mas o código é repetitivo, com o nome `vel_com_peso` aparecendo dez vezes. Cada linha reatribui o objeto ao mesmo nome, e qualquer erro em uma etapa intermediária exige depurar toda a cadeia manualmente. Com o pipe, o mesmo resultado é obtido de forma muito mais clara:
+
+```{r}
+vel |>
+  left_join(pesos, by = "tipo_veic") |>
+  mutate(peso_ton = peso_kg / 1000) |>
+  filter(tipo_veic != "Caminhão/Ônibus") |>
+  select(tipo_veic, velocidade, peso_ton) |>
+  arrange(desc(velocidade))
+```
+
+O raciocínio é linear: começamos com `vel`, adicionamos o peso com `left_join()`, convertemos para toneladas com `mutate()`, excluímos os veículos pesados com `filter()`, mantemos apenas as colunas de interesse com `select()` e ordenamos os registros por velocidade decrescente com `arrange()`. Cada linha descreve um passo da análise, e a leitura de cima para baixo espelha a sequência lógica do raciocínio.
+
+Para armazenar o resultado em um novo objeto, basta atribuir a cadeia completa:
+
+```{r}
+#| eval: false
+vel_leve <- vel |>
+  left_join(pesos, by = "tipo_veic") |>
+  mutate(peso_ton = peso_kg / 1000) |>
+  filter(tipo_veic != "Caminhão/Ônibus") |>
+  select(tipo_veic, velocidade, peso_ton) |>
+  arrange(desc(velocidade))
+```
+
+## Salvando Arquivos em Formato .rds
+
+O formato `.rds` é específico do R e permite salvar um único objeto com todos os seus metadados preservados. Isso inclui os tipos das variáveis e a ordem dos níveis de *factors*, características que se perderiam ao salvar em formatos como `.csv` ou `.xlsx`.
+
+Por exemplo, ao longo deste capítulo transformamos `tipo_veic` em um *factor* com os níveis na ordem "Moto", "Passeio", "SUV/Pickup" e "Caminhão/Ônibus". Se salvarmos `vel` como `.csv` e depois lermos novamente o arquivo, essa ordem será perdida e `tipo_veic` voltará a ser uma variável *character*.
+
+Para salvar `vel` no formato `.rds`:
+
+```{r}
+#| eval: false
+saveRDS(vel, "vel.rds")
+```
+
+Para carregar o arquivo em uma sessão futura:
+
+```{r}
+#| eval: false
+vel <- readRDS("vel.rds")
+```
+
+Ao carregar com `readRDS()`, o objeto retorna exatamente no estado em que foi salvo, com todos os tipos e ordenamentos preservados. Isso torna o `.rds` especialmente útil para armazenar bases de trabalho intermediárias, evitando reprocessar as transformações a cada sessão.
+
+## Exercícios
+
+Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde você irá processá-los. Crie um projeto do R dentro dessa pasta e um novo script `.R` dentro desse projeto para responder às questões abaixo.
+
+- [`escolha_modal.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv)
+- [`velocidades.xlsx`](https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx)
+
+1. Leia o arquivo `velocidades.xlsx` como um `tibble` e armazene-o em um objeto denominado `vel` e converta as variáveis `faixa` e `tipo_veic` para *factor*. Em seguida, obtenha as quantidades e proporções para cada combinação de níveis de `faixa` e `tipo_veic`. Na sequência filtre todas as observações com proporção acima de 0.1 e ordene-as de forma decrescente de acordo com a frequência absoluta de observações.
+
+2. Crie uma nova variável na base `vel` chamada `cat_vel` que classifique as velocidades em três níveis usando `case_when()`:
+   - `"Lenta"`: velocidade menor que 40 km/h
+   - `"Normal"`: velocidade entre 40 e 60 km/h (inclindo esses limites)
+   - `"Alta"`: velocidade acima de 60 km/h
+
+3. Leia o arquivo `escolha_modal.csv` como um `tibble` (com a codificação de caracteres correta) e armazene-o em um objeto denominado `em`. Posteriormente, crie um dataframe com valores médios de emissão de CO2 por km rodado para cada um dos modos presentes na coluna `modo_viagem` (A pé = 0 g/km, Bicicleta = 0 g/km, Carro ou App = 120 g/km e TP = 50 g/km). Na sequência faça um left_join de `em` com essa nova tabela para incorporar os valores de emissão a `em`.
+ 
+4. Salve os objetos `vel` e `em` após todas as operações realizadas em formato .rds para entrega.
