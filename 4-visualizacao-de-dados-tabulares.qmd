@@ -2,7 +2,915 @@
 title: "Visualização de Dados Tabulares"
 ---
 
-Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 14 a 27.
+<!-- Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 14 a 27.
 
-[▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE)
+[▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE) -->
 
+Nos dois capítulos anteriores aprendemos a resumir dados em números e a organizá-los em tabelas. Este capítulo trata do terceiro movimento da análise exploratória, que é transformar esses dados em imagens. A ordem não é acidental. Uma média esconde a forma da distribuição que a gerou, e uma tabela de mil linhas não revela sozinha o padrão que a atravessa. O gráfico é o instrumento que torna esses padrões visíveis antes que qualquer modelo estatístico seja ajustado.
+
+Começaremos discutindo por que a visualização funciona e quais princípios separam um gráfico eficaz de um gráfico enganoso. Em seguida apresentaremos a gramática dos gráficos, o arcabouço teórico que estrutura o pacote `ggplot2`, e percorreremos sistematicamente as possibilidades de representação conforme a quantidade e o tipo das variáveis envolvidas.
+
+## Por que visualizar
+
+Em 1854, um surto de cólera atingiu o bairro do Soho, em Londres. A explicação corrente para a propagação da doença era a teoria do miasma, segundo a qual a contaminação viajava pelo ar. O médico John Snow desconfiava dessa hipótese e adotou um procedimento incomum para a época, que foi registrar em uma planta do bairro a localização de cada morte, representada por uma pequena barra sobre o endereço correspondente.
+
+<!-- FIGURA: slides 4 e 5 do pptx — recortar o mapa (imagem grande à esquerda) -->
+![Mapa da distribuição espacial das mortes por cólera elaborado por John Snow durante o surto de 1854 no Soho, em Londres. Cada barra representa uma morte registrada no endereço correspondente.](img/4-visualizacao-de-dados-tabulares/fig-snow-mapa.png){#fig-snow-mapa}
+
+O padrão que emergiu no mapa (@fig-snow-mapa) foi decisivo. As mortes se adensavam em torno de uma bomba d'água específica, e não se distribuíam de forma difusa como se esperaria de uma contaminação pelo ar. Estabelecimentos vizinhos que dispunham de fonte de água própria, como uma cervejaria da região, escaparam quase ilesos. A investigação posterior confirmou que aquela bomba era abastecida por uma tubulação contaminada por esgoto. Nenhum cálculo estatístico havia sido feito, e mesmo assim a evidência era difícil de contestar.
+
+O exemplo ilustra a razão de ser da visualização de dados. Seu papel não é substituir a análise quantitativa por métodos computacionais, e sim ampliar a capacidade humana de reconhecer estruturas nos dados [@munzner2014]. Quando a pergunta já está bem formulada e o método é conhecido, um algoritmo resolve o problema sem intervenção humana. A visualização se torna indispensável justamente na situação oposta, quando ainda não sabemos qual pergunta fazer, quando há dezenas de hipóteses possíveis e nenhuma delas se destaca de antemão. Foi exatamente a situação de Snow.
+
+Essa utilidade, porém, não é automática. Um gráfico mal construído consome mais tempo do que a tabela que pretendia resumir e pode induzir conclusões erradas. Uma visualização eficaz precisa atender a quatro requisitos [@maguire2019]:
+
+- economizar o tempo de quem a lê, comunicando o padrão principal em poucos segundos;
+- ter um propósito claro, o que pressupõe um público-alvo definido;
+- incluir apenas as informações relevantes para esse propósito;
+- codificar os dados de forma adequada à comparação que se pretende fazer.
+
+O quarto requisito é o mais técnico e o menos intuitivo, e é dele que trataremos nas próximas duas seções.
+
+## Da tabela ao gráfico
+
+Considere uma tabela de resultados financeiros por unidade de negócio e período. Os números estão todos ali, corretos e completos, mas encontrar as unidades deficitárias exige percorrer célula por célula procurando o sinal negativo. O esforço cognitivo é alto e cresce proporcionalmente ao tamanho da tabela.
+
+<!-- FIGURA: slide 18 do pptx — tabela financeira sem codificação visual -->
+![Tabela de resultados financeiros sem nenhuma codificação visual. Identificar os valores negativos exige leitura sequencial de cada célula. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-tabela-crua.png){#fig-tabela-crua}
+
+Uma primeira intervenção consiste em colorir de vermelho os valores negativos. A informação contida na tabela é rigorosamente a mesma, mas agora existe um atalho perceptivo. Os prejuízos saltam aos olhos sem que seja preciso ler os números.
+
+<!-- FIGURA: slide 19 do pptx — mesma tabela com valores negativos em vermelho -->
+![A mesma tabela com os valores negativos destacados em vermelho. A cor funciona como atalho perceptivo para localizar os prejuízos. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-tabela-cor.png){#fig-tabela-cor}
+
+A cor resolve a localização, mas não resolve a comparação. Saber que duas unidades tiveram prejuízo não informa qual delas teve o prejuízo maior, e a leitura dos números continua necessária. O passo seguinte substitui cada valor por uma barra de comprimento proporcional, e é aí que a magnitude relativa se torna imediata.
+
+<!-- FIGURA: slide 20 do pptx — mesma tabela com os números convertidos em barras -->
+![A mesma tabela com os valores representados por barras de comprimento proporcional. A comparação de magnitudes passa a ser imediata. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-tabela-barras.png){#fig-tabela-barras}
+
+As três versões contêm os mesmos dados e produzem experiências de leitura muito diferentes. O que mudou de uma para outra foi a **codificação visual**, ou seja, a escolha de qual propriedade gráfica representa qual informação. Entender essa escolha é o que permite passar da intuição para o método.
+
+<!-- FIGURA OPCIONAL: slide 21 do pptx — esquema codificador/decodificador. Descomentar se quiser reforçar o argumento antes da próxima seção.
+![Processo de codificação e decodificação da comunicação visual. Os dados e a tarefa são codificados em uma visualização, cuja leitura gera *insights* ou erros. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-codificacao-decodificacao.png){#fig-codificacao-decodificacao}
+-->
+
+
+
+## Como percebemos elementos visuais
+
+### Os elementos visuais
+
+Todo gráfico codifica dados usando um repertório limitado de propriedades gráficas. Sistematizá-las ajuda a perceber que a escolha entre um gráfico e outro é, no fundo, uma escolha entre esses elementos [@aldhous2014]:
+
+- **posição**, o local que o dado ocupa no espaço do gráfico;
+- **tamanho**, a extensão linear das formas;
+- **ângulo**, a rotação entre dois vetores;
+- **inclinação**, a orientação de um vetor no espaço;
+- **forma**, o símbolo usado para representar categorias;
+- **área**, a extensão em duas dimensões;
+- **volume**, a extensão em três dimensões;
+- **matiz de cor**, o tom ou coloração propriamente dito;
+- **saturação**, a intensidade da matiz.
+
+<!-- FIGURA: slides 24 e 25 do pptx — montar um painel único com os nove elementos -->
+![Os nove elementos visuais disponíveis para codificar dados em um gráfico. Fonte: adaptado de @aldhous2014.](img/4-visualizacao-de-dados-tabulares/fig-elementos-visuais.png){#fig-elementos-visuais}
+
+Um gráfico de barras usa posição e tamanho. Um gráfico de setores usa ângulo e área. Um gráfico de dispersão com pontos coloridos usa posição, matiz e eventualmente área. A pergunta que importa é se esses elementos são igualmente eficazes.
+
+### A hierarquia de percepção {#sec-hierarquia}
+
+A resposta é que não são, e isso pode ser verificado experimentalmente. @fig-tres-codificacoes mostra o mesmo conjunto de valores codificado de três maneiras, por intensidade de cor, por área de círculo e por altura de barra.
+
+<!-- FIGURA: slide 22 do pptx — os três painéis (A) cor, (B) área, (C) barras -->
+![Um mesmo conjunto de valores codificado por intensidade de cor (a), por área de círculo (b) e por altura de barra (c). Fonte: adaptado de @aldhous2014.](img/4-visualizacao-de-dados-tabulares/fig-tres-codificacoes.png){#fig-tres-codificacoes}
+
+A comparação entre os valores é progressivamente mais fácil da primeira para a terceira representação. Com intensidade de cor conseguimos apenas ordenar grosseiramente os valores, com área acertamos a ordem mas erramos as proporções, e com altura de barra estimamos as razões entre os valores com boa precisão.
+
+Esse resultado não é uma impressão subjetiva. @cleveland1985 conduziram experimentos controlados medindo o erro cometido por participantes ao estimar quantidades codificadas por diferentes elementos visuais, e obtiveram uma ordenação estável entre eles.
+
+<!-- FIGURA: slide 26 do pptx — a hierarquia completa com as miniaturas -->
+![Hierarquia de percepção dos elementos visuais. Os elementos no topo permitem comparações quantitativas mais precisas, e os da base permitem apenas comparações genéricas. Fonte: adaptado de @cleveland1985 e @aldhous2014.](img/4-visualizacao-de-dados-tabulares/fig-hierarquia-percepcao.png){#fig-hierarquia-percepcao}
+
+A hierarquia (@fig-hierarquia-percepcao) coloca no topo a posição em escala comum e alinhada, seguida da posição em escala comum mas desalinhada, da extensão, do ângulo, da inclinação, da área, do volume, da intensidade de cor e, por último, da matiz. A raiz do fenômeno está na psicofísica. A lei de potência de Stevens descreve como a intensidade percebida de um estímulo se relaciona com sua intensidade física, e essa relação é uma potência cujo expoente varia conforme a modalidade sensorial [@stevens1957]. Para algumas propriedades a percepção acompanha o estímulo quase linearmente, e para outras ela o comprime ou o amplifica sistematicamente.
+
+A consequência prática é direta. Quando o objetivo é comparar quantidades com precisão, convém usar elementos do topo da hierarquia. Isso não significa que os elementos da base sejam inúteis, e sim que eles servem a outro propósito. A matiz de cor é péssima para representar magnitude e excelente para distinguir categorias, porque o cérebro humano reconhece diferenças de tom com facilidade sem tentar quantificá-las.
+
+### Duas consequências práticas
+
+Duas regras muito citadas decorrem diretamente da hierarquia. A primeira é que o eixo de contagem de um gráfico de barras deve sempre começar no zero. Como a barra codifica a quantidade por sua extensão, truncar o eixo faz com que a razão entre os comprimentos deixe de corresponder à razão entre os valores, exagerando diferenças que na realidade são pequenas.
+
+<!-- FIGURA: slide 61 do pptx — comparação entre eixo truncado e eixo iniciando no zero -->
+![Efeito de truncar o eixo de contagem em um gráfico de barras. A diferença entre as categorias parece muito maior do que é de fato.](img/4-visualizacao-de-dados-tabulares/fig-eixo-truncado.png){#fig-eixo-truncado}
+
+A segunda é a preferência por barras em vez de setores. O gráfico de setores, popularmente conhecido como gráfico de pizza, codifica proporções por ângulo e área, dois elementos situados no meio e na parte inferior da hierarquia. O gráfico de barras codifica as mesmas proporções por extensão, que está acima de ambos.
+
+<!-- FIGURA: slide 62 do pptx — três conjuntos representados em setores e em barras -->
+![Três conjuntos de dados distintos representados em gráficos de setores (acima) e em gráficos de barras (abaixo). As diferenças entre as categorias, imperceptíveis nos setores, ficam evidentes nas barras. Fonte: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Piecharts.svg).](img/4-visualizacao-de-dados-tabulares/fig-pizza-vs-barras.png){#fig-pizza-vs-barras}
+
+Observando @fig-pizza-vs-barras, os três conjuntos de setores parecem praticamente idênticos, enquanto os gráficos de barras correspondentes revelam com clareza que se trata de distribuições diferentes.
+
+## A gramática dos gráficos
+
+### As camadas de um gráfico
+
+Até aqui discutimos gráficos como objetos prontos, escolhidos de um catálogo. Em 1999, Leland Wilkinson propôs uma inversão dessa perspectiva em um trabalho que se tornou a referência teórica mais influente da área [@wilkinson2005]. O argumento central é que um gráfico não existe por si próprio, da mesma forma que uma frase não existe independentemente das palavras que a compõem. Assim como combinamos substantivos, adjetivos e verbos segundo regras para formar frases, um gráfico é uma composição de elementos governada por uma gramática.
+
+<!-- FIGURA OPCIONAL: slide 29 do pptx — capa de The Grammar of Graphics.
+![Capa da segunda edição de *The Grammar of Graphics*, de Leland Wilkinson.](img/4-visualizacao-de-dados-tabulares/fig-wilkinson.png){#fig-wilkinson}
+-->
+
+
+Essa composição é modular e organizada em camadas, o que permite construir praticamente qualquer modalidade de gráfico a partir de um conjunto pequeno de decisões.
+
+<!-- FIGURA: slide 32 do pptx — esquema das camadas empilhadas -->
+![Composição de um gráfico em camadas sobrepostas, conforme a gramática dos gráficos.](img/4-visualizacao-de-dados-tabulares/fig-camadas-gg.png){#fig-camadas-gg}
+
+As camadas se dividem em dois grupos. O primeiro reúne os elementos fundamentais, sem os quais não há gráfico algum:
+
+- os **dados**, a tabela que fornece os valores a representar;
+- o **mapeamento estético**, a conexão entre cada variável da tabela e a propriedade gráfica que a representará;
+- a **geometria**, a forma visual concreta que traduz esse mapeamento, como pontos, barras ou linhas.
+
+O segundo grupo reúne os elementos secundários, que refinam o resultado sem alterar sua estrutura básica:
+
+- as **facetas**, que subdividem o gráfico em painéis;
+- as **estatísticas**, que inserem no gráfico quantidades calculadas a partir dos dados;
+- o **sistema de coordenadas**, cartesiano, polar ou outro;
+- o **tema**, que reúne os ajustes estéticos finos.
+
+<!-- FIGURA: slides 37 e 38 do pptx — camadas com as anotações de sentido -->
+![As camadas fundamentais e secundárias com a indicação do papel de cada uma na construção do gráfico.](img/4-visualizacao-de-dados-tabulares/fig-camadas-anotadas.png){#fig-camadas-anotadas}
+
+<!-- FIGURA OPCIONAL: slides 33 e 34 do pptx — gráfico estilo The Economist decomposto em camadas. Serve como exemplo de que gráficos sofisticados também se decompõem nas mesmas camadas.
+![Um gráfico no estilo da revista The Economist decomposto nas camadas da gramática. Fonte: adaptado de [Matteo Larrode](https://medium.com/@matteo.larrode2/create-a-the-economist-style-chart-84193a69263e).](img/4-visualizacao-de-dados-tabulares/fig-economist.png){#fig-economist}
+-->
+
+### O ggplot2
+
+A gramática dos gráficos orienta o desenvolvimento das principais ferramentas de visualização em uso hoje, entre elas o Tableau, o Plotly e bibliotecas de Python como `bokeh`, `altair`, `seaborn` e `plotnine`. Sua implementação mais completa, porém, é o pacote `ggplot2` do R [@wickham2016ggplot2], cujo nome vem justamente da sigla em inglês *grammar of graphics*.
+
+O `ggplot2` faz parte do `tidyverse`, de modo que carregar a coleção completa já o disponibiliza:
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+library(tidyverse)
+```
+
+## O primeiro gráfico
+
+Trabalharemos com a base `escolha_modal`, a mesma dos capítulos anteriores. O código abaixo repete o encadeamento construído no capítulo anterior, lendo o arquivo diretamente da URL, convertendo as variáveis categóricas para *factor*, passando o tempo de viagem de minutos para horas e criando a velocidade média da viagem:
+
+```{r}
+#| label: le-em
+#| cache: true
+#| message: false
+em <- read_csv(
+  "https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv",
+  locale = locale(encoding = "Latin1")
+) |>
+  mutate(
+    sexo             = factor(sexo),
+    posse_auto       = factor(posse_auto),
+    modo_viagem      = factor(modo_viagem),
+    tempo_viagem     = tempo_viagem / 60,
+    vel_media_viagem = dist_viagem / tempo_viagem
+  )
+```
+
+Vale conferir rapidamente a estrutura resultante antes de seguir:
+
+```{r}
+#| label: glimpse-em
+glimpse(em)
+```
+
+A base tem 1.000 observações e sete variáveis originais, além da velocidade média que acabamos de criar. Há três variáveis categóricas (`sexo`, `posse_auto` e `modo_viagem`) e cinco numéricas (`idade`, `renda`, `dist_viagem`, `tempo_viagem` e `vel_media_viagem`), combinação que nos permitirá percorrer todos os casos deste capítulo.
+
+A função `ggplot()` recebe dois argumentos principais, que correspondem exatamente às duas primeiras camadas da gramática. O argumento `data` recebe a tabela, e o argumento `mapping` recebe a função `aes()`, dentro da qual declaramos quais variáveis correspondem a quais propriedades gráficas. Vejamos o que acontece ao informar somente esses dois argumentos:
+
+```{r}
+#| label: fig-ggplot-vazio
+#| fig-cap: "Resultado de uma chamada a `ggplot()` sem geometria. O sistema de eixos é construído, mas nada é desenhado."
+ggplot(data = em, mapping = aes(x = renda))
+```
+
+O R desenhou o painel e a escala do eixo horizontal correspondente à variável `renda`, e não desenhou nenhum dado. Falta a terceira camada fundamental, que é a geometria. As geometrias são adicionadas com o operador `+`:
+
+```{r}
+#| label: fig-ggplot-primeiro
+#| message: false
+#| fig-cap: "Histograma da renda obtido com as três camadas fundamentais da gramática."
+ggplot(data = em, mapping = aes(x = renda)) +
+  geom_histogram()
+```
+
+Com duas linhas de código tratamos de três das sete camadas da gramática. Os nomes dos argumentos podem ser omitidos, já que `data` e `mapping` são o primeiro e o segundo parâmetros da função. É também comum encadear a base com o pipe, o que se torna conveniente quando é preciso transformar os dados antes de plotá-los. As três formas abaixo produzem o mesmo resultado:
+
+```{r}
+#| label: formas-equivalentes
+#| eval: false
+ggplot(data = em, mapping = aes(x = renda)) +
+  geom_histogram()
+
+ggplot(em, aes(x = renda)) +
+  geom_histogram()
+
+em |>
+  ggplot(aes(x = renda)) +
+  geom_histogram()
+```
+
+:::{.callout-warning}
+## `+` e `|>` não são intercambiáveis
+
+O operador `|>` encadeia transformações de dados, passando o resultado de uma função como primeiro argumento da seguinte. O operador `+` empilha camadas de um gráfico já iniciado por `ggplot()`. Trocar um pelo outro gera erro. Na prática, o `|>` aparece antes da chamada a `ggplot()` e o `+` aparece depois dela.
+:::
+
+## Visualizando uma variável
+
+Com uma única variável, a escolha do gráfico depende essencialmente do seu tipo. Para variáveis numéricas queremos enxergar a forma da distribuição, onde os valores se concentram e quão dispersos eles são, e as ferramentas usuais são o histograma e o boxplot. Para variáveis categóricas queremos contar observações em cada nível, e a ferramenta usual é o gráfico de barras.
+
+### O histograma
+
+O histograma divide o intervalo de valores da variável em faixas contíguas, chamadas **classes**, e representa cada classe por uma barra cuja altura corresponde à quantidade de observações que caem naquela faixa. O eixo horizontal traz a variável e o eixo vertical traz a contagem.
+
+<!-- FIGURA: slide 42 do pptx — histograma com as anotações de classe, eixo x e altura -->
+![Anatomia de um histograma. Cada barra corresponde a uma classe, e sua altura indica a quantidade de observações no intervalo.](img/4-visualizacao-de-dados-tabulares/fig-hist-anatomia.png){#fig-hist-anatomia}
+
+A leitura de um histograma responde a duas perguntas de imediato. A primeira é onde os dados se concentram, indicada pelas barras mais altas. A segunda é quão espalhados eles estão, indicada pela largura da região ocupada pelas barras.
+
+### Construindo um histograma passo a passo
+
+Entender como o histograma é montado ajuda a interpretar as escolhas que os pacotes fazem por nós. Vamos construir um manualmente a partir dos tempos de viagem, em minutos, de vinte partidas de uma mesma linha de ônibus:
+
+```{r}
+#| label: tempos-onibus
+tempos <- c(58.8, 65.5, 42.9, 98.4, 87.0, 63.9, 60.8, 60.2, 66.9, 73.8,
+            77.6, 39.9, 58.1, 58.2, 56.5, 59.9, 59.7, 52.8, 62.6, 68.5)
+```
+
+O primeiro passo é ordenar os valores de forma crescente, o que já dá uma primeira noção de como eles se distribuem:
+
+```{r}
+#| label: tempos-ordenados
+sort(tempos)
+```
+
+O segundo passo é definir as classes, e para isso precisamos da amplitude dos dados e de uma quantidade de classes. A amplitude é a diferença entre o maior e o menor valor:
+
+```{r}
+#| label: amplitude
+n <- length(tempos)
+amplitude <- max(tempos) - min(tempos)
+n
+amplitude
+```
+
+A quantidade de classes não é escolhida arbitrariamente. Duas regras práticas são bastante difundidas. A primeira usa a raiz quadrada do número de observações, e a segunda é a regra de Sturges, que calcula $k = 1 + \log_2(n)$:
+
+```{r}
+#| label: regras-classes
+sqrt(n)
+1 + log2(n)
+```
+
+Ambas apontam para cinco classes neste caso. Dividindo a amplitude por esse número, obtemos a extensão de cada intervalo:
+
+```{r}
+#| label: extensao-intervalo
+amplitude / 5
+```
+
+O valor de 11,7 minutos é pouco prático como referência de leitura, e por isso costumamos arredondar para um número redondo. Adotando intervalos de 12 minutos iniciados em 39, os limites das cinco classes ficam assim:
+
+```{r}
+#| label: limites-classes
+limites <- seq(from = 39, to = 99, by = 12)
+limites
+```
+
+A convenção usual é tratar cada intervalo como fechado no início e aberto no final, de modo que a primeira classe contém os valores maiores ou iguais a 39 e menores que 51. No R, a função `cut()` faz esse recorte e o argumento `right = FALSE` estabelece justamente essa convenção. O terceiro passo é contar quantas observações caem em cada classe:
+
+```{r}
+#| label: tbl-classes
+#| tbl-cap: "Distribuição de frequências dos tempos de viagem por classe de 12 minutos."
+tab_classes <- tibble(tempo = tempos) |>
+  mutate(classe = cut(tempo, breaks = limites, right = FALSE)) |>
+  count(classe, name = "frequencia") |>
+  mutate(proporcao = frequencia / sum(frequencia))
+
+tab_classes |>
+  knitr::kable()
+```
+
+O quarto e último passo é desenhar uma barra para cada classe, com altura igual à sua frequência. É exatamente o que o `geom_histogram()` faz, e podemos reproduzir a construção manual informando os mesmos limites por meio do argumento `breaks`:
+
+```{r}
+#| label: fig-hist-manual
+#| fig-cap: "Histograma dos tempos de viagem construído com as classes definidas manualmente."
+tibble(tempo = tempos) |>
+  ggplot(aes(x = tempo)) +
+  geom_histogram(breaks = limites, closed = "left",
+                 color = "black", fill = "gray70") +
+  labs(x = "Tempo de viagem (min)", y = "Frequência") +
+  theme_bw()
+```
+
+A escolha da largura do intervalo tem efeito direto sobre a leitura. Intervalos muito largos escondem a estrutura da distribuição, reduzindo-a a poucas barras que pouco informam sobre sua forma:
+
+```{r}
+#| label: fig-hist-largo
+#| fig-cap: "Os mesmos tempos de viagem com intervalos de 20 minutos."
+tibble(tempo = tempos) |>
+  ggplot(aes(x = tempo)) +
+  geom_histogram(binwidth = 20, boundary = 40,
+                 color = "black", fill = "gray70") +
+  labs(x = "Tempo de viagem (min)", y = "Frequência") +
+  theme_bw()
+```
+
+Intervalos muito estreitos produzem o problema oposto, um gráfico irregular no qual cada barra representa pouquíssimas observações e o padrão geral se perde no ruído:
+
+```{r}
+#| label: fig-hist-estreito
+#| fig-cap: "Os mesmos tempos de viagem com intervalos de 5 minutos."
+tibble(tempo = tempos) |>
+  ggplot(aes(x = tempo)) +
+  geom_histogram(binwidth = 5, boundary = 40,
+                 color = "black", fill = "gray70") +
+  labs(x = "Tempo de viagem (min)", y = "Frequência") +
+  theme_bw()
+```
+
+As regras práticas apresentadas acima servem justamente para evitar esses dois extremos, mas nenhuma delas dispensa a inspeção visual do resultado.
+
+De volta à base `em`, o `geom_histogram()` aceita duas formas de controlar as classes. O argumento `bins` define quantas classes queremos e o argumento `binwidth` define a extensão de cada uma. Usar `binwidth` costuma ser mais informativo, porque a extensão tem significado na unidade da variável:
+
+```{r}
+#| label: fig-hist-renda-bw
+#| fig-cap: "Distribuição da renda com classes de 500 reais."
+em |>
+  ggplot(aes(x = renda)) +
+  geom_histogram(binwidth = 500) +
+  labs(x = "Renda (R$)", y = "Frequência") +
+  theme_bw()
+```
+
+A aparência das barras é ajustada pelos argumentos `color`, que define a cor do contorno, `fill`, que define a cor de preenchimento, e `alpha`, que define a opacidade entre 0 e 1. Aproveitamos também para adicionar rótulos com `labs()`:
+
+```{r}
+#| label: fig-hist-renda-estilo
+#| fig-cap: "Distribuição da renda com ajustes de contorno, preenchimento e opacidade."
+em |>
+  ggplot(aes(x = renda)) +
+  geom_histogram(binwidth = 500,
+                 color = "black", fill = "steelblue", alpha = 0.4) +
+  labs(
+    x = "Renda (R$)",
+    y = "Frequência",
+    title = "Distribuição da renda dos entrevistados",
+    subtitle = "Classes de R$ 500"
+  ) +
+  theme_bw()
+```
+
+:::{.callout-note}
+## Argumentos dentro e fora de `aes()`
+
+Os argumentos `color`, `fill` e `alpha` acima estão fora de `aes()`, e por isso não são mapeamento estético. Eles atribuem um valor fixo à geometria inteira. Quando esses mesmos argumentos aparecem dentro de `aes()`, passam a representar uma variável da base, e o `ggplot2` cria automaticamente uma escala e uma legenda para eles. Essa distinção percorre todo o restante do capítulo.
+:::
+
+A última camada que costumamos ajustar é o tema. O `ggplot2` traz vários temas prontos, entre eles `theme_bw()`, `theme_minimal()`, `theme_classic()` e `theme_void()`, que alteram cores de fundo, grades e eixos sem tocar nos dados representados.
+
+### O boxplot
+
+O boxplot representa a mesma distribuição de outra maneira, resumindo-a por meio de suas medidas de posição. Ele é composto por uma caixa, dois traços que dela se estendem, chamados *whiskers*, e eventualmente por pontos isolados.
+
+<!-- FIGURA: slides 54 e 55 do pptx — boxplot com caixa, whiskers e outliers anotados -->
+![Anatomia de um boxplot, com a caixa delimitada por Q1 e Q3, a mediana em seu interior, os *whiskers* e os *outliers*. Fonte: adaptado de @irizarry_dsbook.](img/4-visualizacao-de-dados-tabulares/fig-boxplot-anatomia.png){#fig-boxplot-anatomia}
+
+A caixa é delimitada pelo primeiro e pelo terceiro quartis, com um traço interno na mediana. Ela contém, portanto, os 50% centrais das observações, e quanto menor sua altura maior é a concentração no centro da distribuição. Os *whiskers* se estendem até o valor mais extremo que ainda esteja a até 1,5 intervalo interquartil de distância da caixa. Observações além desse limite são desenhadas individualmente e chamadas de *outliers*, ou valores discrepantes, sendo pontos de atenção no controle de qualidade dos dados.
+
+Para construir um boxplot da renda, mapeamos a variável ao eixo vertical e adicionamos `geom_boxplot()`:
+
+```{r}
+#| label: fig-boxplot-largo
+#| fig-cap: "Boxplot da renda sem ajuste da largura da caixa."
+em |>
+  ggplot(aes(y = renda)) +
+  geom_boxplot() +
+  labs(y = "Renda (R$)") +
+  theme_bw()
+```
+
+A caixa ocupa toda a largura disponível, o que é pouco elegante. Como o `ggplot2` posiciona a caixa entre -0,4 e 0,4 no eixo horizontal, basta ampliar os limites desse eixo com `xlim()` para obter uma proporção mais agradável:
+
+```{r}
+#| label: fig-boxplot-ajustado
+#| fig-cap: "Boxplot da renda com os limites do eixo horizontal ajustados."
+em |>
+  ggplot(aes(y = renda)) +
+  geom_boxplot() +
+  xlim(-1, 1) +
+  labs(y = "Renda (R$)") +
+  theme_bw()
+```
+
+Vale conferir numericamente a que correspondem os elementos do gráfico. Calculando os quartis, o intervalo interquartil e os limites dos *whiskers*:
+
+```{r}
+#| label: elementos-boxplot
+Q1  <- quantile(em$renda, 0.25)
+Q3  <- quantile(em$renda, 0.75)
+IQR <- Q3 - Q1
+
+c(Q1 = Q1, mediana = median(em$renda), Q3 = Q3, IQR = IQR)
+c(limite_inferior = Q1 - 1.5 * IQR, minimo = min(em$renda))
+c(limite_superior = Q3 + 1.5 * IQR, maximo = max(em$renda))
+```
+
+O *whisker* inferior termina no valor mínimo observado, porque este é maior que $Q_1 - 1{,}5 \cdot IQR$. Já o *whisker* superior termina antes do máximo, o que confirma a existência de observações classificadas como *outliers* na cauda superior da distribuição de renda.
+
+Histograma e boxplot são complementares. O histograma mostra a forma completa da distribuição, incluindo eventuais múltiplos picos, e o boxplot resume posição e dispersão de maneira compacta, o que o torna especialmente útil para comparar vários grupos lado a lado.
+
+<!-- FIGURA: slide 56 do pptx — conjuntos A e B com histograma e boxplot -->
+![Dois conjuntos de dados com seus histogramas e boxplots correspondentes. As duas representações descrevem a mesma distribuição sob perspectivas diferentes.](img/4-visualizacao-de-dados-tabulares/fig-hist-vs-boxplot.png){#fig-hist-vs-boxplot}
+
+### O gráfico de barras
+
+Para variáveis categóricas, a representação usual é o gráfico de barras, que conta as observações em cada nível. O eixo horizontal traz os níveis e o eixo vertical traz a contagem, dada pela altura das barras.
+
+O caminho mais direto usa `geom_bar()`, que faz a contagem internamente a partir da base completa:
+
+```{r}
+#| label: fig-barras-modo
+#| fig-cap: "Quantidade de entrevistados por modo de viagem."
+em |>
+  ggplot(aes(x = modo_viagem)) +
+  geom_bar() +
+  labs(x = "Modo de viagem", y = "Frequência") +
+  theme_bw()
+```
+
+Um caminho alternativo parte de uma tabela já agregada. Sumarizando antes com `count()`, passamos a ter uma coluna com as contagens, e nesse caso a geometria apropriada é `geom_col()`, que usa os valores tal como estão em vez de contá-los:
+
+```{r}
+#| label: tab-modo
+tab_mv <- em |>
+  count(modo_viagem)
+
+tab_mv
+```
+
+```{r}
+#| label: fig-barras-col
+#| fig-cap: "O mesmo gráfico construído a partir de uma tabela previamente agregada."
+tab_mv |>
+  ggplot(aes(x = modo_viagem, y = n)) +
+  geom_col() +
+  labs(x = "Modo de viagem", y = "Frequência") +
+  theme_bw()
+```
+
+Uma terceira forma equivalente é `geom_bar(stat = "identity")`, notação mais antiga que produz o mesmo resultado de `geom_col()` e ainda aparece com frequência em códigos R.
+
+Os ajustes visuais seguem a mesma lógica do histograma, com `width` controlando a largura das barras, cujo padrão é 0,9. Quando os rótulos dos níveis são longos, a função `coord_flip()` inverte os eixos e melhora bastante a legibilidade:
+
+```{r}
+#| label: fig-barras-flip
+#| fig-cap: "Gráfico de barras horizontal, com ajustes de largura e cor."
+em |>
+  ggplot(aes(x = modo_viagem)) +
+  geom_bar(width = 0.6, color = "black", fill = "#4D48B2", alpha = 0.8) +
+  coord_flip() +
+  labs(x = "Modo de viagem", y = "Frequência") +
+  theme_bw()
+```
+
+Note que o eixo de contagem inicia no zero em todos os casos, conforme a regra discutida anteriormente. O `ggplot2` adota esse comportamento por padrão justamente por essa razão.
+
+## Visualizando duas variáveis
+
+Com duas variáveis passamos a investigar relações, e o gráfico adequado depende da combinação de tipos. São três situações possíveis.
+
+### Duas variáveis numéricas
+
+O gráfico de dispersão representa cada observação por um ponto cujas coordenadas são os valores das duas variáveis. É a representação que melhor aproveita a hierarquia de percepção, porque usa posição nos dois eixos.
+
+```{r}
+#| label: fig-dispersao
+#| fig-cap: "Relação entre distância e tempo de viagem."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem)) +
+  geom_point() +
+  labs(x = "Distância da viagem (km)", y = "Tempo de viagem (h)") +
+  theme_bw()
+```
+
+Com mil observações, muitos pontos se sobrepõem e a densidade da nuvem fica difícil de avaliar. O argumento `alpha` resolve o problema, porque regiões com mais sobreposição ficam visivelmente mais escuras:
+
+```{r}
+#| label: fig-dispersao-alpha
+#| fig-cap: "Relação entre distância e tempo de viagem com transparência nos pontos."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem)) +
+  geom_point(size = 3, alpha = 0.2, color = "blue") +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    title = "Tempo de viagem em função da distância"
+  ) +
+  theme_bw()
+```
+
+A nuvem revela uma relação positiva entre as duas variáveis, com dispersão crescente à medida que a distância aumenta.
+
+### Duas variáveis categóricas
+
+Para cruzar duas variáveis categóricas, mantemos a primeira no eixo horizontal e mapeamos a segunda ao preenchimento das barras. Vamos cruzar o sexo do entrevistado com a posse de automóvel:
+
+```{r}
+#| label: fig-barras-empilhadas
+#| fig-cap: "Posse de automóvel por sexo, em barras empilhadas."
+em |>
+  ggplot(aes(x = sexo, fill = posse_auto)) +
+  geom_bar() +
+  labs(x = "Sexo", y = "Frequência", fill = "Possui auto") +
+  theme_bw()
+```
+
+O comportamento padrão é `position = "stack"`, que empilha as categorias. O empilhamento facilita a leitura do total de cada barra e dificulta a comparação entre as categorias empilhadas, já que apenas o segmento da base fica alinhado a uma escala comum. Alterando para `position = "dodge"`, as barras ficam lado a lado e passam a compartilhar a mesma linha de base:
+
+```{r}
+#| label: fig-barras-dodge
+#| fig-cap: "Posse de automóvel por sexo, em barras lado a lado."
+em |>
+  ggplot(aes(x = sexo, fill = posse_auto)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Sexo", y = "Frequência", fill = "Possui auto") +
+  theme_bw()
+```
+
+Frequentemente interessa mais a frequência relativa que a absoluta, sobretudo quando os grupos têm tamanhos diferentes. Aqui existe uma armadilha comum. Ao calcular a proporção logo após o `count()`, obtemos a participação de cada combinação no total geral:
+
+```{r}
+#| label: prop-errada
+em |>
+  count(sexo, posse_auto) |>
+  mutate(p = n / sum(n))
+```
+
+As quatro proporções somam 1, e não é isso que queremos. A pergunta correta é qual a proporção de cada categoria de posse de automóvel **dentro** de cada sexo, o que exige agrupar pela primeira variável antes de calcular:
+
+```{r}
+#| label: prop-certa
+tab_sexo_auto <- em |>
+  count(sexo, posse_auto) |>
+  group_by(sexo) |>
+  mutate(p = n / sum(n))
+
+tab_sexo_auto
+```
+
+Agora as proporções somam 1 dentro de cada sexo, e o gráfico empilhado passa a comparar composições:
+
+```{r}
+#| label: fig-barras-relativa
+#| fig-cap: "Composição da posse de automóvel dentro de cada sexo."
+tab_sexo_auto |>
+  ggplot(aes(x = sexo, y = p, fill = posse_auto)) +
+  geom_col() +
+  labs(x = "Sexo", y = "Proporção", fill = "Possui auto") +
+  theme_bw()
+```
+
+### Uma numérica e uma categórica
+
+Quando cruzamos uma variável numérica com uma categórica, o objetivo costuma ser comparar a distribuição da primeira entre os níveis da segunda. O boxplot é a opção mais econômica, porque coloca vários resumos lado a lado com os eixos alinhados:
+
+```{r}
+#| label: fig-boxplot-grupos
+#| fig-cap: "Velocidade média da viagem por modo de transporte."
+em |>
+  ggplot(aes(x = modo_viagem, y = vel_media_viagem)) +
+  geom_boxplot() +
+  labs(x = "Modo de viagem", y = "Velocidade média (km/h)") +
+  theme_bw()
+```
+
+O gráfico separa nitidamente os modos motorizados dos não motorizados, e mostra também que a dispersão interna varia bastante de um modo para outro.
+
+Uma alternativa é manter o histograma e usar a variável categórica para subdividir o gráfico em painéis, o que introduz a camada de facetas. A função `facet_grid()` recebe uma fórmula na qual a variável antes do til define as linhas do painel e a variável depois dele define as colunas:
+
+```{r}
+#| label: fig-hist-facet
+#| fig-cap: "Distribuição da velocidade média por sexo, em painéis."
+#| message: false
+em |>
+  ggplot(aes(x = vel_media_viagem)) +
+  geom_histogram(color = "black", fill = "gray70") +
+  facet_grid(sexo ~ .) +
+  labs(x = "Velocidade média (km/h)", y = "Frequência") +
+  theme_bw()
+```
+
+Uma terceira alternativa substitui as barras por curvas de densidade sobrepostas, o que facilita a comparação direta das formas por eliminar a separação em painéis:
+
+```{r}
+#| label: fig-densidade
+#| fig-cap: "Densidade da velocidade média por sexo, com curvas sobrepostas."
+em |>
+  ggplot(aes(x = vel_media_viagem, fill = sexo)) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Velocidade média (km/h)", y = "Densidade", fill = "Sexo") +
+  theme_bw()
+```
+
+## Visualizando três ou mais variáveis
+
+A partir da terceira variável, todas as representações consistem em acrescentar camadas de codificação aos gráficos que já conhecemos. É aqui que a hierarquia de percepção se torna um critério prático de decisão, porque precisamos distribuir as variáveis entre elementos visuais de eficácia desigual. A regra de bolso é reservar os eixos, que ocupam o topo da hierarquia, para as variáveis mais importantes da análise, e alocar as demais a cor, tamanho, forma ou facetas.
+
+### Três e quatro variáveis numéricas
+
+Partindo do gráfico de dispersão, a terceira variável numérica pode ser mapeada ao tamanho dos pontos:
+
+```{r}
+#| label: fig-3num-size
+#| fig-cap: "Tempo e distância de viagem com a idade representada pelo tamanho dos pontos."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem, size = idade)) +
+  geom_point(alpha = 0.3) +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    size = "Idade"
+  ) +
+  theme_bw()
+```
+
+Ou, alternativamente, à intensidade de cor:
+
+```{r}
+#| label: fig-3num-color
+#| fig-cap: "Tempo e distância de viagem com a idade representada pela intensidade de cor."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem, color = idade)) +
+  geom_point() +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    color = "Idade"
+  ) +
+  theme_bw()
+```
+
+Combinando os dois recursos, chegamos a quatro variáveis numéricas em um único gráfico. A função `scale_color_distiller()` permite trocar a paleta de cores por uma sequencial mais legível que a padrão:
+
+```{r}
+#| label: fig-4num
+#| fig-cap: "Quatro variáveis numéricas representadas por posição, tamanho e cor."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem,
+             size = renda, color = idade)) +
+  geom_point(alpha = 0.6) +
+  scale_color_distiller(palette = "BuPu", direction = 1) +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    size = "Renda (R$)",
+    color = "Idade"
+  ) +
+  theme_bw()
+```
+
+Este é um bom momento para lembrar que a possibilidade técnica não implica boa prática. Tamanho e intensidade de cor ocupam posições baixas na hierarquia de percepção, de modo que renda e idade aqui comunicam tendências gerais e não permitem comparações precisas. Quando a leitura exata da terceira ou quarta variável for essencial, é preferível produzir vários gráficos mais simples.
+
+### Duas numéricas e uma categórica
+
+Para uma variável categórica, o recurso natural é a matiz de cor, que é ruim para magnitude e ótima para distinguir categorias:
+
+```{r}
+#| label: fig-2num-1cat-cor
+#| fig-cap: "Tempo e distância de viagem por modo de transporte, distinguidos por cor."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem, color = modo_viagem)) +
+  geom_point(alpha = 0.6) +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    color = "Modo de viagem"
+  ) +
+  theme_bw()
+```
+
+A separação entre os modos fica evidente, com cada categoria formando uma faixa própria de inclinação, o que faz sentido porque a inclinação da relação entre distância e tempo é a própria velocidade média.
+
+A forma dos pontos é outra alternativa para variáveis categóricas, embora seja menos eficaz que a cor e só funcione bem com poucos níveis:
+
+```{r}
+#| label: fig-2num-1cat-forma
+#| fig-cap: "Tempo e distância de viagem por sexo, distinguidos pela forma dos pontos."
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem, shape = sexo)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    shape = "Sexo"
+  ) +
+  theme_bw()
+```
+
+### Duas categóricas e uma numérica
+
+Partindo do boxplot agrupado, a segunda variável categórica pode ser mapeada ao preenchimento das caixas. A função `scale_fill_manual()` permite definir cores específicas para cada nível:
+
+```{r}
+#| label: fig-2cat-1num-fill
+#| fig-cap: "Velocidade média por sexo e posse de automóvel, com as caixas distinguidas por cor."
+em |>
+  ggplot(aes(x = sexo, y = vel_media_viagem, fill = posse_auto)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("#E4A11B", "#3B71CA")) +
+  labs(
+    x = "Sexo",
+    y = "Velocidade média (km/h)",
+    fill = "Possui auto"
+  ) +
+  theme_bw()
+```
+
+Ou então às facetas, o que separa os grupos em painéis distintos:
+
+```{r}
+#| label: fig-2cat-1num-facet
+#| fig-cap: "Velocidade média por sexo, em painéis definidos pela posse de automóvel."
+em |>
+  ggplot(aes(x = sexo, y = vel_media_viagem)) +
+  geom_boxplot() +
+  facet_grid(. ~ posse_auto) +
+  labs(x = "Sexo", y = "Velocidade média (km/h)") +
+  theme_bw()
+```
+
+A escolha entre as duas depende da comparação que interessa. Com cor, comparamos os níveis da segunda categórica dentro de cada nível da primeira, porque as caixas ficam próximas. Com facetas, comparamos o padrão geral entre os painéis.
+
+### Três e quatro variáveis categóricas
+
+Com três variáveis categóricas e nenhuma numérica, o que resta a representar é a contagem de observações. Combinamos então eixo horizontal, preenchimento e facetas, uma para cada variável, mantendo a contagem no eixo vertical:
+
+```{r}
+#| label: fig-3cat-abs
+#| fig-cap: "Frequência absoluta por sexo, posse de automóvel e modo de viagem."
+#| fig-width: 9
+#| fig-height: 4
+em |>
+  count(sexo, posse_auto, modo_viagem) |>
+  ggplot(aes(x = sexo, y = n, fill = posse_auto)) +
+  geom_col(position = "dodge") +
+  facet_grid(. ~ modo_viagem) +
+  labs(
+    x = "Sexo",
+    y = "Frequência",
+    fill = "Possui auto"
+  ) +
+  theme_bw()
+```
+
+A versão em frequência relativa exige o mesmo cuidado com o agrupamento visto anteriormente. Para que cada barra empilhada represente a composição dentro de uma combinação de sexo e modo de viagem, agrupamos por essas duas variáveis antes de calcular a proporção:
+
+```{r}
+#| label: fig-3cat-rel
+#| fig-cap: "Composição da posse de automóvel por sexo e modo de viagem."
+#| fig-width: 9
+#| fig-height: 4
+em |>
+  count(sexo, modo_viagem, posse_auto) |>
+  group_by(sexo, modo_viagem) |>
+  mutate(p = n / sum(n)) |>
+  ggplot(aes(x = sexo, y = p, fill = posse_auto)) +
+  geom_col() +
+  facet_grid(. ~ modo_viagem) +
+  labs(
+    x = "Sexo",
+    y = "Proporção",
+    fill = "Possui auto"
+  ) +
+  theme_bw()
+```
+
+Uma quarta variável categórica cabe ainda na segunda dimensão do grid de painéis. Vamos criar uma variável dicotômica de faixa etária e usá-la nas linhas do grid, deixando o modo de viagem nas colunas:
+
+```{r}
+#| label: fig-4cat
+#| fig-cap: "Frequência absoluta por sexo, posse de automóvel, faixa etária e modo de viagem."
+#| fig-width: 9
+#| fig-height: 5
+em |>
+  mutate(faixa_etaria = ifelse(idade > 40, "Mais de 40 anos", "Até 40 anos")) |>
+  count(sexo, posse_auto, faixa_etaria, modo_viagem) |>
+  ggplot(aes(x = sexo, y = n, fill = posse_auto)) +
+  geom_col(position = "dodge") +
+  facet_grid(faixa_etaria ~ modo_viagem) +
+  labs(
+    x = "Sexo",
+    y = "Frequência",
+    fill = "Possui auto"
+  ) +
+  theme_bw()
+```
+
+### Duas numéricas e duas categóricas
+
+O último caso combina o gráfico de dispersão com um grid completo de painéis, no qual uma variável categórica define as linhas e a outra define as colunas:
+
+```{r}
+#| label: fig-2num-2cat-grid
+#| fig-cap: "Tempo e distância de viagem em painéis definidos por posse de automóvel e modo de viagem."
+#| fig-width: 9
+#| fig-height: 5
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem)) +
+  geom_point(alpha = 0.4) +
+  facet_grid(posse_auto ~ modo_viagem) +
+  labs(x = "Distância da viagem (km)", y = "Tempo de viagem (h)") +
+  theme_bw()
+```
+
+Alternativamente, uma das categóricas vai para a cor e apenas a outra permanece nos painéis, o que economiza espaço:
+
+```{r}
+#| label: fig-2num-2cat-cor
+#| fig-cap: "Tempo e distância de viagem por modo, com a posse de automóvel indicada por cor."
+#| fig-width: 9
+#| fig-height: 3.5
+em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem, color = posse_auto)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(. ~ modo_viagem) +
+  labs(
+    x = "Distância da viagem (km)",
+    y = "Tempo de viagem (h)",
+    color = "Possui auto"
+  ) +
+  theme_bw()
+```
+
+## Refinando e salvando gráficos
+
+Um mesmo gráfico pode receber mais de uma geometria. O caso mais frequente sobrepõe uma curva de densidade a um histograma, o que exige uma ressalva. O histograma desenha contagens no eixo vertical e a densidade desenha valores muito menores, de modo que as duas escalas são incompatíveis. A solução é pedir ao histograma que apresente densidade em vez de contagem, o que se faz com `after_stat()` dentro de `aes()`:
+
+```{r}
+#| label: fig-hist-densidade
+#| fig-cap: "Histograma da renda com a curva de densidade sobreposta."
+em |>
+  ggplot(aes(x = renda)) +
+  geom_histogram(aes(y = after_stat(density)), binwidth = 500,
+                 color = "black", fill = "gray80") +
+  geom_density(color = "#4D48B2", linewidth = 1) +
+  labs(x = "Renda (R$)", y = "Densidade") +
+  theme_bw()
+```
+
+O exemplo ilustra também onde declarar o mapeamento estético. O que aparece dentro de `aes()` na chamada a `ggplot()` vale para todas as geometrias do gráfico, e é o caso de `x = renda` acima. O que aparece dentro de `aes()` em uma geometria específica vale apenas para ela, e é o caso de `y = after_stat(density)`, que se aplica somente ao histograma. Essa distinção é útil quando geometrias diferentes precisam de mapeamentos diferentes.
+
+Por fim, gráficos costumam sair do R para relatórios, artigos e apresentações. A função `ggsave()` exporta o último gráfico produzido, ou um gráfico armazenado em um objeto, com controle sobre dimensões e resolução:
+
+```{r}
+#| label: ggsave-exemplo
+#| eval: false
+grafico_renda <- em |>
+  ggplot(aes(x = renda)) +
+  geom_histogram(binwidth = 500, color = "black", fill = "gray70") +
+  labs(x = "Renda (R$)", y = "Frequência") +
+  theme_bw()
+
+ggsave("histograma_renda.png", plot = grafico_renda,
+       width = 16, height = 10, units = "cm", dpi = 300)
+```
+
+Os argumentos `width` e `height` definem as dimensões na unidade indicada em `units`, e `dpi` define a resolução em pontos por polegada. Para publicação impressa, 300 dpi é o valor usualmente exigido. O formato de saída é deduzido da extensão do nome do arquivo, o que permite gerar `.png`, `.jpg`, `.pdf` ou `.svg` sem argumentos adicionais.
+
+## Exercícios
+
+Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde você irá processá-los. Crie um projeto do R dentro dessa pasta e um novo script `.R` dentro desse projeto para responder às questões abaixo.
+
+- [`escolha_modal.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv)
+- [`velocidades.xlsx`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx)
+
+1. Leia o arquivo `velocidades.xlsx`, armazene-o em um objeto `vel` e converta `faixa` e `tipo_veic` para *factor*. Construa um histograma da variável `velocidade` com classes de 5 km/h, com contorno preto e preenchimento cinza, rótulos em português nos dois eixos e um tema à sua escolha.
+
+2. Ainda com a base `vel`, construa um boxplot da variável `velocidade`. Em seguida calcule no R o primeiro quartil, o terceiro quartil, o intervalo interquartil e os limites $Q_1 - 1{,}5 \cdot IQR$ e $Q_3 + 1{,}5 \cdot IQR$. Verifique se existem *outliers* e, em caso afirmativo, em qual das caudas eles se encontram.
+
+3. Construa um gráfico de barras horizontal com a contagem de observações por `tipo_veic`. Produza o mesmo gráfico de duas maneiras, uma diretamente da base completa com `geom_bar()` e outra a partir de uma tabela agregada com `count()` e `geom_col()`.
+
+4. Compare a distribuição da velocidade entre os tipos de veículo usando um boxplot agrupado. Em seguida produza a mesma comparação com curvas de densidade sobrepostas. Qual das duas representações você considera mais adequada para essa comparação, e por quê?
+
+5. Na base `vel`, cruze `faixa` e `tipo_veic` em um gráfico de barras agrupadas, primeiro em frequência absoluta e depois em frequência relativa dentro de cada faixa. Atenção ao agrupamento necessário para o cálculo das proporções.
+
+6. Usando a base `em` deste capítulo, construa um gráfico de dispersão entre `idade` e `renda`, mapeando o modo de viagem à cor dos pontos e a posse de automóvel aos painéis. Ajuste a transparência dos pontos e escreva uma frase interpretando o padrão observado.
+
+7. Retome o gráfico da questão anterior e escolha uma codificação alternativa para a variável `modo_viagem`, usando forma em vez de cor. Compare os dois resultados à luz da hierarquia de percepção discutida na @sec-hierarquia e justifique qual deles comunica melhor a informação.
+
+8. Escolha o gráfico que você considerou mais informativo entre todos os que produziu nesta lista e exporte-o com `ggsave()` em formato `.png`, com 16 cm de largura, 10 cm de altura e resolução de 300 dpi.
