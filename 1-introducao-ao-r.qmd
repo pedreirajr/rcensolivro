@@ -587,11 +587,11 @@ Para criar um projeto, vá em **File > New Project**. Se você já tiver uma pas
 
 Os arquivos utilizados nos exemplos deste capítulo estão disponíveis para download abaixo. Clique em cada link para baixar o arquivo e salve-o diretamente na pasta onde está o seu projeto do RStudio.
 
-- [`viagens_trabalho.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.csv)
-- [`viagens_trabalho.txt`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.txt)
-- [`viagens_trabalho.xlsx`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.xlsx)
-- [`viagens_trabalho2.txt`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho2.txt)
-- [`viagens_trabalho3.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho3.csv)
+- [`viagens_trabalho.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.csv)
+- [`viagens_trabalho.txt`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.txt)
+- [`viagens_trabalho.xlsx`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.xlsx)
+- [`viagens_trabalho2.txt`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho2.txt)
+- [`viagens_trabalho3.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho3.csv)
 
 Todos os arquivos contêm dados fictícios sobre o deslocamento para o trabalho de uma amostra de trabalhadores. As variáveis incluem uma coluna de identificação dos indivíduos (`ID`), se o indivíduo possui veículo motorizado (`posse_veic`), o tamanho da família, em quantidade de membros (`tam_familia`), a distância da viagem em km (`dist_v_km`) e o tempo de deslocamento em minutos (`tempo_v_min`). As diferenças entre os arquivos são apenas de formato: cada um usa uma configuração diferente de separador de colunas e separador decimal, o que nos permitirá explorar as diferentes opções de leitura disponíveis no R.
 
@@ -611,7 +611,7 @@ Cada linha é uma observação (um trabalhador) e cada valor separado por vírgu
 A função do R base para leitura de CSV é `read.csv()`. Passamos o nome do arquivo entre aspas como argumento e armazenamos o resultado em um objeto:
 
 ```{r, echo = FALSE, message = FALSE}
-url <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.csv"
+url <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.csv"
 df <- read.csv(url)
 ```
 
@@ -638,7 +638,7 @@ Note que as colunas `ID`, `dist_v_km` e `tempo_v_min` foram lidas como numérica
 #| echo: false
 #| message: false
 
-url_txt <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.txt"
+url_txt <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.txt"
 df_txt <- read.csv(url_txt)
 ```
 
@@ -683,8 +683,8 @@ O arquivo `viagens_trabalho2.txt` usa espaço como separador de colunas e vírgu
 #| echo: false
 #| message: false
 
-url2 <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho2.txt"
-url3 <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho3.csv"
+url2 <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho2.txt"
+url3 <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho3.csv"
 df2 <- read.csv(url2, sep = " ", dec = ",")
 df3 <- read.csv(url3, sep = ";", dec = ",")
 ```
@@ -749,7 +749,7 @@ O R *base* não possui uma função nativa para leitura de arquivos Excel. Para 
 #| message: false
 
 library(readxl)
-url_xlsx <- "https://github.com/pedreirajr/bdib/releases/download/datsets/viagens_trabalho.xlsx"
+url_xlsx <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/viagens_trabalho.xlsx"
 temp_xlsx <- tempfile(fileext = ".xlsx")
 download.file(url_xlsx, temp_xlsx, mode = "wb", quiet = TRUE)
 df_excel <- read_excel(temp_xlsx)

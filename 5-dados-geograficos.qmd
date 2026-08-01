@@ -10,13 +10,13 @@ Este capítulo é uma introdução ao tema. Há livros e disciplinas inteiras de
 
 O foco recai inteiramente sobre dados vetoriais e como processá-los com o pacote `sf` (*simple features*), que é a principal biblioteca para esse tipo de dado no ecossistema R. Para executar as atividades ao longo do capítulo, utilizaremos alguns arquivos geográficos que seguem abaixo com *link* para download. Desde já, recomendo que você faça o *donwload* dos mesmos para uma pasta em seu computador, crie um arquivo de projeto do R neste mesmo local e, na sequência, um *script* `.R` para explorá-los conforme vá desenvolvendo a leitura do capítulo.
 
--   [`uf_br.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/uf_br.gpkg) — polígonos dos estados do Brasil
--   [`ssa.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/ssa.gpkg) — polígono do município de Salvador
--   [`bairros_ssa.geojson`](https://github.com/pedreirajr/bdib/releases/download/datsets/bairros_ssa.geojson) — polígonos dos bairros de Salvador
--   [`escolas_ssa.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/escolas_ssa.gpkg) — pontos das escolas de Salvador
--   [`smsl_est.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/smsl_est.gpkg) — estações do metrô de Salvador
--   [`smsl_linhas.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/smsl_linhas.gpkg) — linhas do metrô de Salvador
--   [`pop_uf_br.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/pop_uf_br.csv) — população por UF (Censo 2022)
+-   [`uf_br.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/uf_br.gpkg) — polígonos dos estados do Brasil
+-   [`ssa.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/ssa.gpkg) — polígono do município de Salvador
+-   [`bairros_ssa.geojson`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/bairros_ssa.geojson) — polígonos dos bairros de Salvador
+-   [`escolas_ssa.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolas_ssa.gpkg) — pontos das escolas de Salvador
+-   [`smsl_est.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/smsl_est.gpkg) — estações do metrô de Salvador
+-   [`smsl_linhas.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/smsl_linhas.gpkg) — linhas do metrô de Salvador
+-   [`pop_uf_br.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/pop_uf_br.csv) — população por UF (Censo 2022)
 
 ```{r}
 #| label: setup
@@ -32,7 +32,7 @@ library(patchwork)
 #| include: false
 #| cache: true
 #| message: false
-url_base <- "https://github.com/pedreirajr/bdib/releases/download/datsets/"
+url_base <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/"
 
 uf_br      <- st_read(paste0(url_base, "uf_br.gpkg"),      quiet = TRUE)
 ssa        <- st_read(paste0(url_base, "ssa.gpkg"),         quiet = TRUE)
@@ -1083,8 +1083,8 @@ Com essas operações, é possível extrair uma grande variedade de informaçõe
 
 Faça o download dos arquivos abaixo e salve-os na mesma pasta de trabalho:
 
--   [`estab_sau_ba.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/estab_sau_ba.gpkg) — estabelecimentos de saúde da Bahia
--   [`reg_sau_ba.gpkg`](https://github.com/pedreirajr/bdib/releases/download/datsets/reg_sau_ba.gpkg) — regiões de saúde da Bahia
+-   [`estab_sau_ba.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/estab_sau_ba.gpkg) — estabelecimentos de saúde da Bahia
+-   [`reg_sau_ba.gpkg`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/reg_sau_ba.gpkg) — regiões de saúde da Bahia
 
 **Exercício 1.** Carregue os dois arquivos com `st_read()`. Verifique o SRC de cada um com `st_crs()`. Plote ambas as camadas no mesmo mapa: as regiões de saúde como polígonos e os estabelecimentos como pontos.
 

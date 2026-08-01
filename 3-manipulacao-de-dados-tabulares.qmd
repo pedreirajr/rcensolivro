@@ -8,8 +8,8 @@ Para quem preferir esta aula em formato audiovisual, há uma *playlist* de video
 
 Neste capítulo, trabalharemos com dois conjuntos de dados: `escolha_modal.csv` e `velocidades.xlsx`. Faça o download de ambos pelos links abaixo e salve-os em uma pasta onde você irá criar o projeto no RStudio no qual executará esta aula. Assim que salvá-los, crie um novo script do R para iniciarmos o estudo.
 
-- [`escolha_modal.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv)
-- [`velocidades.xlsx`](https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx)
+- [`escolha_modal.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv)
+- [`velocidades.xlsx`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx)
 
 ```{r}
 #| label: setup
@@ -55,7 +55,7 @@ Embora ambas façam a leitura do mesmo arquivo, o comportamento ao imprimir os o
 #| cache: true
 #| message: false
 #| warning: false
-em2 <- read_csv("https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv")
+em2 <- read_csv("https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv")
 ```
 
 ```{r}
@@ -124,7 +124,7 @@ Outro aspecto interessante quando queremos utilizar funções de bibliotecas já
 #| echo: false
 #| cache: true
 #| message: false
-url_vel <- "https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx"
+url_vel <- "https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx"
 temp_vel <- tempfile(fileext = ".xlsx")
 download.file(url_vel, temp_vel, mode = "wb", quiet = TRUE)
 vel <- readxl::read_xlsx(temp_vel)
@@ -169,7 +169,7 @@ Vamos agora fazer a leitura definitiva da base `escolha_modal.csv`, informando a
 #| cache: true
 #| message: false
 em <- read_csv(
-  "https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv",
+  "https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv",
   locale = locale(encoding = "Latin1")
 )
 ```
@@ -604,8 +604,8 @@ Ao carregar com `readRDS()`, o objeto retorna exatamente no estado em que foi sa
 
 Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde você irá processá-los. Crie um projeto do R dentro dessa pasta e um novo script `.R` dentro desse projeto para responder às questões abaixo.
 
-- [`escolha_modal.csv`](https://github.com/pedreirajr/bdib/releases/download/datsets/escolha_modal.csv)
-- [`velocidades.xlsx`](https://github.com/pedreirajr/bdib/releases/download/datsets/velocidades.xlsx)
+- [`escolha_modal.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv)
+- [`velocidades.xlsx`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx)
 
 1. Leia o arquivo `velocidades.xlsx` como um `tibble` e armazene-o em um objeto denominado `vel` e converta as variáveis `faixa` e `tipo_veic` para *factor*. Em seguida, obtenha as quantidades e proporções para cada combinação de níveis de `faixa` e `tipo_veic`. Na sequência filtre todas as observações com proporção acima de 0.1 e ordene-as de forma decrescente de acordo com a frequência absoluta de observações.
 
