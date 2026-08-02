@@ -6,20 +6,46 @@ title: "Visualização de Dados Tabulares"
 
 [▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE) -->
 
-Nos dois capítulos anteriores aprendemos a resumir dados em números e a organizá-los em tabelas. Este capítulo trata do terceiro movimento da análise exploratória, que é transformar esses dados em imagens. A ordem não é acidental. Uma média esconde a forma da distribuição que a gerou, e uma tabela de mil linhas não revela sozinha o padrão que a atravessa. O gráfico é o instrumento que torna esses padrões visíveis antes que qualquer modelo estatístico seja ajustado.
+Nos dois capítulos anteriores aprendemos a resumir dados em números e a organizá-los em tabelas. Este capítulo trata do terceiro movimento da análise exploratória, que é transformar esses dados em imagens. Começaremos discutindo a importância da visualização de dados e quais princípios separam um gráfico eficaz de um gráfico enganoso. Em seguida apresentaremos a Gramática dos Gráficos, o arcabouço teórico que estrutura o pacote `ggplot2` que utilizaremos no R. POr fim, percorreremos sistematicamente as possibilidades de representação conforme a quantidade e o tipo das variáveis envolvidas.
 
-Começaremos discutindo por que a visualização funciona e quais princípios separam um gráfico eficaz de um gráfico enganoso. Em seguida apresentaremos a gramática dos gráficos, o arcabouço teórico que estrutura o pacote `ggplot2`, e percorreremos sistematicamente as possibilidades de representação conforme a quantidade e o tipo das variáveis envolvidas.
+Neste capítulo, retomaremos os dois conjuntos de dados do capítulo anterior, `escolha_modal.csv` e `velocidades.xlsx`. Faça o download de ambos pelos links abaixo e salve-os em uma pasta onde você irá criar o projeto no RStudio no qual executará esta aula. Assim que salvá-los, crie um novo script do R para iniciarmos o estudo.
 
-## Por que visualizar
+- [`escolha_modal.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv)
+- [`velocidades.xlsx`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/velocidades.xlsx)
 
-Em 1854, um surto de cólera atingiu o bairro do Soho, em Londres. A explicação corrente para a propagação da doença era a teoria do miasma, segundo a qual a contaminação viajava pelo ar. O médico John Snow desconfiava dessa hipótese e adotou um procedimento incomum para a época, que foi registrar em uma planta do bairro a localização de cada morte, representada por uma pequena barra sobre o endereço correspondente.
+```{r}
+#| label: setup-oculto
+#| include: false
+# Pacotes usados nas figuras ilustrativas das seções conceituais, cujo código
+# não é exibido. O carregamento didático do tidyverse aparece mais adiante.
+library(tidyverse)
+library(patchwork)
+```
 
-<!-- FIGURA: slides 4 e 5 do pptx — recortar o mapa (imagem grande à esquerda) -->
-![Mapa da distribuição espacial das mortes por cólera elaborado por John Snow durante o surto de 1854 no Soho, em Londres. Cada barra representa uma morte registrada no endereço correspondente.](img/4-visualizacao-de-dados-tabulares/fig-snow-mapa.png){#fig-snow-mapa}
+## Importância da Visualização de Dados
 
-O padrão que emergiu no mapa (@fig-snow-mapa) foi decisivo. As mortes se adensavam em torno de uma bomba d'água específica, e não se distribuíam de forma difusa como se esperaria de uma contaminação pelo ar. Estabelecimentos vizinhos que dispunham de fonte de água própria, como uma cervejaria da região, escaparam quase ilesos. A investigação posterior confirmou que aquela bomba era abastecida por uma tubulação contaminada por esgoto. Nenhum cálculo estatístico havia sido feito, e mesmo assim a evidência era difícil de contestar.
+A Guerra da Crimeia estendeu-se de 1853 a 1856 pela península da Crimeia, no mar Negro, pelo Cáucaso e pelos Bálcãs. De um lado estava o Império Russo, e do outro uma coligação formada por Império Otomano, Reino Unido, França e Reino da Sardenha, reunida em reação às pretensões expansionistas da Rússia. Em outubro de 1854, a enfermeira britânica Florence Nightingale foi enviada com uma equipe de voluntárias ao hospital militar de Scutari, na Turquia, para cuidar dos feridos do conflito.
 
-O exemplo ilustra a razão de ser da visualização de dados. Seu papel não é substituir a análise quantitativa por métodos computacionais, e sim ampliar a capacidade humana de reconhecer estruturas nos dados [@munzner2014]. Quando a pergunta já está bem formulada e o método é conhecido, um algoritmo resolve o problema sem intervenção humana. A visualização se torna indispensável justamente na situação oposta, quando ainda não sabemos qual pergunta fazer, quando há dezenas de hipóteses possíveis e nenhuma delas se destaca de antemão. Foi exatamente a situação de Snow.
+![Florence Nightingale, enfermeira britânica inventora do diagrama da rosa](img/4-visualizacao-de-dados-tabulares/4-1-florence_nightingale.png){#fig-florence .float-right-sm}
+
+O que Nightingale encontrou em Scutari a levou a organizar um registro meticuloso das causas de morte entre os soldados britânicos. Os números mostravam que a maior parte das mortes não vinha dos combates, e sim de doenças contraídas dentro do próprio hospital, como cólera, febre tifoide e disenteria, favorecidas pela ausência de cuidados sanitários, conforme se pode observar na @fig-rose-diagram. Nos primeiros sete meses da campanha, a mortalidade por doença correspondia sozinha a uma taxa anual de 60%, superior à da Grande Peste de Londres de 1665 [@friendly2021].
+
+De volta à Inglaterra em julho de 1856, ela passou a pressionar o governo britânico por reformas nos hospitais militares. Apresentou relatórios extensos, cheios de tabelas e de propostas concretas, e pouco aconteceu. Foi então que recorreu a um recurso que acabaria por mudar a história da comunicação de dados.
+
+![Diagrama da Rosa, apresentando as causas de mortalidade no exército britânico no Oriente, publicado por Florence Nightingale em 1859. A rosa da direita cobre o período de abril de 1854 a março de 1855, e a da esquerda cobre de abril de 1855 a março de 1856. Fonte: @nightingale1859.](img/4-visualizacao-de-dados-tabulares/4-2-rose_diagram.png){#fig-rose-diagram}
+
+O diagrama representa cada mês do conflito como uma fatia de ângulo igual, cuja extensão a partir do centro corresponde à mortalidade daquele mês. As áreas azuis indicam mortes por doenças evitáveis, as vermelhas indicam mortes por ferimentos de combate e as cinzas indicam as demais causas, como acidentes e queimaduras. A separação em duas rosas é proposital, pois a Comissão Sanitária encarregada de investigar as condições dos hospitais chegou à região em março de 1855, exatamente na fronteira entre os dois períodos representados [@friendly2021].
+
+A comparação entre as duas rosas dispensa qualquer cálculo. O azul domina a figura inteira e encolhe visivelmente no segundo período. Em uma única imagem ficava demonstrado que os soldados morriam sobretudo de causas evitáveis e que as medidas sanitárias funcionavam. O argumento venceu onde os relatórios haviam falhado, e as reformas sanitárias foram adotadas nos hospitais militares britânicos. A estratégia está resumida em uma frase tradicionalmente atribuída a ela:
+
+::: {.citacao-destaque}
+"O diagrama deve afetar através dos olhos o que não conseguimos transmitir ao cérebro do público através dos seus ouvidos à prova de palavras."
+:::
+
+Há no diagrama um detalhe que antecipa o assunto das próximas seções. Em uma versão anterior, Nightingale representou a mortalidade pela distância entre o centro e a ponta da fatia. Ela percebeu que o resultado enganava, porque o olho lê a área da fatia e não o seu comprimento, de modo que dobrar a taxa de mortalidade quadruplicava a área percebida. Na versão final passou a usar a raiz quadrada da distância, fazendo com que a área de cada fatia refletisse corretamente o número de mortes [@friendly2021]. Mais de um século antes de a psicologia da percepção ser sistematicamente incorporada ao projeto de gráficos, ela já havia identificado o problema e o corrigido.
+
+<!-- Trecho removido
+O episódio ilustra as duas razões de ser da visualização de dados. A primeira é comunicar um achado de forma que dispense a mediação de quem o produziu, como no diagrama da rosa. A segunda é ampliar a capacidade humana de reconhecer estruturas nos dados, em vez de substituí-la por métodos computacionais [@munzner2015]. Quando a pergunta já está bem formulada e o método é conhecido, um algoritmo resolve o problema sem intervenção humana. A visualização se torna indispensável na situação oposta, quando ainda não sabemos qual pergunta fazer, quando há muitas hipóteses possíveis e nenhuma delas se destaca de antemão.
 
 Essa utilidade, porém, não é automática. Um gráfico mal construído consome mais tempo do que a tabela que pretendia resumir e pode induzir conclusões erradas. Uma visualização eficaz precisa atender a quatro requisitos [@maguire2019]:
 
@@ -28,38 +54,13 @@ Essa utilidade, porém, não é automática. Um gráfico mal construído consome
 - incluir apenas as informações relevantes para esse propósito;
 - codificar os dados de forma adequada à comparação que se pretende fazer.
 
-O quarto requisito é o mais técnico e o menos intuitivo, e é dele que trataremos nas próximas duas seções.
+O quarto requisito é o mais técnico e o menos intuitivo, e é dele que trataremos nas próximas duas seções. 
 
-## Da tabela ao gráfico
-
-Considere uma tabela de resultados financeiros por unidade de negócio e período. Os números estão todos ali, corretos e completos, mas encontrar as unidades deficitárias exige percorrer célula por célula procurando o sinal negativo. O esforço cognitivo é alto e cresce proporcionalmente ao tamanho da tabela.
-
-<!-- FIGURA: slide 18 do pptx — tabela financeira sem codificação visual -->
-![Tabela de resultados financeiros sem nenhuma codificação visual. Identificar os valores negativos exige leitura sequencial de cada célula. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-tabela-crua.png){#fig-tabela-crua}
-
-Uma primeira intervenção consiste em colorir de vermelho os valores negativos. A informação contida na tabela é rigorosamente a mesma, mas agora existe um atalho perceptivo. Os prejuízos saltam aos olhos sem que seja preciso ler os números.
-
-<!-- FIGURA: slide 19 do pptx — mesma tabela com valores negativos em vermelho -->
-![A mesma tabela com os valores negativos destacados em vermelho. A cor funciona como atalho perceptivo para localizar os prejuízos. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-tabela-cor.png){#fig-tabela-cor}
-
-A cor resolve a localização, mas não resolve a comparação. Saber que duas unidades tiveram prejuízo não informa qual delas teve o prejuízo maior, e a leitura dos números continua necessária. O passo seguinte substitui cada valor por uma barra de comprimento proporcional, e é aí que a magnitude relativa se torna imediata.
-
-<!-- FIGURA: slide 20 do pptx — mesma tabela com os números convertidos em barras -->
-![A mesma tabela com os valores representados por barras de comprimento proporcional. A comparação de magnitudes passa a ser imediata. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-tabela-barras.png){#fig-tabela-barras}
-
-As três versões contêm os mesmos dados e produzem experiências de leitura muito diferentes. O que mudou de uma para outra foi a **codificação visual**, ou seja, a escolha de qual propriedade gráfica representa qual informação. Entender essa escolha é o que permite passar da intuição para o método.
-
-<!-- FIGURA OPCIONAL: slide 21 do pptx — esquema codificador/decodificador. Descomentar se quiser reforçar o argumento antes da próxima seção.
-![Processo de codificação e decodificação da comunicação visual. Os dados e a tarefa são codificados em uma visualização, cuja leitura gera *insights* ou erros. Fonte: adaptado de @maguire2019.](img/4-visualizacao-de-dados-tabulares/fig-codificacao-decodificacao.png){#fig-codificacao-decodificacao}
 -->
 
+## Como percebemos elementos visuais {#sec-percepcao}
 
-
-## Como percebemos elementos visuais
-
-### Os elementos visuais
-
-Todo gráfico codifica dados usando um repertório limitado de propriedades gráficas. Sistematizá-las ajuda a perceber que a escolha entre um gráfico e outro é, no fundo, uma escolha entre esses elementos [@aldhous2014]:
+Todo gráfico codifica dados usando um repertório limitado de propriedades gráficas. Sistematizá-las ajuda a perceber que a escolha entre um gráfico e outro é, no fundo, uma escolha entre esses elementos [@munzner2015]:
 
 - **posição**, o local que o dado ocupa no espaço do gráfico;
 - **tamanho**, a extensão linear das formas;
@@ -68,85 +69,181 @@ Todo gráfico codifica dados usando um repertório limitado de propriedades grá
 - **forma**, o símbolo usado para representar categorias;
 - **área**, a extensão em duas dimensões;
 - **volume**, a extensão em três dimensões;
-- **matiz de cor**, o tom ou coloração propriamente dito;
+- **matiz**, o tom ou coloração propriamente dito;
 - **saturação**, a intensidade da matiz.
 
-<!-- FIGURA: slides 24 e 25 do pptx — montar um painel único com os nove elementos -->
-![Os nove elementos visuais disponíveis para codificar dados em um gráfico. Fonte: adaptado de @aldhous2014.](img/4-visualizacao-de-dados-tabulares/fig-elementos-visuais.png){#fig-elementos-visuais}
+![Elementos visuais disponíveis para codificar dados em um gráfico. Fonte: adaptado de @munzner2015.](img/4-visualizacao-de-dados-tabulares/4-3-elementos_visuais.png){#fig-elementos-visuais}
 
-Um gráfico de barras usa posição e tamanho. Um gráfico de setores usa ângulo e área. Um gráfico de dispersão com pontos coloridos usa posição, matiz e eventualmente área. A pergunta que importa é se esses elementos são igualmente eficazes.
+Os diferentes tipos de gráfico possuem como pecularidade exatamente um ou mais destes elementos. Enquanto um gráfico de barras usa posição e tamanho, um gráfico de setores^[Coloquialmente conhecido como gráfico de *pizza*] usa ângulo e área. Já um gráfico de dispersão com pontos coloridos usa posição, matiz e eventualmente área. A pergunta que importa é quão eficiente cada um desses elementos é no processo de assimilação das informações que se pretende transmitir.
 
-### A hierarquia de percepção {#sec-hierarquia}
+A resposta a essa pergunta pode ser dada a partir de um simples exercício visual. A @fig-tres-codificacoes mostra um mesmo conjunto de cinco valores codificado de três maneiras, por intensidade de cor, por área de círculo e por altura de barra. Antes de prosseguir na leitura, vale a pena parar e tentar responder, para cada um dos três painéis, quantas vezes o valor de D é maior que o de E.
 
-A resposta é que não são, e isso pode ser verificado experimentalmente. @fig-tres-codificacoes mostra o mesmo conjunto de valores codificado de três maneiras, por intensidade de cor, por área de círculo e por altura de barra.
+```{r}
+#| label: fig-tres-codificacoes
+#| echo: false
+#| fig-cap: "Um mesmo conjunto de valores codificado por intensidade de cor (a), por área de círculo (b) e por altura de barra (c). Elaboração própria, com base na demonstração de @munzner2015."
+#| fig-width: 3.2
+#| fig-height: 6
+dados_cod <- tibble(
+  categoria = factor(c("A", "B", "C", "D", "E")),
+  valor     = c(20, 40, 30, 50, 10)
+)
 
-<!-- FIGURA: slide 22 do pptx — os três painéis (A) cor, (B) área, (C) barras -->
-![Um mesmo conjunto de valores codificado por intensidade de cor (a), por área de círculo (b) e por altura de barra (c). Fonte: adaptado de @aldhous2014.](img/4-visualizacao-de-dados-tabulares/fig-tres-codificacoes.png){#fig-tres-codificacoes}
+tema_cod <- theme_minimal(base_size = 11) +
+  theme(
+    panel.grid      = element_blank(),
+    axis.title      = element_blank(),
+    axis.text.y     = element_blank(),
+    legend.position = "none",
+    plot.title      = element_text(size = 11, hjust = 0.5),
+    plot.margin     = margin(t = 4, r = 4, b = 16, l = 4)
+  )
 
-A comparação entre os valores é progressivamente mais fácil da primeira para a terceira representação. Com intensidade de cor conseguimos apenas ordenar grosseiramente os valores, com área acertamos a ordem mas erramos as proporções, e com altura de barra estimamos as razões entre os valores com boa precisão.
+p_cor <- dados_cod |>
+  ggplot(aes(x = categoria, y = 1, fill = valor)) +
+  geom_point(shape = 22, size = 16, color = "grey80", stroke = 0.4) +
+  scale_fill_gradient(low = "#EDEBF7", high = "#2F2A7A") +
+  scale_y_continuous(limits = c(0.82, 1.9), expand = c(0, 0)) +
+  coord_cartesian(clip = "off") +
+  labs(title = "(a) intensidade de cor") +
+  tema_cod
 
-Esse resultado não é uma impressão subjetiva. @cleveland1985 conduziram experimentos controlados medindo o erro cometido por participantes ao estimar quantidades codificadas por diferentes elementos visuais, e obtiveram uma ordenação estável entre eles.
+p_area <- dados_cod |>
+  ggplot(aes(x = categoria, y = 1, size = valor)) +
+  geom_point(color = "#4D48B2") +
+  scale_size_area(max_size = 20) +
+  scale_y_continuous(limits = c(0.78, 1.9), expand = c(0, 0)) +
+  coord_cartesian(clip = "off") +
+  labs(title = "(b) área do círculo") +
+  tema_cod
 
-<!-- FIGURA: slide 26 do pptx — a hierarquia completa com as miniaturas -->
-![Hierarquia de percepção dos elementos visuais. Os elementos no topo permitem comparações quantitativas mais precisas, e os da base permitem apenas comparações genéricas. Fonte: adaptado de @cleveland1985 e @aldhous2014.](img/4-visualizacao-de-dados-tabulares/fig-hierarquia-percepcao.png){#fig-hierarquia-percepcao}
+p_barra <- dados_cod |>
+  ggplot(aes(x = categoria, y = valor)) +
+  geom_col(width = 0.7, fill = "#4D48B2") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "(c) altura da barra") +
+  tema_cod
 
-A hierarquia (@fig-hierarquia-percepcao) coloca no topo a posição em escala comum e alinhada, seguida da posição em escala comum mas desalinhada, da extensão, do ângulo, da inclinação, da área, do volume, da intensidade de cor e, por último, da matiz. A raiz do fenômeno está na psicofísica. A lei de potência de Stevens descreve como a intensidade percebida de um estímulo se relaciona com sua intensidade física, e essa relação é uma potência cujo expoente varia conforme a modalidade sensorial [@stevens1957]. Para algumas propriedades a percepção acompanha o estímulo quase linearmente, e para outras ela o comprime ou o amplifica sistematicamente.
+p_cor / p_area / p_barra
+```
 
-A consequência prática é direta. Quando o objetivo é comparar quantidades com precisão, convém usar elementos do topo da hierarquia. Isso não significa que os elementos da base sejam inúteis, e sim que eles servem a outro propósito. A matiz de cor é péssima para representar magnitude e excelente para distinguir categorias, porque o cérebro humano reconhece diferenças de tom com facilidade sem tentar quantificá-las.
+Os valores são exatamente os mesmos nos três painéis, e D vale cinco vezes E. Com intensidade de cor conseguimos no máximo ordenar grosseiramente as categorias, sem nenhuma noção da razão entre elas. Com área acertamos a ordem e subestimamos a diferença, porque o olho comprime a percepção de área. Com altura de barra a razão de cinco para um é lida com boa precisão. A comparação, portanto, é progressivamente mais fácil da primeira para a terceira representação.
 
+Esse resultado não é uma impressão subjetiva. Estudos experimentais foram realizados em ocasiões diferentes e chegaram à mesma ordenação [@cleveland1985; @heer2010]^[@cleveland1985 conduziram experimentos controlados medindo o erro cometido por participantes ao estimar quantidades codificadas por diferentes elementos visuais, e obtiveram uma ordenação estável entre eles. Vinte e cinco anos depois, @heer2010 repetiram esses experimentos recorrendo a uma plataforma de trabalho colaborativo pela internet, o que lhes permitiu recrutar um conjunto de participantes muito maior e mais heterogêneo do que era viável em laboratório. Os resultados anteriores foram reproduzidos, e o estudo ainda os estendeu a codificações não contempladas originalmente, como a área de retângulos.]. A hierarquia resultante desses estudos (@fig-hierarquia-percepcao) coloca no topo a posição em escala comum e alinhada, seguida da posição em escala comum mas desalinhada, da extensão, do ângulo, da inclinação, da área, do volume, da intensidade de cor e, por último, da matiz. Consequentemente, quando o objetivo é comparar quantidades com precisão, convém usar elementos do topo da hierarquia.
+
+![Hierarquia de percepção dos elementos visuais. Os elementos no topo permitem comparações quantitativas mais precisas, e os da base permitem apenas comparações genéricas. Fonte: adaptado de @cleveland1985 e @munzner2015.](img/4-visualizacao-de-dados-tabulares/4-5-hierarquia_elem_visuais.png){#fig-hierarquia-percepcao}
+
+Isso não significa que os elementos da base sejam inúteis, e sim que eles servem a outro propósito ou apoiam a intuição de forma secundária. Um exemplo do primeiro caso é a matiz, bastante contraindicada para representar magnitude, porém excelente para distinguir categorias, porque o cérebro humano reconhece diferenças de tom com facilidade sem tentar quantificá-las.
+
+O segundo caso aparece sempre que a leitura precisa fica a cargo de outro elemento e a codificação de baixa hierarquia apenas orienta o olhar. É o que veremos adiante neste capítulo no gráfico de dispersão em que uma terceira variável é representada pela intensidade de cor ou pelo tamanho dos pontos. A posição nos eixos sustenta a leitura precisa das duas primeiras variáveis, enquanto a cor ou área do ponto apenas indica se a terceira cresce ou diminui ao longo dos valores de $x$ e $y$, sem permitir comparação numérica direta entre observações. 
+<!-- Checar se esse texto abaixo é útil mesmo
+Outra situação frequente é o gráfico de barras em que a intensidade de cor acompanha a altura das barras. A informação é redundante, porque a altura sozinha já bastaria, e é justamente essa redundância que ajuda o olho a localizar os extremos antes mesmo de comparar os comprimentos.
+-->
+
+<!--
 ### Duas consequências práticas
 
 Duas regras muito citadas decorrem diretamente da hierarquia. A primeira é que o eixo de contagem de um gráfico de barras deve sempre começar no zero. Como a barra codifica a quantidade por sua extensão, truncar o eixo faz com que a razão entre os comprimentos deixe de corresponder à razão entre os valores, exagerando diferenças que na realidade são pequenas.
 
-<!-- FIGURA: slide 61 do pptx — comparação entre eixo truncado e eixo iniciando no zero -->
 ![Efeito de truncar o eixo de contagem em um gráfico de barras. A diferença entre as categorias parece muito maior do que é de fato.](img/4-visualizacao-de-dados-tabulares/fig-eixo-truncado.png){#fig-eixo-truncado}
 
 A segunda é a preferência por barras em vez de setores. O gráfico de setores, popularmente conhecido como gráfico de pizza, codifica proporções por ângulo e área, dois elementos situados no meio e na parte inferior da hierarquia. O gráfico de barras codifica as mesmas proporções por extensão, que está acima de ambos.
 
-<!-- FIGURA: slide 62 do pptx — três conjuntos representados em setores e em barras -->
 ![Três conjuntos de dados distintos representados em gráficos de setores (acima) e em gráficos de barras (abaixo). As diferenças entre as categorias, imperceptíveis nos setores, ficam evidentes nas barras. Fonte: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Piecharts.svg).](img/4-visualizacao-de-dados-tabulares/fig-pizza-vs-barras.png){#fig-pizza-vs-barras}
 
-Observando @fig-pizza-vs-barras, os três conjuntos de setores parecem praticamente idênticos, enquanto os gráficos de barras correspondentes revelam com clareza que se trata de distribuições diferentes.
+Observando @fig-pizza-vs-barras, os três conjuntos de setores parecem praticamente idênticos, enquanto os gráficos de barras correspondentes revelam com clareza que se trata de distribuições diferentes. -->
 
 ## A gramática dos gráficos
 
+### Por que uma gramática
+
+Até aqui discutimos gráficos como objetos prontos, escolhidos de um catálogo. Quem aprende visualização dessa maneira acaba com uma lista mental de tipos de gráficos (barras, setores, dispersão, histograma, ...) e com a tarefa de escolher um deles a cada análise. O problema dessa abordagem é que a lista é bastante extensa, não explica por que um tipo funciona melhor que outro e não ajuda em nada quando a situação não se encaixa em nenhum item do catálogo.
+
+![Capa da segunda edição de *The Grammar of Graphics*, de Leland Wilkinson.](img/4-visualizacao-de-dados-tabulares/4-6-grammar_of_graphics.png){#fig-grammar_of_graphics .float-left-sm}
+
+Em 1999, Leland Wilkinson propôs uma inversão dessa perspectiva em um trabalho que se tornou uma das referências teóricas mais influente da área, denominado a **Gramática dos Gráficos**^[do inglês, *Grammar of Graphics*] [@wilkinson2005]. O argumento central é que um gráfico não existe por si próprio, da mesma forma que uma frase não existe independentemente das palavras que a compõem. Sabemos que uma língua é muito mais que um repertório de frases prontas a serem memorizadas. Ela é um vocabulário extenso somado a regras de combinação, e dessa interação nasce a possibilidade de formular frases que ninguém jamais pronunciou. Wilkinson percebeu que gráficos funcionam do mesmo modo, ou seja, que existe um conjunto pequeno de componentes cujas combinações geram praticamente qualquer representação visual de dados, inclusive as que ainda não foram inventadas.
+
+A consequência mais imediata dessa mudança de olhar é que a taxonomia dos tipos de gráfico se dissolve. O que parecem duas modalidades distintas costuma ser a mesma construção com uma única camada trocada. O caso mais eloquente é o par formado pelo gráfico de barras empilhadas e pelo gráfico de setores, caracterizando duas representações diferentes para a mesma informação.
+
+```{r}
+#| label: fig-cartesiano-polar
+#| echo: false
+#| fig-cap: "Uma mesma barra empilhada representada em coordenadas cartesianas (a) e em coordenadas polares (b). A segunda é o que costumamos chamar de gráfico de setores."
+#| fig-width: 8
+#| fig-height: 3.4
+dados_gg <- tibble(
+  categoria = factor(c("A", "B", "C", "D")),
+  valor     = c(35, 25, 25, 15)
+)
+
+p_cartesiano <- dados_gg |>
+  ggplot(aes(x = "", y = valor, fill = categoria)) +
+  geom_col(width = 0.6, color = "white") +
+  labs(title = "(a) coordenadas cartesianas",
+       x = NULL, y = NULL, fill = "Categoria") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(size = 11, hjust = 0.5))
+
+p_polar <- p_cartesiano +
+  coord_polar(theta = "y") +
+  labs(title = "(b) coordenadas polares") +
+  theme(axis.text = element_blank(), panel.grid = element_blank())
+
+p_cartesiano + p_polar + plot_layout(guides = "collect")
+```
+
 ### As camadas de um gráfico
 
-Até aqui discutimos gráficos como objetos prontos, escolhidos de um catálogo. Em 1999, Leland Wilkinson propôs uma inversão dessa perspectiva em um trabalho que se tornou a referência teórica mais influente da área [@wilkinson2005]. O argumento central é que um gráfico não existe por si próprio, da mesma forma que uma frase não existe independentemente das palavras que a compõem. Assim como combinamos substantivos, adjetivos e verbos segundo regras para formar frases, um gráfico é uma composição de elementos governada por uma gramática.
+A composição proposta pela Gramática dos Gráficos é modular e organizada em camadas sobrepostas, o que permite construir praticamente qualquer modalidade de gráfico a partir de um conjunto pequeno de decisões.
 
-<!-- FIGURA OPCIONAL: slide 29 do pptx — capa de The Grammar of Graphics.
-![Capa da segunda edição de *The Grammar of Graphics*, de Leland Wilkinson.](img/4-visualizacao-de-dados-tabulares/fig-wilkinson.png){#fig-wilkinson}
--->
-
-
-Essa composição é modular e organizada em camadas, o que permite construir praticamente qualquer modalidade de gráfico a partir de um conjunto pequeno de decisões.
-
-<!-- FIGURA: slide 32 do pptx — esquema das camadas empilhadas -->
-![Composição de um gráfico em camadas sobrepostas, conforme a gramática dos gráficos.](img/4-visualizacao-de-dados-tabulares/fig-camadas-gg.png){#fig-camadas-gg}
+![Composição de um gráfico em camadas sobrepostas, conforme a gramática dos gráficos.](img/4-visualizacao-de-dados-tabulares/4-8-grammar_of_graphics_layers.png){#fig-camadas-gg}
 
 As camadas se dividem em dois grupos. O primeiro reúne os elementos fundamentais, sem os quais não há gráfico algum:
 
-- os **dados**, a tabela que fornece os valores a representar;
-- o **mapeamento estético**, a conexão entre cada variável da tabela e a propriedade gráfica que a representará;
-- a **geometria**, a forma visual concreta que traduz esse mapeamento, como pontos, barras ou linhas.
+- Os **dados** (*data*) são a tabela que fornece os valores a representar. Na gramática, ela é a primeira camada, pois determina o que é possível representar. Uma tabela em que cada linha é uma observação e cada coluna é uma variável, formato que vimos no capítulo anterior, é exatamente o que a gramática pressupõe.
 
-O segundo grupo reúne os elementos secundários, que refinam o resultado sem alterar sua estrutura básica:
+- O **mapeamento estético** (*aesthetics* ou *aesthetic mapping*) é a conexão entre cada variável da tabela e a propriedade gráfica que a representará. É aqui que a discussão da seção anterior entra na prática, porque mapear uma variável ao eixo horizontal, à cor ou ao tamanho dos pontos são decisões com consequências perceptivas muito diferentes. O mapeamento é a camada que traduz números em elementos visuais.
 
-- as **facetas**, que subdividem o gráfico em painéis;
-- as **estatísticas**, que inserem no gráfico quantidades calculadas a partir dos dados;
-- o **sistema de coordenadas**, cartesiano, polar ou outro;
-- o **tema**, que reúne os ajustes estéticos finos.
+- A **geometria** (*geometry*) é a forma visual concreta que traduz esse mapeamento, como pontos, barras, linhas ou caixas. Um mesmo mapeamento admite geometrias diferentes. Duas variáveis numéricas mapeadas aos eixos $x$ e $y$ podem virar uma nuvem de pontos ou uma linha, e a escolha entre elas depende de a relação entre as observações ser de comparação ou de continuidade.
 
-<!-- FIGURA: slides 37 e 38 do pptx — camadas com as anotações de sentido -->
-![As camadas fundamentais e secundárias com a indicação do papel de cada uma na construção do gráfico.](img/4-visualizacao-de-dados-tabulares/fig-camadas-anotadas.png){#fig-camadas-anotadas}
+O segundo grupo reúne os elementos complementares, que refinam o resultado sem alterar sua estrutura básica:
 
-<!-- FIGURA OPCIONAL: slides 33 e 34 do pptx — gráfico estilo The Economist decomposto em camadas. Serve como exemplo de que gráficos sofisticados também se decompõem nas mesmas camadas.
-![Um gráfico no estilo da revista The Economist decomposto nas camadas da gramática. Fonte: adaptado de [Matteo Larrode](https://medium.com/@matteo.larrode2/create-a-the-economist-style-chart-84193a69263e).](img/4-visualizacao-de-dados-tabulares/fig-economist.png){#fig-economist}
--->
+- As **estatísticas** (*statistics*) inserem no gráfico quantidades calculadas a partir dos dados em vez dos valores originais. Essa camada costuma passar despercebida porque quase sempre age de forma silenciosa. Um histograma, por exemplo, agrupa os valores em classes e desenha a *contagem* de cada classe. Um gráfico de barras construído a partir de uma variável categórica também *conta* observações antes de desenhar, e um boxplot calcula *quartis* e *limites* antes de traçar a caixa.
+
+- As **escalas** (*scales*) definem como os valores das variáveis se convertem em valores concretos da propriedade gráfica, ou seja, quais números correspondem a quais posições no eixo, a quais cores e a quais tamanhos. Toda variável mapeada recebe automaticamente uma escala, e ajustá-la é o que permite trocar uma paleta de cores, inverter um eixo ou garantir que a área dos círculos seja proporcional ao valor representado.
+
+- O **sistema de coordenadas** (*coordinates*) organiza o espaço em que as geometrias são desenhadas, podendo ser cartesiano ou polar, por exemplo.
+
+- As **facetas** (*facets*) subdividem o gráfico em painéis segundo os níveis de uma ou duas variáveis categóricas, repetindo a mesma construção para cada subconjunto dos dados. É o recurso que permite comparar grupos sem sobrecarregar um único painel.
+
+- O **tema** (*theme*) reúne os ajustes estéticos que não codificam dado algum, como cor de fundo, presença de grades, tamanho de fonte e posição da legenda.
+
+Convém guardar essa divisão, porque ela organiza tudo o que faremos daqui em diante. Diante de qualquer gráfico deste capítulo, vale o exercício de identificar qual variável está em qual mapeamento, qual geometria foi escolhida e quais camadas complementares foram acionadas.
 
 ### O ggplot2
 
-A gramática dos gráficos orienta o desenvolvimento das principais ferramentas de visualização em uso hoje, entre elas o Tableau, o Plotly e bibliotecas de Python como `bokeh`, `altair`, `seaborn` e `plotnine`. Sua implementação mais completa, porém, é o pacote `ggplot2` do R [@wickham2016ggplot2], cujo nome vem justamente da sigla em inglês *grammar of graphics*.
+A Gramática dos Gráficos orienta o desenvolvimento das principais ferramentas de visualização em uso hoje, entre elas o Tableau, o Plotly e bibliotecas de Python como `bokeh`, `altair`, `seaborn` e `plotnine`. Sua implementação mais completa, porém, é o pacote `ggplot2` do R, onde o duplo **g** inicial vem justamente da sigla em inglês *Grammar of Graphics*.
+
+O `ggplot2` foi desenvolvido por Hadley Wickham, que traduziu a proposta de Wilkinson para código. Ao implementá-la, inclusive, ele a reformulou naquilo que chamou de **gramática em camadas** [@wickham2010]. Duas contribuições dessa reformulação explicam por que o pacote é tão econômico de usar.
+
+A primeira é a organização em camadas propriamente dita, que agrupa dados, mapeamento, geometria e estatística em unidades sobrepostas. É isso que torna possível somar elementos a um gráfico com o operador `+`, escrevendo a construção na mesma ordem em que a pensamos. A segunda é a **hierarquia de valores-padrão**. Todo gráfico precisa das sete camadas para existir, e exigir que todas fossem declaradas a cada vez tornaria o código muito comprido. O `ggplot2` deduz o que não foi informado. Ao pedir um histograma, o pacote sabe que a estatística é o agrupamento em classes, que o sistema de coordenadas é o cartesiano, que a escala do eixo horizontal é contínua e que o tema é o padrão. Nada disso precisa ser escrito, e tudo isso pode ser sobrescrito quando necessário. Por isso duas linhas de código produzem um gráfico completo, e por isso mesmo vale insistir que as camadas continuam todas lá, ainda que invisíveis no código.
+
+Uma consequência prática dessa arquitetura é que o `ggplot2` não tem uma função por tipo de gráfico. Não existe uma função `histograma()` e outra `barras()`. Existem funções para cada camada, e o tipo de gráfico emerge da combinação escolhida, como a @tbl-camadas resume.
+
+| Camada | Papel | Funções no `ggplot2` |
+|---|---|---|
+| Dados | Tabela com os valores a representar | `ggplot(data = ...)` |
+| Mapeamento estético | Liga variáveis a propriedades gráficas | `aes()` |
+| Geometria | Forma visual que representa os dados | `geom_point()`, `geom_col()`, `geom_boxplot()` |
+| Estatística | Transforma os dados antes de desenhá-los | `stat_*()` e o argumento `stat` das geometrias |
+| Escalas | Converte valores em posições, cores e tamanhos | `scale_x_continuous()`, `scale_fill_manual()` |
+| Coordenadas | Organiza o espaço do gráfico | `coord_cartesian()`, `coord_polar()`, `coord_flip()` |
+| Facetas | Subdivide o gráfico em painéis | `facet_grid()`, `facet_wrap()` |
+| Tema | Ajustes estéticos que não codificam dados | `theme_bw()`, `theme_minimal()`, `theme()` |
+
+: Correspondência entre as camadas da gramática dos gráficos e as funções do `ggplot2`. {#tbl-camadas}
+
+Essa tabela é a chave de leitura de todo o restante do capítulo. Cada gráfico que produzirmos daqui em diante será uma escolha explícita de algumas dessas linhas, com as demais assumindo seus valores-padrão. Para quem quiser aprofundar o funcionamento do pacote camada por camada, a referência é o livro do próprio autor [@wickham2016ggplot2], disponível gratuitamente em [ggplot2-book.org](https://ggplot2-book.org/).
 
 O `ggplot2` faz parte do `tidyverse`, de modo que carregar a coleção completa já o disponibiliza:
 
@@ -159,16 +256,34 @@ library(tidyverse)
 
 ## O primeiro gráfico
 
-Trabalharemos com a base `escolha_modal`, a mesma dos capítulos anteriores. O código abaixo repete o encadeamento construído no capítulo anterior, lendo o arquivo diretamente da URL, convertendo as variáveis categóricas para *factor*, passando o tempo de viagem de minutos para horas e criando a velocidade média da viagem:
+Trabalharemos com a base `escolha_modal`, a mesma dos capítulos anteriores. Lembre-se de fazer o download pelo link abaixo, salvando o arquivo em uma pasta onde você irá criar o projeto no RStudio junto com o script no qual executará o código para a criação dos gráficos:
+
+- [`escolha_modal.csv`](https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv)
+
+O código abaixo repete o encadeamento construído no capítulo anterior, lendo o arquivo, convertendo as variáveis categóricas para *factor*, passando o tempo de viagem de minutos para horas e criando a velocidade média da viagem:
 
 ```{r}
 #| label: le-em
+#| echo: false
 #| cache: true
 #| message: false
 em <- read_csv(
   "https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv",
   locale = locale(encoding = "Latin1")
 ) |>
+  mutate(
+    sexo             = factor(sexo),
+    posse_auto       = factor(posse_auto),
+    modo_viagem      = factor(modo_viagem),
+    tempo_viagem     = tempo_viagem / 60,
+    vel_media_viagem = dist_viagem / tempo_viagem
+  )
+```
+
+```{r}
+#| label: le-em-exibido
+#| eval: false
+em <- read_csv("escolha_modal.csv", locale = locale(encoding = "Latin1")) |>
   mutate(
     sexo             = factor(sexo),
     posse_auto       = factor(posse_auto),
@@ -187,7 +302,7 @@ glimpse(em)
 
 A base tem 1.000 observações e sete variáveis originais, além da velocidade média que acabamos de criar. Há três variáveis categóricas (`sexo`, `posse_auto` e `modo_viagem`) e cinco numéricas (`idade`, `renda`, `dist_viagem`, `tempo_viagem` e `vel_media_viagem`), combinação que nos permitirá percorrer todos os casos deste capítulo.
 
-A função `ggplot()` recebe dois argumentos principais, que correspondem exatamente às duas primeiras camadas da gramática. O argumento `data` recebe a tabela, e o argumento `mapping` recebe a função `aes()`, dentro da qual declaramos quais variáveis correspondem a quais propriedades gráficas. Vejamos o que acontece ao informar somente esses dois argumentos:
+A primeira função que trabalharemos do pacote é a `ggplot()`, que recebe dois argumentos principais, que correspondem exatamente às duas primeiras camadas da gramática. O argumento `data` recebe a tabela, e o argumento `mapping` recebe a função `aes()`, dentro da qual declaramos a correspondência entre as variáveis correspondem a as propriedades gráficas. Vejamos o que acontece ao informar somente esses dois argumentos:
 
 ```{r}
 #| label: fig-ggplot-vazio
@@ -195,7 +310,7 @@ A função `ggplot()` recebe dois argumentos principais, que correspondem exatam
 ggplot(data = em, mapping = aes(x = renda))
 ```
 
-O R desenhou o painel e a escala do eixo horizontal correspondente à variável `renda`, e não desenhou nenhum dado. Falta a terceira camada fundamental, que é a geometria. As geometrias são adicionadas com o operador `+`:
+O R desenhou o painel e a escala do eixo horizontal correspondente à variável `renda`, sem ter desenhado nenhum elemento gráfico. Isso ocorre porque falta a terceira camada fundamental, a geometria. As geometrias são adicionadas com o operador `+` após `ggplot()`, conforme o exemplo da `geom_histogram()` abaixo que desenha um histograma para a variável renda:
 
 ```{r}
 #| label: fig-ggplot-primeiro
@@ -205,7 +320,7 @@ ggplot(data = em, mapping = aes(x = renda)) +
   geom_histogram()
 ```
 
-Com duas linhas de código tratamos de três das sete camadas da gramática. Os nomes dos argumentos podem ser omitidos, já que `data` e `mapping` são o primeiro e o segundo parâmetros da função. É também comum encadear a base com o pipe, o que se torna conveniente quando é preciso transformar os dados antes de plotá-los. As três formas abaixo produzem o mesmo resultado:
+Com duas linhas de código tratamos de três das sete camadas da gramática. Os nomes dos argumentos podem ser omitidos, já que `data` e `mapping` são o primeiro e o segundo parâmetros da função. É também comum encadear a base de dados inicialmente com o pipe, o que se torna conveniente quando é preciso transformar os dados antes de plotá-los. Verifique, no seu computador, como as três formas abaixo produzem o mesmo resultado:
 
 ```{r}
 #| label: formas-equivalentes
@@ -227,9 +342,22 @@ em |>
 O operador `|>` encadeia transformações de dados, passando o resultado de uma função como primeiro argumento da seguinte. O operador `+` empilha camadas de um gráfico já iniciado por `ggplot()`. Trocar um pelo outro gera erro. Na prática, o `|>` aparece antes da chamada a `ggplot()` e o `+` aparece depois dela.
 :::
 
-## Visualizando uma variável
+Para apresentarmos de forma mais sistematizada o desenvolvimento dos principais tipos de gráfico no R, subdiviremos as próximas seções em quatro partes:
 
-Com uma única variável, a escolha do gráfico depende essencialmente do seu tipo. Para variáveis numéricas queremos enxergar a forma da distribuição, onde os valores se concentram e quão dispersos eles são, e as ferramentas usuais são o histograma e o boxplot. Para variáveis categóricas queremos contar observações em cada nível, e a ferramenta usual é o gráfico de barras.
+- Visualização de **uma única variável**.
+
+- Visualização de **duas variáveis**.
+
+- Visualização de **três variáveis**.
+
+- Visualização de **quatro variáveis ou mais**.
+
+## Visualizando uma única variável
+
+Com uma única variável, a escolha do gráfico depende essencialmente da escala de mensuração desta variável (se numérica ou categórica), conforme demonstrado na @fig-unica-variavel. Para variáveis numéricas queremos enxergar a forma da distribuição, onde os valores se concentram e quão dispersos eles são, e as ferramentas usuais são o histograma e o boxplot. Para variáveis categóricas queremos contar observações em cada nível, e a ferramenta usual é o gráfico de barras.
+
+![Principais tipos de visualização para uma única variável](img/4-visualizacao-de-dados-tabulares/4-11-uma_unica_variavel.png){#fig-unica-variavel}
+Apesar da leitura do gráfico de barras ser bem direta, existem aspectos teóricos importantes a serem discutidos a respeito de histogramas e do *boxplot*, que serão discutidos de forma mais minuciosa nas próximas seções.
 
 ### O histograma
 
@@ -911,6 +1039,6 @@ Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde vo
 
 6. Usando a base `em` deste capítulo, construa um gráfico de dispersão entre `idade` e `renda`, mapeando o modo de viagem à cor dos pontos e a posse de automóvel aos painéis. Ajuste a transparência dos pontos e escreva uma frase interpretando o padrão observado.
 
-7. Retome o gráfico da questão anterior e escolha uma codificação alternativa para a variável `modo_viagem`, usando forma em vez de cor. Compare os dois resultados à luz da hierarquia de percepção discutida na @sec-hierarquia e justifique qual deles comunica melhor a informação.
+7. Retome o gráfico da questão anterior e escolha uma codificação alternativa para a variável `modo_viagem`, usando forma em vez de cor. Compare os dois resultados à luz da hierarquia de percepção discutida na @sec-percepcao e justifique qual deles comunica melhor a informação.
 
 8. Escolha o gráfico que você considerou mais informativo entre todos os que produziu nesta lista e exporte-o com `ggsave()` em formato `.png`, com 16 cm de largura, 10 cm de altura e resolução de 300 dpi.

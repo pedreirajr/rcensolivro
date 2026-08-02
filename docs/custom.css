@@ -111,6 +111,31 @@ caption {
 }
 
 /* ========================================
+   CITAÇÃO EM DESTAQUE
+   ======================================== */
+
+.citacao-destaque {
+  font-size: 1.3em;
+  line-height: 1.5;
+  font-style: italic;
+  border-left: 4px solid #4D48B2;
+  margin: 1.8em 0;
+  padding: 0.3em 0 0.3em 1.3em;
+}
+
+.citacao-destaque p {
+  margin-bottom: 0;
+}
+
+.citacao-destaque .fonte {
+  display: block;
+  font-size: 0.65em;
+  font-style: normal;
+  opacity: 0.7;
+  margin-top: 0.8em;
+}
+
+/* ========================================
    UTILITÁRIOS
    ======================================== */
 
