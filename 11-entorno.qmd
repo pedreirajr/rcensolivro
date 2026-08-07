@@ -19,21 +19,21 @@ library(patchwork)
 
 Os quatro produtos do Censo apresentados até aqui têm algo em comum. Os Agregados por Setor Censitário, os Microdados da Amostra, a Grade Estatística e o CNEFE descrevem pessoas, domicílios e endereços, ou seja, aquilo que existe **dentro** do lote. A *Pesquisa Urbanística do Entorno dos Domicílios* faz o movimento inverso e descreve o que existe **fora** dele, na calçada, na via e no canteiro central. É o retrato do espaço público que cerca a moradia.
 
-Essa inversão de foco vem acompanhada de uma inversão de método. Enquanto todos os demais produtos nascem de uma resposta dada por um informante, as características do entorno nascem de **observação direta**, feita por um agente do IBGE que percorre a rua a pé e registra o que vê, sem entrevistar ninguém. Não há morador para dizer se a rua tem bueiro, mas sim um agente do IBGE olhando para a sarjeta e marcando "sim" ou "não" em um aplicativo.
+Essa inversão de foco vem acompanhada de uma mudança sutil de método. Enquanto todos os demais produtos nascem de uma resposta dada por um informante, as características do entorno nascem de **observação direta**, feita por um agente do IBGE que percorre a rua a pé e registra o que vê, sem entrevistar ninguém. Não há morador para dizer se a rua tem boca de lobo, mas sim um agente censitário olhando para a sarjeta e registrando "sim" ou "não" no questionário da pesquisa.
 
 O interesse prático dessa informação é imediato para quem trabalha com o território. Saber quantos domicílios de um bairro estão em ruas sem calçada, sem rampa de acessibilidade, sem ponto de ônibus ou sem uma única árvore permite dimensionar carências de infraestrutura com a mesma granularidade com que se dimensiona população e renda. O próprio IBGE posiciona o produto como subsídio ao Estatuto da Cidade, à Agenda 2030 e à Nova Agenda Urbana, alinhando a estatística oficial às pautas de acessibilidade, drenagem pluvial, mobilidade ativa e enfrentamento das mudanças climáticas [@ibge_entorno2022]. <!-- São exatamente os temas que retomaremos na Parte 3 deste livro. -->  
 
-### Um produto com três idades
+### Histórico
 
 A investigação do entorno começou no Censo 2000, mas o produto que usamos hoje só existe desde 2010, e mudou de forma substancial em 2022. Vale percorrer essa trajetória, porque cada etapa deixou marcas na estrutura dos dados que o leitor vai encontrar.
 
-No **Censo 2000**, o levantamento contemplava apenas três itens, a identificação dos logradouros, a iluminação pública e o calçamento ou pavimentação. A caracterização era feita de forma separada para o logradouro e para o setor censitário. Na Caderneta do Setor, ao encerrar seu trabalho, o recenseador indicava existência total, existência parcial ou inexistência de cada item. Na Folha de Coleta, usada para caracterizar o logradouro após percorrer a face ou o trecho, apenas o calçamento admitia a alternativa de existência parcial [@ibge_entorno2022; @ibge_metodologia2000]. Esses resultados, porém, não chegaram ao usuário na forma de dados por setor censitário. O dicionário dos Agregados por Setor Censitário de 2000 não registra nenhuma variável de entorno^[O leitor pode confirmar isso abrindo o dicionário com `censobr::data_dictionary(year = 2000, dataset = "tracts")` e procurando por qualquer um dos três itens.]. Por isso, na prática, a série de dados começa em 2010.
+No **Censo 2000**, o levantamento contemplava apenas três itens, a identificação dos logradouros, a iluminação pública e o calçamento ou pavimentação. Nesta época, especialistas em habitação haviam concluído que os quesitos de material das paredes, do piso e da cobertura já não distinguiam sozinhos a qualidade da moradia, e que características do entorno a classificariam melhor. Decidiu-se então registrar os três itens nos instrumentos de listagem do setor via observação direta do recenseador, o que permitia estabelecer a correspondência entre cada domicílio e seu entorno e evitava o custo de acrescentar quesitos ao questionário [@ibge_metodologia2000]. A caracterização era feita de forma separada para o logradouro e para o setor censitário. Na Caderneta do Setor, ao encerrar seu trabalho, o recenseador indicava existência total, existência parcial ou inexistência de cada item. Na Folha de Coleta, usada para caracterizar o logradouro após percorrer a face ou o trecho, apenas o calçamento admitia a alternativa de existência parcial [@ibge_entorno2022; @ibge_metodologia2000]. Diferentemente dos censos de 2010 e 2022, esses resultados foram divulgados por meio dos microdados da amostra^[mais especificamente, na segunda edição dos microdados para o Censo de 2000].
 
-No **Censo 2010**, o levantamento ganhou escopo e virou uma etapa estruturada da operação. Foram dez itens investigados durante a **pré-coleta**, operação de campo inédita que antecedeu o recenseamento e cuja finalidade principal era montar a lista de endereços de cada setor. Cerca de 22 mil agentes censitários supervisores percorreram 222.541 setores censitários urbanos, nas áreas urbanizadas dos 5.565 municípios então existentes [@ibge_entorno2010]. A restrição decisiva daquela edição foi metodológica. Como a coleta exigia percorrer faces de quadra, foram excluídos da pré-coleta os setores sem arruamento regular, o que deixou de fora tanto os setores rurais quanto os aglomerados subnormais sem quadras e faces identificáveis. Esses últimos foram caracterizados por um instrumento à parte, o Levantamento de Informações Territoriais (LIT), com metodologia própria e resultados que não podem ser confrontados com os do restante da cidade [@ibge_aglomerados2010].
+No **Censo 2010**, o levantamento ganhou escopo e virou uma etapa estruturada da operação. Foram dez itens investigados durante a **pré-coleta**, operação de campo inédita que antecedeu o recenseamento e cuja finalidade principal era montar a lista de endereços de cada setor. Cerca de 22 mil agentes censitários supervisores percorreram 222.541 setores censitários urbanos, nas áreas urbanizadas dos 5.565 municípios então existentes [@ibge_entorno2010]. Como a coleta exigia percorrer faces de quadra, foram excluídos da pré-coleta os setores sem arruamento regular, o que deixou de fora tanto os setores rurais quanto os aglomerados subnormais sem quadras e faces identificáveis. Esses últimos foram caracterizados por um instrumento à parte, o Levantamento de Informações Territoriais (LIT), com metodologia própria e resultados que não podem ser confrontados com os do restante da cidade [@ibge_aglomerados2010].
 
 No **Censo 2022**, a pesquisa manteve os dez itens, mas trocou quatro deles, migrou para questionário eletrônico e ampliou o universo para 340.965 setores. A mudança conceitualmente mais relevante foi a **unificação metodológica**. Favelas e comunidades urbanas passaram a ser pesquisadas com o mesmo instrumento aplicado ao resto da cidade, corrigindo justamente a lacuna que o LIT havia contornado em 2010 [@ibge_entorno2022]. Pela primeira vez, portanto, é possível comparar a infraestrutura de uma favela com a do bairro vizinho usando a mesma régua.
 
-A @tbl-quesitos-censos resume quais itens foram investigados em cada edição e registra também se o resultado chegou a ser divulgado por setor censitário, informação que costuma faltar aos quadros comparativos e que determina o que efetivamente dá para analisar.
+A @tbl-quesitos-censos resume quais itens foram investigados em cada edição, informação que costuma faltar aos quadros comparativos e que determina o que efetivamente dá para analisar. A marcação "só na amostra" indica os itens de 2000, que foram divulgados vinculados ao domicílio nos resultados amostrais e nunca agregados por setor.
 
 ```{r}
 #| label: tbl-quesitos-censos
@@ -41,23 +41,23 @@ A @tbl-quesitos-censos resume quais itens foram investigados em cada edição e 
 #| tbl-cap: "Itens investigados pela Pesquisa Urbanística do Entorno dos Domicílios nos Censos de 2000, 2010 e 2022, e sua divulgação por setor censitário."
 
 tibble::tribble(
-  ~Quesito,                          ~`2000`,                  ~`2010`, ~`2022`,
-  "Iluminação pública",              "coletado, não divulgado", "sim",  "sim",
-  "Identificação do logradouro",     "coletado, não divulgado", "sim",  "—",
-  "Calçamento ou pavimentação",      "coletado, não divulgado", "sim",  "sim",
-  "Calçada ou passeio",              "—",                       "sim",  "sim",
-  "Rampa para cadeirante",           "—",                       "sim",  "sim",
-  "Bueiro ou boca de lobo",          "—",                       "sim",  "sim",
-  "Arborização",                     "—",                       "sim",  "sim",
-  "Meio-fio ou guia",                "—",                       "sim",  "—",
-  "Lixo acumulado nos logradouros",  "—",                       "sim",  "—",
-  "Esgoto a céu aberto",             "—",                       "sim",  "—",
-  "Capacidade de circulação da via", "—",                       "—",    "sim",
-  "Ponto de ônibus ou van",          "—",                       "—",    "sim",
-  "Via sinalizada para bicicletas",  "—",                       "—",    "sim",
-  "Obstáculo na calçada",            "—",                       "—",    "sim"
+  ~Quesito,                          ~`2000`, ~`2010`, ~`2022`,
+  "Iluminação pública",              "X",     "X",     "X",
+  "Identificação do logradouro",     "X",     "X",     "—",
+  "Calçamento ou pavimentação",      "X",     "X",     "X",
+  "Calçada ou passeio",              "—",     "X",     "X",
+  "Rampa para cadeirante",           "—",     "X",     "X",
+  "Bueiro ou boca de lobo",          "—",     "X",     "X",
+  "Arborização",                     "—",     "X",     "X",
+  "Meio-fio ou guia",                "—",     "X",     "—",
+  "Lixo acumulado nos logradouros",  "—",     "X",     "—",
+  "Esgoto a céu aberto",             "—",     "X",     "—",
+  "Capacidade de circulação da via", "—",     "—",     "X",
+  "Ponto de ônibus ou van",          "—",     "—",     "X",
+  "Via sinalizada para bicicletas",  "—",     "—",     "X",
+  "Obstáculo na calçada",            "—",     "—",     "X"
 ) |>
-  knitr::kable(align = c("l", "c", "c", "c")) |>
+  knitr::kable(align = c("c", "c", "c", "c")) |>
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
@@ -71,9 +71,9 @@ As seções seguintes destrincham a metodologia da pesquisa, a estrutura das var
 
 Tudo na Pesquisa Urbanística gira em torno de uma unidade territorial que não aparece em nenhum outro capítulo deste livro como protagonista, a **face de quadra**. O IBGE a define como a linha que representa graficamente os alinhamentos das fachadas do parcelamento dos lotes distribuídos nas quadras. Em termos mais diretos, cada face é um dos lados de uma quadra, contenha ou não edificações [@ibge_entorno2022].
 
-A face é a mesma âncora espacial que sustenta o CNEFE, visto na @sec-cnefe-intro. Lá, os campos `NUM_QUADRA` e `NUM_FACE` localizam cada endereço dentro do setor. Aqui, a face deixa de ser um atributo do endereço e passa a ser a própria unidade pesquisada. Cada quesionário preenchido do entorno equivale a uma face percorrida.
+A face é a mesma âncora espacial que sustenta o CNEFE, visto na @sec-cnefe-intro. Lá, os campos `NUM_QUADRA` e `NUM_FACE` localizam cada endereço dentro do setor. Aqui, a face deixa de ser um atributo do endereço e passa a ser a própria unidade pesquisada. Cada questionário preenchido do entorno equivale a uma face percorrida.
 
-Ao caminhar por uma face, o agente observa três elementos distintos, e é fundamental entender que **nem todos os itens usam a mesma área de observação**. Há a face percorrida, há a **face confrontante**, que é a face em frente, e há o **canteiro central**, quando existe. A definição de face confrontante adotada em 2010 traz uma consequência que passa despercebida com facilidade, pois a face em frente é considerada independentemente de pertencer ao setor que está sendo trabalhado [@ibge_entorno2010]. Ou seja, para boa parte dos itens, o dado atribuído a um setor censitário incorpora observações feitas do outro lado da rua, que pode estar em outro setor. A @fig-face-quadra ilustra esses elementos.
+Ao caminhar por uma face, o agente observa três elementos distintos, e é fundamental entender que **nem todos os itens usam a mesma área de observação**. Existem a face percorrida, a **face confrontante**, que é a face em frente, e o **canteiro central**, quando presente. A definição de face confrontante adotada em 2010 traz uma consequência que passa despercebida com facilidade, pois a face em frente é considerada independentemente de pertencer ao setor que está sendo trabalhado [@ibge_entorno2010]. Ou seja, para boa parte dos itens, o dado atribuído a um setor censitário incorpora observações feitas do outro lado da rua, que pode estar em outro setor. A @fig-face-quadra ilustra esses elementos.
 
 ```{r}
 #| label: fig-face-quadra
@@ -107,24 +107,24 @@ ggplot() +
            colour = "#b2182b", linewidth = 1.7) +
   annotate("segment", x = 0.15, xend = 11.85, y = 6.6, yend = 6.6,
            colour = "#2166ac", linewidth = 1.7, linetype = "22") +
-  annotate("text", x = 6, y = 3.35, label = "Face percorrida",
+  annotate("text", x = 6, y = 3, label = "Face percorrida",
            colour = "#b2182b", size = 3.3, fontface = "bold") +
-  annotate("text", x = 6, y = 5.45, label = "Face confrontante",
+  annotate("text", x = 6, y = 5.85, label = "Face confrontante",
            colour = "#2166ac", size = 3.3, fontface = "bold") +
   # calçadas
-  annotate("text", x = 1.1, y = 2.5, label = "calçada", size = 2.6, colour = "grey45") +
-  annotate("text", x = 1.1, y = 6.3, label = "calçada", size = 2.6, colour = "grey45") +
+  annotate("text", x = 9.15, y = 2.5, label = "calçada", size = 2.6, colour = "grey45") +
+  annotate("text", x = 9.15, y = 6.3, label = "calçada", size = 2.6, colour = "grey45") +
   # sentido do percurso do agente, sobre a calçada da face percorrida
-  annotate("text", x = 9.15, y = 2.5, label = "percurso do agente",
+  annotate("text", x = 1.1, y = 2.5, label = "percurso do agente",
            size = 2.6, colour = "grey30") +
-  annotate("segment", x = 10.55, xend = 11.7, y = 2.5, yend = 2.5,
+  annotate("segment", x = 2.5, xend = 3.5, y = 2.5, yend = 2.5,
            arrow = arrow(length = unit(0.16, "cm"), type = "closed"),
            colour = "grey30", linewidth = 0.5) +
   coord_equal(xlim = c(0, 12), ylim = c(0, 8.8), expand = FALSE) +
   theme_void()
 ```
 
-O esquema acima é limpo porque a realidade que ele representa é regular. Em campo, o agente precisa reconhecer os mesmos elementos em tecidos urbanos muito diferentes entre si, e a @fig-face-real mostra dois extremos desse espectro. À esquerda, a perspectiva de quem percorre uma via de traçado regular, com a face em amarelo, a face confrontante em vermelho e a via entre as duas. À direita, a leitura aérea de uma área densamente ocupada, em que as faces existem e podem ser delimitadas, ainda que os lotes e as edificações não sigam um parcelamento regular.
+Em campo, o agente precisa reconhecer os mesmos elementos em tecidos urbanos muito diferentes entre si, e a @fig-face-real mostra dois extremos desse espectro. À esquerda, a perspectiva de quem percorre uma via de traçado regular, com a face em amarelo, a face confrontante em vermelho e a via entre as duas. À direita, a leitura aérea de uma área densamente ocupada, em que as faces existem e podem ser delimitadas, ainda que os lotes e as edificações não sigam um parcelamento regular.
 
 ![Identificação da face percorrida e da face confrontante em perspectiva de campo e em perspectiva aérea. Fonte: @ibge_entorno2022.](img/11-entorno/face.png){#fig-face-real}
 
@@ -136,14 +136,14 @@ Duas implicações decorrem disso. A primeira é que faces sem nenhum domicílio
 
 ### O universo da pesquisa {#sec-entorno-universo}
 
-A Pesquisa Urbanística nunca cobriu o país inteiro, e entender quem fica de fora é pré-requisito para interpretar qualquer percentual calculado a partir dela. Em 2010, o critério era a existência de arruamento regular. Setores rurais e setores urbanos sem quadras e faces identificáveis ficaram fora da pré-coleta [@ibge_entorno2010]. Em 2022, o critério passou a ser a **morfologia urbana observada**, e não a classificação legal do setor. Além dos setores classificados como urbanos na Base Territorial, entraram setores com áreas urbanizadas mapeadas e setores que apresentassem concentração de estruturas, edificações e equipamentos urbanos ou sistema viário consolidado, independentemente de serem urbanos ou rurais. A identificação desses casos adicionais foi feita por análise de imagens de satélite de alta resolução [@ibge_entorno2022]. Nos setores rurais com pequenos núcleos de morfologia urbana ou situados em franja periurbana, a pesquisa alcançou apenas a porção urbanizada, onde havia faces definidas.
+A Pesquisa Urbanística não cobre o país inteiro, e entender quem fica de fora é pré-requisito para interpretar qualquer percentual calculado a partir dela. Em 2010, o critério era a existência de arruamento regular. Setores rurais e setores urbanos sem quadras e faces identificáveis ficaram fora da pré-coleta [@ibge_entorno2010]. Em 2022, o critério passou a ser a **morfologia urbana observada**, e não a classificação legal do setor. Além dos setores classificados como urbanos na Base Territorial, entraram setores com áreas urbanizadas mapeadas e setores que apresentassem concentração de estruturas, edificações e equipamentos urbanos ou sistema viário consolidado, independentemente de serem urbanos ou rurais. A identificação desses casos adicionais foi feita por análise de imagens de satélite de alta resolução [@ibge_entorno2022]. Nos setores rurais com pequenos núcleos de morfologia urbana ou situados em franja periurbana, a pesquisa alcançou apenas a porção urbanizada, onde havia faces definidas.
 
 O resultado é uma cobertura alta dentro do universo escolhido e parcial em relação ao país. Em 2022, dos 202.083.020 moradores de domicílios particulares permanentes enumerados pelo Censo, 174.162.485 residiam em setores selecionados para a pesquisa, o equivalente a 86,2%. Dentro desses setores, a coleta alcançou 99,7% dos domicílios particulares permanentes ocupados, com variação entre 99,5% no Rio de Janeiro e em Rondônia e 100,0% no Amapá [@ibge_entorno2022]. Em 2010, a pesquisa alcançou 96,9% dos domicílios particulares permanentes **urbanos** do país, com variação regional entre 94,7% no Nordeste e 99,7% no Centro-Oeste [@ibge_entorno2010].
 
 ::: {.callout-warning}
 ## Os percentuais do entorno não são percentuais do Brasil
 
-Quando este capítulo disser que determinado percentual de domicílios está em faces com calçada, o denominador serão sempre os domicílios **do universo da pesquisa**, e não todos os domicílios do município, do estado ou do país. Como a parcela excluída é justamente a de menor densidade urbana, tratar esses valores como se fossem nacionais superestima sistematicamente a infraestrutura disponível. Essa ressalva vale para 2010 e para 2022, com recortes de universo diferentes em cada ano.
+Quando este capítulo disser que determinado percentual de domicílios está em faces com calçada, o denominador serão sempre os domicílios **do universo da pesquisa** (ou seja, o total que teve suas características do entorno investigadas), e não todos os domicílios do município, do estado ou do país. Essa ressalva vale para 2010 e para 2022, com recortes de universo diferentes em cada ano.
 :::
 
 ### O questionário e o momento da coleta {#sec-entorno-questionario}
@@ -152,13 +152,13 @@ Como visto na @sec-produtos_censo, a Pesquisa Urbanística corresponde à etapa 
 
 ![Questionário da Pesquisa Urbanística do Entorno dos Domicílios aplicado no Censo Demográfico 2022. Fonte: @ibge_entorno2022.](img/11-entorno/quest-entorno.png){#fig-questionario width=88%}
 
-O questionário cabe em uma única página e está organizado em quatro blocos. O bloco 1 apenas identifica a quadra e a face dentro do setor censitário. Os três seguintes agrupam os itens não por tema, mas pela **área que precisa ser observada** para respondê-los, distinção que a @sec-entorno-criterios vai detalhar. Repare ainda em dois detalhes que a imagem revela de imediato. Ao lado de cada item aparece, entre parênteses, o critério que rege o registro, com as indicações de Predominância, Mínimo e Contagem. Já as setas azuis à direita explicitam o encadeamento das perguntas, incluindo as instruções de encerrar o questionário ou pular um bloco inteiro.
+O questionário cabe em uma única página e está organizado em quatro blocos. O bloco 1 apenas identifica a quadra e a face dentro do setor censitário. Os três seguintes agrupam os itens pelo **elemento que precisa ser observado** (face, canteiro central ou face confrontante) para respondê-los. Repare ainda em dois detalhes que o questionário revela de imediato. Ao lado de cada item aparece, entre parênteses, o critério que rege o registro, com as indicações de *Predominância*, *Mínimo* e *Contagem*. Já as setas azuis à direita explicitam o encadeamento das perguntas, incluindo as instruções de encerrar o questionário ou pular um bloco inteiro.
 
-Quanto ao calendário da coleta, ele tem consequências analíticas que convém registrar. Em 2010, a operação de pré-coleta começou em 12 de abril para os municípios com mais de 1.500 endereços residenciais urbanos e em 7 de maio para os demais, estendendo-se até junho. Uma parte residual do levantamento foi realizada já durante a coleta do Censo, iniciada em agosto de 2010, em setores com características mistas de regularidade e irregularidade urbanas [@ibge_entorno2010]. Em 2022, a coleta se deu prioritariamente na etapa de Reconhecimento do Setor Censitário, entre 20 de junho e 31 de julho, complementada por duas frentes. Durante as entrevistas domiciliares, os recenseadores puderam ajustar as informações registradas pelos agentes supervisores e indicar a inclusão de novas faces. Já a etapa conhecida como Entorno pós-coleta atendeu setores em que a pesquisa não pôde ser feita antes por razões logísticas, além das localidades de povos e comunidades tradicionais em áreas urbanas, onde se garantiu que o primeiro contato do IBGE com as lideranças fosse a reunião de abordagem do recenseador [@ibge_entorno2022].
+Quanto ao calendário da coleta, há consequências analíticas que convém registrar. Em 2010, a operação de pré-coleta começou em 12 de abril para os municípios com mais de 1.500 endereços residenciais urbanos e em 7 de maio para os demais, estendendo-se até junho. Uma parte residual do levantamento foi realizada já durante a coleta do Censo, iniciada em agosto de 2010, em setores com características mistas de regularidade e irregularidade urbanas [@ibge_entorno2010]. Em 2022, a coleta se deu prioritariamente na etapa de Reconhecimento do Setor Censitário, entre 20 de junho e 31 de julho, complementada por duas frentes. Durante as entrevistas domiciliares, os recenseadores puderam ajustar as informações registradas pelos agentes supervisores e indicar a inclusão de novas faces. Já a etapa conhecida como **Entorno pós-coleta** atendeu setores em que a pesquisa não pôde ser feita antes por razões logísticas, além das localidades de povos e comunidades tradicionais em áreas urbanas, onde se garantiu que o primeiro contato do IBGE com as lideranças fosse a reunião de abordagem do recenseador [@ibge_entorno2022].
 
 Daí decorre uma característica que merece atenção. As informações do entorno têm como referência a **data efetiva da observação em campo**, enquanto os questionários domiciliares têm como referência a meia-noite de 31 de julho para 1º de agosto. Entorno e domicílio de um mesmo setor, portanto, não são estritamente contemporâneos. Em 2022, embora a maior parte da coleta se concentre em pouco mais de um mês (20 de junho a 31 de julho de 2022), o período a que se referem as informações do entorno estende-se de 20 de junho de 2022 a 28 de maio de 2023 [@ibge_entorno2022]. Em 2010 a defasagem também alcançava alguns meses, já que a pré-coleta antecedeu em cerca de um trimestre a data de referência do censo.
 
-Três situações de campo fogem do padrão e explicam feições que o leitor encontrará nos dados. A primeira ocorre em favelas e comunidades urbanas muito adensadas, onde a ocorrência de faces era inexistente ou rarefeita. Nesses casos, a coleta se deu por captura de coordenadas geográficas, com um questionário aplicado a cada quinze edificações visíveis ao longo do percurso. A segunda é a inclusão de faces novas por *tracking* georreferenciado, quando o mapa não correspondia ao encontrado em campo. A terceira é o Distrito Federal, cuja estrutura de quadras exigiu duas metodologias específicas, denominadas Blocos Superquadras e Faces-quadras, além das faces tradicionais, que seguem o padrão nacional [@ibge_entorno2022].
+Três situações de campo fogem do padrão e explicam feições que o leitor encontrará nos dados. A primeira ocorre em favelas e comunidades urbanas muito adensadas, onde a ocorrência de faces era inexistente ou rarefeita. Nesses casos, a coleta se deu por captura de coordenadas geográficas, com um questionário aplicado a cada quinze edificações visíveis ao longo do percurso. A segunda é a inclusão de faces novas por rastreio^[*tracking*] georreferenciado, quando o mapa não correspondia ao encontrado em campo. A terceira é o Distrito Federal, cuja estrutura de quadras exigiu duas metodologias específicas, denominadas Blocos Superquadras e Faces-quadras, além das faces tradicionais, que seguem o padrão nacional [@ibge_entorno2022].
 
 #### Critérios de análise e área de observação {#sec-entorno-criterios}
 
@@ -192,13 +192,11 @@ tibble::tribble(
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
-São três as consequências principais. Primeiro, os itens ligados à calçada olham **apenas para a face percorrida**, enquanto os itens ligados à via olham para os dois lados. Um percentual de calçadas e um percentual de iluminação, ainda que apresentados lado a lado, não descrevem a mesma extensão de espaço público. Segundo, a arborização é o único item que considera a face e o canteiro central sem considerar a face confrontante, escolha que, como veremos adiante, inviabiliza a comparação com 2010. Terceiro, e talvez o mais contraintuitivo, a pesquisa investiga **existência, não estado de conservação, funcionamento ou eficácia** [@ibge_entorno2022]. Um poste sem lâmpada conta como iluminação pública existente. Um bueiro entupido conta como bueiro existente. Os dados descrevem a presença do equipamento urbano, e não a sua qualidade.
+São três as consequências principais. Primeiro, os itens ligados à calçada olham **apenas para a face percorrida**, enquanto os itens ligados à via olham para os dois lados. Um percentual de calçadas e um percentual de iluminação, ainda que apresentados lado a lado, não descrevem a mesma extensão de espaço público. Segundo, a arborização é o único item que considera a face e o canteiro central sem considerar a face confrontante, escolha que, como veremos adiante, inviabiliza a comparação com 2010. Por fim, a pesquisa investiga **existência, não estado de conservação, funcionamento ou eficácia** [@ibge_entorno2022]. Um poste sem lâmpada conta como iluminação pública existente. Um bueiro entupido conta como bueiro existente. Os dados descrevem a presença do equipamento urbano, e não a sua qualidade.
 
 #### O fluxo do questionário e seus saltos {#sec-entorno-fluxo}
 
-O questionário de 2022 não é uma lista plana de dez perguntas. Ele possui uma lógica condicional que faz com que certos itens deixem de ser aplicados em determinadas faces, e essa lógica é a origem de uma categoria de resposta que confunde muitos usuários dos dados.
-
-Há dois saltos, ambos visíveis nas instruções impressas na @fig-questionario. O primeiro ocorre quando a capacidade de circulação da via é registrada como **aquavia**, situação em que o rio ou canal constitui a própria face e é a forma de acesso direto às edificações. O formulário instrui a encerrar o questionário ali mesmo, e nenhum outro item é preenchido. O segundo, muito mais frequente, ocorre quando **não há calçada** na face. Como obstáculo e rampa são características da calçada, não faz sentido investigá-los onde ela não existe, e o item 3.01 manda seguir direto para o bloco de arborização. A @fig-fluxo-questionario resume esse encadeamento.
+O questionário de 2022 possui uma lógica condicional que faz com que certos itens deixem de ser aplicados em determinadas faces, e essa lógica é a origem de uma categoria de resposta que confunde muitos usuários dos dados. Há dois saltos, ambos visíveis nas instruções impressas na @fig-questionario. O primeiro ocorre quando a capacidade de circulação da via é registrada como **aquavia**, situação em que o rio ou canal constitui a própria face e é a forma de acesso direto às edificações. O formulário instrui a encerrar o questionário ali mesmo, e nenhum outro item é preenchido. O segundo, muito mais frequente, ocorre quando **não há calçada** na face. Como obstáculo e rampa são características da calçada, não faz sentido investigá-los onde ela não existe, e o item 3.01 manda seguir direto para o bloco de arborização. A @fig-fluxo-questionario resume esse encadeamento.
 
 ::: {#fig-fluxo-questionario}
 
@@ -219,13 +217,13 @@ flowchart TD
 Fluxo do questionário da Pesquisa Urbanística do Entorno dos Domicílios no Censo 2022, com os dois pontos de salto. Elaborado a partir do questionário reproduzido na @fig-questionario.
 :::
 
-Guarde este fluxograma. Quando chegarmos aos dados, veremos que as faces que sofreram salto não desaparecem das tabelas. Elas são contabilizadas em categorias específicas de não resposta, e confundi-las com falhas de coleta produz percentuais errados.
+Guarde este fluxograma, pois quando chegarmos aos dados, veremos que as faces que sofreram "salto" não desaparecem das tabelas. Elas são contabilizadas em categorias específicas de não resposta, e confundi-las com falhas de coleta produz percentuais errados.
 
 ### As variáveis e sua disponibilização {#sec-entorno-variaveis}
 
 É importante salientar que as tabelas de 2010 e de 2022 **não diferem apenas nos itens investigados**. Elas têm arquiteturas incompatíveis, e quem tentar transportar o raciocínio de um ano para o outro vai errar. Vejamos cada uma.
 
-#### Censo 2022, três blocos paralelos {#sec-entorno-var2022}
+#### Variáveis do Censo 2022 {#sec-entorno-var2022}
 
 A tabela de 2022 organiza a informação em três blocos que medem os mesmos dez itens em **unidades de contagem diferentes**. O primeiro conta faces de quadra, ou seja, o dado como foi coletado. O segundo conta domicílios particulares permanentes ocupados situados naquelas faces. O terceiro conta os moradores desses domicílios. A @tbl-blocos-2022 resume a estrutura, já usando os nomes que o pacote `censobr` atribui às colunas.
 
@@ -240,7 +238,7 @@ tibble::tribble(
   "Domicílios",       "domicilios_V050xx",   "domicilios_V05000",   "Domicílios particulares permanentes ocupados com entorno pesquisado",
   "Moradores",        "moradores_V052xx",    "moradores_V05200",    "Moradores desses domicílios"
 ) |>
-  knitr::kable(align = c("l", "l", "l", "l")) |>
+  knitr::kable(align = c("c", "c", "c", "c")) |>
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
@@ -248,19 +246,17 @@ Os três blocos têm 35 variáveis cada e seguem exatamente o mesmo *layout*, co
 
 Dentro de cada bloco, os itens aparecem decompostos em categorias. Oito deles trazem a tríade **Sim**, **Não** e **Não Declarado**. Os dois restantes trazem classes múltiplas, pois a arborização é registrada em quatro faixas de contagem e a capacidade de circulação da via em quatro tipos de veículo, e ambos contam ainda com uma categoria reservada aos casos em que o item não chegou a ser perguntado. A propriedade que torna o cálculo simples é que, em todo item, **as categorias somam a variável de total do bloco**. O denominador de um percentual, portanto, é sempre a variável de total, e não uma soma que o analista precise montar.
 
-A contrapartida dessa simplicidade está na categoria "Não Declarado", que carrega dois significados distintos. Na maioria dos itens ela reúne um resíduo pequeno de inconsistências e não validações. Nos itens de obstáculo na calçada e rampa para cadeirante, ela absorve também as faces que sofreram o salto do questionário, ou seja, aquelas em que não existe calçada. O que parece uma não resposta é, na verdade, um "não se aplica". Voltaremos a esse ponto com números na parte prática, porque ele muda o resultado de forma perceptível.
+Por outro lado, essa simplicidade é compensada pela existência da categoria "Não Declarado", que carrega dois significados distintos. Na maioria dos itens ela reúne um resíduo pequeno de inconsistências e não validações. Nos itens de obstáculo na calçada e rampa para cadeirante, ela absorve também as faces que sofreram o "salto" do questionário, ou seja, aquelas em que não existe calçada. O que parece uma não resposta é, na verdade, um "não se aplica". Voltaremos a esse ponto com números na parte prática, porque ele muda o resultado de forma perceptível.
 
-#### Censo 2010, cinco arquivos e nenhuma face {#sec-entorno-var2010}
+#### Variáveis do Censo 2010 {#sec-entorno-var2010}
 
-A tabela de 2010 segue outra filosofia. São 1.062 variáveis distribuídas em cinco arquivos, de `Entorno01` a `Entorno05`, e três diferenças estruturais a separam de 2022.
-
-A primeira é que **não existe contagem de faces**. Embora a coleta tenha sido feita por face, o produto divulgado conta apenas domicílios e moradores. Não há como saber, em 2010, qual proporção das faces de um setor tinha calçada. A segunda é que **não existe a categoria "Não Declarado"**, já que cada item aparece apenas como "Existe" ou "Não existe".
+A organização dos dados de 2010 segue uma outra lógica. São 1.161 variáveis distribuídas em cinco arquivos, de `Entorno01` a `Entorno05`, e três diferenças estruturais a separam de 2022. A primeira é que **não existe contagem de faces**. Embora a coleta tenha sido feita por face, o produto divulgado conta apenas domicílios e moradores. Não há como saber, em 2010, qual proporção das faces de um setor tinha calçada. A segunda é que **não existe a categoria "Não Declarado"**, já que cada item aparece apenas como "Existe" ou "Não existe".
 
 A terceira é a mais complexa para quem abre o arquivo pela primeira vez. Em 2010, os itens do entorno **nunca aparecem sozinhos**. Eles vêm sempre cruzados com um atributo do domicílio ou do morador. Não há uma variável que informe quantos domicílios estão em faces com iluminação pública. Há variáveis que informam quantos domicílios *próprios* estão em faces com iluminação, quantos *alugados*, quantos *com responsável do sexo feminino*, quantos *de renda per capita até um quarto de salário mínimo*, e assim por diante. O arquivo é, na prática, uma coleção de tabulações cruzadas [@ibge_base2010].
 
-Essa organização em blocos tem uma consequência prática severa. Como não há uma variável de total de domicílios com entorno pesquisado, o denominador precisa ser reconstruído somando um bloco inteiro. E **nem todos os blocos são exaustivos**. Os blocos de condição de ocupação, de abastecimento de água e de existência de banheiro e esgotamento sanitário deixam categorias de fora, de modo que somá-los produz um total menor que o correto. Já os blocos de sexo do responsável, adequação da moradia, renda per capita, grupos de idade e cor ou raça cobrem todos os domicílios ou moradores pesquisados. A escolha do bloco de referência é, portanto, uma decisão metodológica, e não um detalhe de implementação. Trataremos disso com código na parte prática.
+Essa organização em blocos gera uma complexidade prática, pois como não há uma variável de total de domicílios com entorno pesquisado, o denominador precisa ser reconstruído somando um bloco inteiro. E **nem todos os blocos são exaustivos**. Os blocos de condição de ocupação, de abastecimento de água e de existência de banheiro e esgotamento sanitário deixam categorias de fora, de modo que somá-los produz um total menor que o correto. Já os blocos de sexo do responsável, adequação da moradia, renda per capita, grupos de idade e cor ou raça cobrem todos os domicílios ou moradores pesquisados. A escolha do bloco de referência é, portanto, uma decisão metodológica importante. Trataremos disso com código na parte prática.
 
-A @tbl-estrutura contronta estruturalmente os resultados do Entorno para ambos os censos e sintetiza o que muda de um censo para o outro.
+A @tbl-estrutura confronta estruturalmente os resultados do Entorno para ambos os censos e sintetiza o que muda de um censo para o outro.
 
 ```{r}
 #| label: tbl-estrutura
@@ -274,10 +270,10 @@ tibble::tribble(
   "Categorias de resposta",       "Existe e Não existe",                                  "Sim, Não e Não Declarado",
   "Total de pesquisados",         "Não divulgado, precisa ser reconstruído",              "Variável explícita em cada bloco",
   "Forma de apresentação",        "Sempre cruzado com atributo do domicílio ou morador",  "Item isolado",
-  "Número de variáveis",          "1.062, em cinco arquivos",                             "105, em um arquivo",
+  "Número de variáveis",          "1.161, em cinco arquivos",                             "105, em um arquivo",
   "Itens com classes múltiplas",  "Nenhum",                                               "Arborização e capacidade da via"
 ) |>
-  knitr::kable(align = c("l", "l", "l")) |>
+  knitr::kable(align = c("c", "c", "c")) |>
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
@@ -297,7 +293,7 @@ tibble::tribble(
   "Pavimentação da via",    "Não",            "Em 2010 bastava qualquer trecho pavimentado e em 2022 exige-se predominância",
   "Arborização",            "Não",            "Em 2010 considerava a face confrontante e em 2022 considera apenas a face e o canteiro central"
 ) |>
-  knitr::kable(align = c("l", "c", "l")) |>
+  knitr::kable(align = c("c", "c", "c")) |>
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
@@ -311,7 +307,7 @@ Mesmo nos dois itens comparáveis, a comparação exige cautela adicional. O nú
 
 ### Níveis geográficos de coleta e de divulgação {#sec-entorno-niveis}
 
-Resta esclarecer uma assimetria que atravessa todo o produto: **a coleta ocorre na face, mas a divulgação é feita no setor**. Isso quer dizer que a face de quadra é a unidade de investigação, mas não é unidade de divulgação. Não existe, no conjunto de dados públicos, uma tabela que informe as características urbanísticas de uma face específica. O que se publica é a **contagem de faces por categoria dentro de cada setor censitário**, que passa a ser a maior resolução espacial disponível. Essa diferença tem uma implicação analítica que convém fixar desde já, pois o valor de um setor é uma síntese de faces que podem ser bastante heterogêneas entre si. Um setor em que 70% das faces têm calçada não é um setor uniformemente atendido. É um setor em que três de cada dez trechos de rua não têm por onde caminhar, e a leitura do mapa precisa levar isso em conta.
+Neste ponto, é importante esclarecer um aspecto bastante relevante sobre o produto: **a coleta ocorre na face, mas a divulgação é feita no nível do setor censitário**. Isso quer dizer que a face de quadra é a unidade de investigação, mas não é unidade de divulgação. Não existe, no conjunto de dados públicos, uma tabela que informe as características urbanísticas de uma face específica. O que se publica é a **contagem de faces por categoria dentro de cada setor censitário**, que passa a ser a maior resolução espacial disponível. Essa diferença tem uma implicação analítica que convém fixar desde já, pois o valor de um setor é uma síntese de faces que podem ser bastante heterogêneas entre si.
 
 A partir do setor censitário, a informação pode ser agregada para os recortes já discutidos na @sec-recortes, na sequência bairro, subdistrito, distrito e município, e daí para concentração urbana, unidade da federação, grande região e Brasil. A publicação de 2022 apresenta resultados até o nível de município e de concentração urbana, além de uma leitura segundo a hierarquia urbana definida em Regiões de Influência das Cidades [@ibge_entorno2022].
 
@@ -325,9 +321,7 @@ Com o terreno conceitual preparado, podemos partir para os dados. Na próxima se
 
 ## Obtendo e integrando os dados {#sec-entorno-dados}
 
-Usaremos **Fortaleza** como pano de fundo do restante do capítulo. A escolha não é arbitrária, pois a capital cearense reúne, em um mesmo território, situações que exercitam quase tudo o que foi discutido até aqui. Ela tem um dos maiores contingentes de população em favelas e comunidades urbanas entre as capitais brasileiras, apresenta um passivo de drenagem urbana bem acima da média nacional e, ao mesmo tempo, é um caso atípico e positivo em sinalização cicloviária.
-
-O ponto de partida é a leitura dos arquivos de entorno dos dois censos com a função `read_tracts()`, já apresentada no @sec-obtendo. O argumento `dataset` recebe o valor `"Entorno"`, e o retorno é um *Dataset* do Arrow, e não um `data.frame`. Isso importa porque o arquivo de 2022 tem quase 345 mil linhas e o de 2010 tem 310 mil, com mais de mil colunas no caso de 2010. Filtrar antes de materializar evita carregar o país inteiro na memória.
+Usaremos **Fortaleza** como pano de fundo do restante do capítulo. O ponto de partida é a leitura dos arquivos de entorno dos dois censos com a função `read_tracts()`, já apresentada no @sec-obtendo. O argumento `dataset` recebe o valor `"Entorno"`, e o retorno é um *Dataset* do Arrow, e não um `data.frame`. Isso importa porque o arquivo de 2022 tem quase 345 mil linhas e o de 2010 tem 310 mil, com mais de mil colunas no caso de 2010. Filtrar antes de materializar evita carregar o país inteiro na memória.
 
 ```{r}
 #| label: entorno-leitura
@@ -353,10 +347,10 @@ ent_for2022 <- ent2022 |>
 ::: {.callout-note}
 ## Por que não existe `read_tracts(year = 2000, dataset = "Entorno")`
 
-Como registrado na @tbl-quesitos-censos, o Censo 2000 investigou três itens do entorno, mas não os divulgou nos Agregados por Setor Censitário. Por isso o `censobr` não oferece o conjunto `Entorno` para aquele ano, e a chamada retorna erro. A série utilizável começa em 2010.
+Como registrado na @tbl-quesitos-censos, o Censo 2000 investigou três itens do entorno, mas os divulgou vinculados ao domicílio nos resultados da amostra, e não nos Agregados por Setor Censitário. Por isso o `censobr` não oferece o conjunto `Entorno` para aquele ano, e a chamada retorna erro. A série por setor começa em 2010.
 :::
 
-Antes de qualquer cálculo, o dicionário precisa estar aberto ao lado. A função `data_dictionary()` cuida disso, com a diferença de que para 2010 ela abre um PDF, cujas seções 6.22 a 6.26 descrevem os cinco arquivos de entorno, e para 2022 abre uma pasta de trabalho `.xlsx`, cuja última aba, chamada `Entorno`, traz as variáveis que nos interessam.
+Antes de qualquer cálculo, o dicionário precisa estar aberto ao lado. Já se sabe dos capítulos anteriores que a função `data_dictionary()` cuida disso. Lembre-se que para 2010 ela abre um PDF, e nele podemos verificar que as seções 6.22 a 6.26 descrevem os cinco arquivos de entorno. Já para 2022, a função abre uma pasta de trabalho `.xlsx`, cuja última aba, chamada `Entorno`, traz as variáveis que nos interessam.
 
 ```{r}
 #| label: entorno-dicionario
@@ -365,7 +359,7 @@ data_dictionary(year = 2010, dataset = "tracts")  # abre um PDF
 data_dictionary(year = 2022, dataset = "tracts")  # abre um .xlsx, ver aba "Entorno"
 ```
 
-Lembre-se que até a versão do `censobr` trabalhada no nosso texto (v0.6.0), os arquivos não vem com uma coluna de geometria. Deste modo, precisamos obter os polígonos dos setores vêm do `geobr`, com `read_census_tract()`. O argumento `code_tract` aceita o código do município para devolver todos os seus setores. Usamos `simplified = FALSE` para preservar o traçado original.
+Recorde-se também que até a versão do `censobr` trabalhada no nosso texto (v0.6.0), os arquivos não vêm com uma coluna de geometria. Deste modo, precisamos obter os polígonos dos setores no `geobr`, com `read_census_tract()`. O argumento `code_tract` aceita o código do município para devolver todos os seus setores. Usamos `simplified = FALSE` para preservar o traçado original.
 
 ```{r}
 #| label: entorno-geo
@@ -398,16 +392,16 @@ tibble(
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
-Os 23 setores de 2010 e os 27 de 2022 que ficam sem par **não são falha de dado**. São setores que não foram selecionados para a pesquisa, e aparecerão nos mapas com a cor reservada a valores ausentes. Repare também que a malha de Fortaleza cresceu de 3.043 para 4.408 setores entre os dois censos, informação que será decisiva na @sec-entorno-comparacao.
+Os 23 setores de 2010 e os 27 de 2022 que ficam sem par são setores que não foram selecionados para a pesquisa, **não consistindo em falha de dado**. Eles aparecerão nos mapas com a cor reservada a valores ausentes. Repare também que a malha de Fortaleza cresceu de 3.043 para 4.408 setores entre os dois censos, informação que será decisiva na @sec-entorno-comparacao.
 
-Em 2022 existe ainda um segundo tipo de ausência, mais sutil, que não vem do `join` e sim do próprio arquivo.
+Em 2022 existe ainda um segundo tipo de ausência, mais sutil, que não vem do `join` e sim do próprio arquivo. Abaixo, contabilizamos a quantidade de setores que possuem `NA` na variável de total de domicílios investigados com relação ao entorno:
 
 ```{r}
 #| label: entorno-na-domicilios
 sum(is.na(ent_for2022$domicilios_V05000))
 ```
 
-São 111 setores com faces pesquisadas mas sem total de domicílios, tipicamente setores sem uso residencial, como grandes áreas de parque, equipamentos e concentrações de comércio. A consequência é direta e vale antecipar. **Um indicador calculado sobre faces existe nesses setores, enquanto o mesmo indicador calculado sobre domicílios não existe.** Somando os 27 setores não pareados aos 111 sem domicílios, um mapa por domicílios terá 138 setores em branco, contra apenas 27 de um mapa por faces.
+São 111 setores com faces pesquisadas mas sem total de domicílios, tipicamente setores sem uso residencial, como grandes áreas de parque, equipamentos e concentrações de comércio. A consequência direta é que **um indicador calculado sobre faces existe nesses setores, enquanto o mesmo indicador calculado sobre domicílios não existe.** Somando os 27 setores não pareados aos 111 sem domicílios, um mapa por domicílios terá 138 setores em branco, contra apenas 27 de um mapa por faces.
 
 ## A escolha do denominador {#sec-entorno-denominador}
 
@@ -417,14 +411,18 @@ A @sec-entorno-var2022 estabeleceu a regra de cálculo de 2022, ou seja, as cate
 #| label: tbl-entorno-unidades
 #| tbl-cap: "Os mesmos itens do entorno medidos sobre faces de quadra e sobre domicílios, Fortaleza (Censo 2022)."
 
-# Função auxiliar que protege a divisão contra denominador zero ou ausente.
-# Será reaproveitada adiante, quando tratarmos do Censo 2010.
+# Função auxiliar para calcular percentuais com segurança. Se a variável de
+# total (o denominador) for 0 ou ausente, ela é substituída por NA_real_, e a
+# divisão 100 * numerador / total devolve NA em vez de Inf ou NaN. Aqui, com
+# totais municipais, isso nunca acontece, mas será decisivo nos cálculos por
+# setor logo adiante, onde há os 111 setores sem domicílios investigados.
 perc <- function(numerador, total) {
   total <- ifelse(is.na(total) | total == 0, NA_real_, total)
   100 * numerador / total
 }
 
 # Totais municipais de cada variável dos três blocos
+# Obs.: mais explicações sobre as funções novas que aparecem abaixo na nota mais adiante.
 tot_for2022 <- ent_for2022 |>
   summarise(across(starts_with(c("faces_", "domicilios_")),
                    \(x) sum(x, na.rm = TRUE)))
@@ -463,9 +461,7 @@ tibble(
 - **`\(x) sum(x, na.rm = TRUE)`** é a forma abreviada de escrever uma função anônima em R, equivalente a `function(x) sum(x, na.rm = TRUE)`. Ela é útil quando precisamos passar como argumento uma função que não existe pronta, no caso a soma que ignora valores ausentes.
 :::
 
-A tabela revela um padrão sistemático. Em quase todos os itens, o percentual medido sobre domicílios é **maior** que o medido sobre faces, e a diferença chega a quase dez pontos no caso da calçada. A explicação é geográfica, pois as faces mais bem servidas de infraestrutura concentram mais moradias, enquanto as faces mal servidas tendem a ser trechos de baixa densidade, terrenos vazios ou vias de borda. Ao contar domicílios, damos peso maior justamente às faces onde mais gente vive.
-
-O item de sinalização cicloviária é a única exceção, e ela é instrutiva. Ali a relação se inverte, com 7,9% das faces contra 7,2% dos domicílios, porque a sinalização para bicicletas se concentra em vias arteriais e orlas, onde há proporcionalmente menos residências. A regra prática que decorre disso pode ser resumida assim. Faces medem **oferta de infraestrutura no território**, e domicílios medem **população atendida por ela**. Nenhuma das duas é mais correta, mas responder à pergunta errada com a unidade errada é um erro comum, e a escolha precisa ser declarada explicitamente em qualquer análise.
+A tabela revela um padrão sistemático, pois em quase todos os itens o percentual medido sobre domicílios é **maior** que o medido sobre faces, e a diferença chega a quase dez pontos no caso da calçada. Isso ocorre pois as faces mais bem servidas de infraestrutura concentram mais moradias, enquanto as faces mal servidas tendem a ser trechos de baixa densidade, terrenos vazios ou vias de borda. Ao contar domicílios, damos peso maior justamente às faces onde mais gente vive^[O item de sinalização cicloviária é a única exceção, com 7,9% das faces contra 7,2% dos domicílios. Isso ocorre provavelmente porque a sinalização para bicicletas se concentra em vias arteriais e orlas, onde há proporcionalmente menos residências]. A regra prática que decorre disso pode ser resumida assim: faces medem **oferta de infraestrutura no território** e domicílios medem **população atendida por ela**. Nenhuma das duas é mais correta, mas responder à pergunta errada com a unidade errada é um erro comum, e a escolha precisa ser declarada explicitamente em qualquer análise.
 
 ### Quando "Não Declarado" significa "não se aplica" {#sec-entorno-nd}
 
@@ -485,7 +481,7 @@ ent_for2022 |>
   glimpse()
 ```
 
-O contraste é brutal. No item de bueiro, o "Não Declarado" reúne 794 domicílios, um resíduo de menos de 0,1% que corresponde a inconsistências de coleta. Nos itens de obstáculo e de rampa, ele reúne 94.526 domicílios, e esse número não é arbitrário, pois é **exatamente** a diferença entre o total de domicílios e os que estão em faces com calçada. Não se trata de informação perdida, e sim de domicílios para os quais a pergunta não fazia sentido.
+Veja como o contraste é significativo. No item de bueiro, o "Não Declarado" reúne somente 794 domicílios, representando 0,1% do total, indicando inconsistências de coleta. Nos itens de obstáculo e de rampa, ele reúne 94.526 domicílios, justamente a diferença entre o total de domicílios e os que estão em faces com calçada. Trata-se de domicílios para os quais a pergunta não fazia sentido (pois foi saltada) e não informação perdida.
 
 Daí decorrem duas taxas legítimas e bem diferentes para a rampa de acessibilidade em Fortaleza.
 
@@ -501,7 +497,7 @@ ent_for2022 |>
   round(1)
 ```
 
-A primeira, de 12,2%, é a que o IBGE publica e responde à pergunta "que parcela da população mora em rua com rampa". A segunda, de 13,8%, responde a "onde há calçada, com que frequência ela é acessível". Um relatório de acessibilidade urbana pode precisar das duas, mas apresentar uma no lugar da outra distorce o diagnóstico. Novamente, o essencial é declarar qual está sendo usada.
+A primeira, de 12,2%, é a que o IBGE publica e responde à pergunta "que parcela da população mora em rua com rampa?". A segunda, de 13,8%, responde a "onde há calçada, com que frequência ela é acessível?". Um relatório de acessibilidade urbana pode precisar das duas, mas apresentar uma no lugar da outra distorce o diagnóstico. Novamente, o essencial é declarar qual está sendo usada.
 
 ## Mapeando os indicadores de 2022 {#sec-entorno-mapas2022}
 
@@ -536,9 +532,59 @@ geo_for2022 |>
 A função **`transmute()`** cria colunas exatamente como o `mutate()`, com uma diferença importante. Ela **mantém apenas as colunas criadas**, descartando todas as demais, e por isso equivale a um `mutate()` seguido de `select()`. Aqui isso é conveniente, pois o objeto `ent_for2022` tem 134 colunas e queremos levar para o `left_join()` somente o `code_tract`, necessário para a união, e o indicador recém-calculado. Usar `mutate()` no lugar funcionaria, mas arrastaria as outras 133 colunas para dentro do objeto espacial sem qualquer utilidade.
 :::
 
-O mapa mostra uma cidade majoritariamente calçada com bolsões bem definidos de carência. A mediana municipal é de 91,7% das faces por setor e 53,4% dos setores estão acima de 90%, mas 554 setores, ou 12,6% do total, ficam abaixo da metade. Agregando por bairro, os extremos superiores ficam na malha consolidada, com Dionísio Torres em 97,8%, Cidade 2000 em 97,6% e Centro em 97,1%, enquanto os inferiores se concentram na frente de expansão litorânea a leste e sudeste, com Sabiaguaba em 19,1%, Manuel Dias Branco em 38,5% e Praia do Futuro II em 42,6%. É essa faixa leste que aparece em tons claros na ponta direita do mapa.
+O mapa mostra uma cidade majoritariamente calçada com bolsões bem definidos de carência. A mediana municipal é de 91,7% das faces por setor e 53,4% dos setores têm 90% ou mais de suas faces calçadas, mas 554 setores, ou 12,6% do total, ficam abaixo da metade. Observe como obter esses resultados com o código abaixo:
+
+```{r}
+#| label: entorno-calcada-resumo
+ent_for2022 |>
+  transmute(perc_calcada = perc(faces_V05421, faces_V05400)) |>
+  summarise(
+    mediana           = median(perc_calcada),
+    perc_acima_90     = 100 * sum(perc_calcada >= 90) / n(),
+    setores_abaixo_50 = sum(perc_calcada < 50),
+    perc_abaixo_50    = 100 * sum(perc_calcada < 50) / n()
+  )
+```
+
 
 Vale insistir na leitura correta de um valor intermediário, retomando a @sec-entorno-niveis. Um setor com 60% de faces calçadas não é um setor com calçadas de má qualidade, e sim um setor em que quatro de cada dez trechos de rua não têm por onde caminhar.
+
+O mapa sugere um padrão espacial, e a agregação por bairro permite nomeá-lo. O arquivo de entorno já traz a coluna `name_neighborhood`, ao lado de todo o encadeamento de recortes discutido na @sec-recortes, de modo que basta agrupar por ela. Um cuidado é decisivo nesse passo: o percentual do bairro **não é a média dos percentuais de seus setores**, e sim a razão entre a soma das faces com calçada e a soma de todas as faces do bairro. Setores têm quantidades muito diferentes de faces, e tratar todos com o mesmo peso distorce o resultado^[Em Manuel Dias Branco, por exemplo, a média simples dos setores dá 51,0%, contra 38,5% do cálculo correto]. A @tbl-for-calcada-bairros traz os cinco bairros de cada extremo.
+
+```{r}
+#| label: tbl-for-calcada-bairros
+#| tbl-cap: "Bairros de Fortaleza com maior e com menor percentual de faces de quadra com calçada ou passeio (Censo 2022)."
+
+## Sumarizando os resultados por bairro (name_neighborhood):
+calcada_bairro <- ent_for2022 |>
+  group_by(name_neighborhood) |>
+  summarise(setores = n(),
+            perc_calcada = perc(sum(faces_V05421, na.rm = TRUE),
+                                sum(faces_V05400, na.rm = TRUE)))
+
+# O código abaixo seleciona os 5 melhores e piores bairros com relação à percentual
+# de calçadas (mais detalhes sobre as funções na nota abaixo):
+bind_rows(
+  calcada_bairro |>
+    slice_max(perc_calcada, n = 5),
+  calcada_bairro |>
+    slice_min(perc_calcada, n = 5)
+) |>
+  arrange(desc(perc_calcada)) |>
+  knitr::kable(col.names = c("Bairro", "Setores", "% das faces c/ calçada"),
+               digits = 1, align = c("c", "c", "c"),
+               format.args = list(decimal.mark = ",")) |>
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+::: {.callout-note}
+## Extraindo os extremos de uma tabela
+
+- **`slice_max()`** e **`slice_min()`** retornam as `n` linhas com os maiores e os menores valores da coluna indicada, já ordenadas. Elas dispensam a dupla `arrange()` mais `head()` e, ao contrário dela, tratam empates de forma explícita pelo argumento `with_ties`, que por padrão devolve todas as linhas empatadas na última posição.
+- **`bind_rows()`** empilha tabelas, casando as colunas pelo nome. É a operação usada aqui para reunir os dois extremos em um único quadro, e não deve ser confundida com os `joins` da @sec-entorno-dados, que unem tabelas lado a lado por uma chave.
+:::
+
+Os extremos superiores reúnem bairros com praticamente toda a sua extensão calçada, com Varjota em 99,0%, Parque Santa Rosa em 98,0% e Dionísio Torres em 97,8%. Os três últimos colocados se concentram na frente de expansão a leste e sudeste, com Sabiaguaba em 19,1%, Manuel Dias Branco em 38,5% e Praia do Futuro II em 42,6%. É essa faixa leste que aparece em tons claros na ponta direita do mapa.
 
 O segundo mapa muda de unidade e de sentido. Ele mostra o percentual de domicílios em faces sem nenhuma árvore, medido sobre domicílios por ser uma pergunta sobre exposição da população, e aqui valores altos são ruins, o que justifica uma paleta em tons quentes.
 
@@ -568,60 +614,6 @@ geo_for2022 |>
 
 Compare a quantidade de cinza nos dois mapas. O primeiro tem 27 setores sem valor e o segundo tem 138, exatamente a diferença antecipada na @sec-entorno-join. Trocar o denominador de faces para domicílios não muda apenas a escala do indicador, mas também a **cobertura** do mapa.
 
-### Um panorama em pequenos múltiplos {#sec-entorno-painel}
-
-Mapear item por item fica repetitivo depois do terceiro. Uma alternativa é montar um painel de pequenos múltiplos, em que os indicadores compartilham a mesma escala de cor e podem ser lidos em conjunto. Para que a comparação visual funcione, todos os itens precisam apontar no mesmo sentido, e por isso usamos arborização com **ao menos uma árvore**, somando as três classes positivas, em vez do "sem árvores" do mapa anterior. Assim, em todos os painéis, mais escuro significa melhor.
-
-Um detalhe de implementação merece atenção. A união com a geometria deve vir **antes** do `pivot_longer()`, e não depois. Na ordem inversa, os setores sem correspondência geram uma faceta espúria rotulada como ausente, em vez de aparecerem em cinza dentro de cada painel.
-
-```{r}
-#| label: fig-for-painel
-#| fig-cap: "Panorama da infraestrutura do entorno em Fortaleza (Censo 2022), medida como percentual de faces de quadra por setor censitário. Escala compartilhada entre os seis painéis."
-#| fig-width: 8
-#| fig-height: 5.6
-#| message: false
-indicadores_for <- ent_for2022 |>
-  transmute(
-    code_tract,
-    `Iluminação pública`             = perc(faces_V05412, faces_V05400),
-    `Via pavimentada`                = perc(faces_V05406, faces_V05400),
-    `Calçada ou passeio`             = perc(faces_V05421, faces_V05400),
-    `Arborização (1+ árvore)`        = perc(faces_V05431 + faces_V05432 +
-                                              faces_V05433, faces_V05400),
-    `Bueiro ou boca de lobo`         = perc(faces_V05409, faces_V05400),
-    `Via sinalizada para bicicletas` = perc(faces_V05418, faces_V05400)
-  )
-
-geo_for2022 |>
-  select(code_tract) |>
-  left_join(indicadores_for, by = "code_tract") |>
-  pivot_longer(cols = -c(code_tract, geometry),
-               names_to = "indicador", values_to = "valor") |>
-  mutate(indicador = factor(indicador, levels = names(indicadores_for)[-1])) |>
-  ggplot() +
-  geom_sf(aes(fill = valor), color = NA) +
-  facet_wrap(~ indicador, ncol = 3) +
-  scale_fill_distiller(palette = "YlGnBu", direction = 1,
-                       name = "% das faces",
-                       na.value = "gray90", limits = c(0, 100)) +
-  coord_sf(expand = FALSE) +
-  theme_minimal() +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank(),
-        strip.text = element_text(size = 8))
-```
-
-::: {.callout-note}
-## `pivot_longer()` e o formato longo
-
-A função **`pivot_longer()`**, do pacote `tidyr`, converte a tabela do formato **largo** para o formato **longo**. No formato largo, cada indicador ocupa uma coluna própria, que é como o objeto `indicadores_for` foi construído. No formato longo, todos os valores passam a ocupar **uma única coluna**, e uma segunda coluna guarda o nome do indicador ao qual cada valor pertence. O argumento `cols` diz quais colunas devem ser empilhadas, e aqui usamos a notação negativa para empilhar todas menos `code_tract` e a geometria. Os argumentos `names_to` e `values_to` dão os nomes às duas colunas resultantes.
-
-Essa conversão é o que viabiliza o `facet_wrap()`, listado entre as camadas da gramática dos gráficos na @tbl-camadas e aqui usado pela primeira vez, porque a criação de facetas exige que a variável usada para dividir os painéis exista como **uma coluna**. Com seis indicadores em seis colunas separadas, não haveria o que passar a `~ indicador`. A tabela sai de 4.408 linhas e sete colunas para 26.448 linhas e três colunas, ou seja, seis vezes mais linhas, uma para cada combinação de setor e indicador.
-:::
-
-O painel conta a história da cidade em uma imagem. Iluminação pública e pavimentação estão praticamente universalizadas, com 96,3% e 88,6% das faces. A calçada vem logo atrás, com 79,5%, e a arborização atinge metade das faces. A drenagem destoa do conjunto, presente em apenas 28,4% das faces, bem abaixo da média nacional de 40,9%, e o mapa mostra que a carência é generalizada e não se concentra em um setor da cidade. A sinalização cicloviária, com 7,9%, parece baixa em termos absolutos, mas é mais de cinco vezes a média brasileira de 1,5%, o que faz de Fortaleza um caso nacionalmente atípico nesse item. O desenho linear e contínuo que as ciclovias formam no painel revela a lógica em rede desse tipo de infraestrutura, bem distinta da distribuição difusa dos demais itens.
-
 ## Recuperando os dados de 2010 {#sec-entorno-r2010}
 
 Passamos agora ao censo anterior, e o primeiro obstáculo aparece antes de qualquer cálculo. Enquanto em 2022 os nomes de coluna já indicam o bloco, em 2010 eles não dizem absolutamente nada.
@@ -631,7 +623,7 @@ Passamos agora ao censo anterior, e o primeiro obstáculo aparece antes de qualq
 names(ent_for2010)[c(30, 100, 500, 900)]
 ```
 
-A @sec-entorno-var2010 descreveu a lógica que organiza essas 1.062 variáveis. Vamos agora convertê-la em código. A regra é que, dentro de cada bloco, os dez itens aparecem sempre na mesma ordem, e cada um ocupa `2 × número de categorias` colunas consecutivas. Adotaremos o bloco de **sexo do responsável**, do arquivo `Entorno02`, por duas razões. Ele é exaustivo, portanto serve de denominador, e é o mais econômico, com apenas duas categorias e quatro colunas por item.
+A @sec-entorno-var2010 descreveu a lógica que organiza essas 1.161 variáveis. Vamos agora convertê-la em código. A regra é que, dentro de cada bloco, os dez itens aparecem sempre na mesma ordem, e cada um ocupa `2 × número de categorias` colunas consecutivas. Adotaremos o bloco de **sexo do responsável**, do arquivo `Entorno02`, por duas razões. Ele é exaustivo, portanto serve de denominador, e é o mais econômico, com apenas duas categorias e quatro colunas por item.
 
 Esse bloco começa em `V382`, e dentro de cada item a ordem é masculino-Existe, masculino-Não existe, feminino-Existe, feminino-Não existe. Em vez de digitar quarenta nomes de coluna, construímos o dicionário por aritmética.
 
@@ -660,20 +652,25 @@ dic_2010
 ```
 
 ::: {.callout-note}
-## `sprintf()` para montar nomes de coluna
+## `seq_along()` e `sprintf()` para montar nomes de coluna
 
-A função **`sprintf()`** monta textos a partir de um molde com marcadores de posição, e vem do C, estando disponível em praticamente toda linguagem de programação. O molde `"entorno02_V%03d"` tem duas partes. O trecho literal `entorno02_V` é copiado como está, e o marcador `%03d` é substituído pelo número passado adiante, formatado como inteiro (`d`) com três dígitos (`3`) e preenchido com zeros à esquerda (`0`).
+A função **`seq_along()`** recebe um vetor e devolve a sequência das posições que ele ocupa, ou seja, `1, 2, ..., n`. Aqui `seq_along(quesitos_2010)` devolve os números de 1 a 10, um para cada item da pesquisa. A conta `382 + 4 * (seq_along(quesitos_2010) - 1)` transforma essas posições nos códigos de início de cada item. A subtração de 1 faz o primeiro item começar no próprio 382, e a multiplicação por 4 avança de quatro em quatro colunas, produzindo 382, 386, 390 e assim por diante até 418.
+
+Poderíamos ter escrito `1:10` no lugar, mas `seq_along()` é preferível por duas razões. A sequência se ajusta sozinha caso o vetor de quesitos mude de tamanho, e ela nunca produz uma contagem invertida, problema clássico de `1:length(x)` quando o vetor está vazio, situação em que essa expressão devolve `1 0` em vez de sequência nenhuma.
+
+A função **`sprintf()`**, por sua vez, monta textos a partir de um molde com marcadores de posição, estando disponível em praticamente toda linguagem de programação. O molde `"entorno02_V%03d"` tem duas partes. O trecho literal `entorno02_V` é copiado como está, e o marcador `%03d` é substituído pelo número passado adiante, formatado como inteiro (`d`) com três dígitos (`3`) e preenchido com zeros à esquerda (`0`).
 
 É esse preenchimento que interessa aqui. O código 382 vira `V382` naturalmente, mas o número 9 precisaria virar `V009`, e não `V9`, para casar com os nomes reais das colunas. Escrever `paste0("entorno02_V", inicio)` produziria `entorno02_V9` e a coluna não seria encontrada. Como `sprintf()` é vetorizada, os dez códigos são gerados de uma vez.
 :::
 
-### Validar antes de confiar {#sec-entorno-validacao}
-
-Um mapa de códigos construído por dedução precisa ser testado, e o teste aqui é simples e poderoso. Se o bloco é realmente exaustivo e a ordem dos itens está correta, a soma das quatro colunas tem de dar **exatamente o mesmo total** nos dez itens, porque todas elas repartem o mesmo conjunto de domicílios. Se algum total destoar, o mapeamento está errado.
+Antes de prosseguir, teste o mapa de códigos construído. Se o bloco é realmente exaustivo e a ordem dos itens está correta, a soma das quatro colunas tem de dar **exatamente o mesmo total** nos dez itens, porque todas elas repartem o mesmo conjunto de domicílios. Se algum total destoar, o mapeamento está errado.
 
 ```{r}
 #| label: tbl-entorno-2010
 #| tbl-cap: "Características do entorno dos domicílios em Fortaleza no Censo 2010, reconstruídas a partir do bloco de sexo do responsável do arquivo Entorno02."
+# Para cada um dos dez itens, soma ao longo de todos os setores de Fortaleza os
+# domicílios das duas colunas de "Existe", masculino e feminino, e acrescenta as
+# duas de "Não existe" para chegar ao total de domicílios investigados
 resumo_2010 <- dic_2010 |>
   rowwise() |>
   mutate(
@@ -683,6 +680,8 @@ resumo_2010 <- dic_2010 |>
                           na.rm = TRUE)
   ) |>
   ungroup()
+
+resumo_2010
 
 # Um único valor de total significa que o mapeamento está consistente
 n_distinct(resumo_2010$total)
@@ -710,20 +709,27 @@ O teste passa, com um único total de 684.389 domicílios nos dez itens. Esse h�
 
 Os resultados de 2010 já antecipam o que veremos adiante. A iluminação pública alcançava 97,9% dos domicílios, praticamente saturada, enquanto o bueiro chegava a apenas 16,5%. Note ainda que aparecem aqui os quatro itens que não sobreviveram a 2022, e o esgoto a céu aberto, presente no entorno de 19,3% dos domicílios de Fortaleza em 2010, é um retrato que o Censo 2022 simplesmente não permite refazer.
 
-### A armadilha do denominador zero {#sec-entorno-nan}
-
-Em 2022, o denominador podia estar ausente, mas nunca era zero. Em 2010, ele pode ser zero, e é aí que mora um erro silencioso. O arquivo inclui setores com domicílios registrados na variável `entorno01_V001` cujas faces não foram pesquisadas, e neles a soma do bloco dá zero.
+Um último detalhe a ser discutido é a **armadilha do denominador zero** para 2010. Em 2022, o denominador podia estar ausente, mas nunca era zero. Em 2010, o arquivo inclui setores com domicílios registrados na variável `entorno01_V001` cujas faces não foram pesquisadas, e neles a soma do bloco dá zero.
 
 ```{r}
 #| label: entorno-zeros-2010
+# Nomes das quatro colunas de um item qualquer do bloco, aqui o da iluminação
+# pública, já que os dez itens repartem o mesmo total de domicílios
 cols_total <- dic_2010 |>
   filter(quesito == "Iluminação pública") |>
   select(masc_existe, masc_nao, fem_existe, fem_nao) |>
-  unlist(use.names = FALSE)
+  unlist(use.names = FALSE)   # converte a linha da tabela em um vetor de texto
 
+cols_total
+
+# Enquanto até aqui somamos colunas inteiras, obtendo totais municipais, o
+# rowSums() soma as quatro colunas dentro de cada linha, produzindo o
+# denominador setor a setor, que é onde o zero pode aparecer
 ent_for2010 <- ent_for2010 |>
   mutate(total_entorno = rowSums(across(all_of(cols_total)), na.rm = TRUE))
 
+# Diagnóstico do problema, contando os setores com denominador zero e medindo
+# quanto dos domicílios do arquivo o entorno de fato cobre
 tibble(
   setores                = nrow(ent_for2010),
   denominador_zero       = sum(ent_for2010$total_entorno == 0),
@@ -732,40 +738,50 @@ tibble(
 )
 ```
 
+::: {.callout-note}
+## `unlist()` e `rowSums()`
+
+- **`unlist()`** achata uma estrutura aninhada em um vetor simples. Aqui ela é necessária porque o `select()` devolve uma tabela de uma linha e quatro colunas, enquanto o `all_of()` da linha seguinte espera um vetor de textos com os nomes das colunas. O argumento `use.names = FALSE` descarta os nomes das colunas de origem, que só atrapalhariam.
+- **`rowSums()`** soma valores **ao longo da linha**, devolvendo um resultado por linha da tabela. É a operação complementar ao `sum()` usado até aqui, que reduz tudo a um único número. Vem do R base e por isso não entende nomes de coluna soltos, o que explica o `across(all_of(...))` em volta, cuja função é traduzir os nomes em um bloco de colunas.
+
+:::
+
 São 119 setores com denominador igual a zero, e a diferença entre os 709.680 domicílios do arquivo e os 684.389 com entorno pesquisado corresponde a 96,4% de cobertura, coerente com os 96,9% que o IBGE reporta para o conjunto do país [@ibge_entorno2010]. Uma divisão ingênua nesses 119 setores devolveria `NaN`, que o `ggplot2` pinta com a cor de ausente sem emitir aviso algum. O erro passaria despercebido. É justamente para isso que serve a função `perc()` definida na @sec-entorno-denominador, que converte o denominador zero em ausente antes de dividir, tornando a ausência explícita em vez de acidental.
 
 ## Comparando 2010 e 2022 {#sec-entorno-comparacao}
 
-Chegamos ao ponto em que todas as ressalvas metodológicas do capítulo cobram sua conta. Antes de sobrepor qualquer resultado, três travas precisam ser respeitadas.
+Para finalizar, iremos comparar alguns resultados entre os Censos de 2010 e 2022. Antes de sobrepor qualquer resultado, três cuidados precisam ser levados em consideração. O primeiro vem da @tbl-comparabilidade, ou seja, apenas **iluminação pública** e **bueiro** mantiveram conceito e critério nos dois censos. Calçada, pavimentação e arborização mudaram e não devem ser confrontadas.
 
-A primeira vem da @tbl-comparabilidade, ou seja, apenas **iluminação pública** e **bueiro** mantiveram conceito e critério nos dois censos. Calçada, pavimentação e arborização mudaram e não devem ser confrontadas.
+O segundo decorre da @sec-entorno-var2010, pois 2010 não tem contagem de faces. A comparação tem de ser feita **por domicílios** nos dois anos. Confrontar o percentual de faces de 2022 com o percentual de domicílios de 2010 seria um erro grosseiro, e a @tbl-entorno-unidades mostra que a distância entre as duas unidades chega a dez pontos percentuais, mais que suficiente para inventar uma tendência inexistente.
 
-A segunda decorre da @sec-entorno-var2010, pois 2010 não tem contagem de faces. A comparação tem de ser feita **por domicílios** nos dois anos. Confrontar o percentual de faces de 2022 com o percentual de domicílios de 2010 seria um erro grosseiro, e a @tbl-entorno-unidades mostra que a distância entre as duas unidades chega a dez pontos percentuais, mais que suficiente para inventar uma tendência inexistente.
+O terceiro é de natureza geográfica. A malha de Fortaleza passou de 3.043 para 4.408 setores, de modo que os setores de 2010 e de 2022 **não são as mesmas unidades**. Isso inviabiliza um mapa de diferença por setor, recurso que no @sec-ge-maceio foi possível justamente porque as células da Grade Estatística permanecem estáveis entre as edições. Aqui o caminho é apresentar dois mapas independentes lado a lado.
 
-A terceira é geográfica. A malha de Fortaleza passou de 3.043 para 4.408 setores, de modo que os setores de 2010 e de 2022 **não são as mesmas unidades**. Isso inviabiliza um mapa de diferença por setor, recurso que no @sec-ge-maceio foi possível justamente porque as células da Grade Estatística permanecem estáveis entre as edições. Aqui o caminho é apresentar dois mapas independentes lado a lado.
-
-Começamos pelo retrato municipal dos dois itens comparáveis.
+Começamos pelo retrato municipal dos dois itens comparáveis. Lembre-se que não existe tabela pronta com os dois censos lado a lado, então montamos o quadro manualmente, com uma linha por item comparável e uma coluna por ano. Note que em 2010, o numerador exige somar as colunas masculina e feminina de "Existe", sobre o `total_entorno` calculado no bloco anterior, enquanto em 2022 uma única coluna já traz os domicílios com o item, sobre a variável de total do próprio bloco:
 
 ```{r}
 #| label: tbl-entorno-comparacao
 #| tbl-cap: "Percentual de domicílios com entorno pesquisado segundo os dois itens comparáveis entre os Censos de 2010 e 2022, Fortaleza."
-S <- function(x) sum(x, na.rm = TRUE)
 
+# Preparação do quadro comparativo entre 2010 e 2022 para Fortaleza:
 tibble(
   Item = c("Iluminação pública", "Bueiro ou boca de lobo"),
   `2010` = c(
-    perc(S(ent_for2010$entorno02_V386) + S(ent_for2010$entorno02_V388),
-         S(ent_for2010$total_entorno)),
-    perc(S(ent_for2010$entorno02_V402) + S(ent_for2010$entorno02_V404),
-         S(ent_for2010$total_entorno))
+    perc(sum(ent_for2010$entorno02_V386, na.rm = TRUE) + 
+           sum(ent_for2010$entorno02_V388, na.rm = TRUE),
+         sum(ent_for2010$total_entorno, na.rm = TRUE)),
+    perc(sum(ent_for2010$entorno02_V402, na.rm = TRUE) +
+           sum(ent_for2010$entorno02_V404, na.rm = TRUE),
+         sum(ent_for2010$total_entorno, na.rm = TRUE))
   ),
   `2022` = c(
-    perc(S(ent_for2022$domicilios_V05012), S(ent_for2022$domicilios_V05000)),
-    perc(S(ent_for2022$domicilios_V05009), S(ent_for2022$domicilios_V05000))
+    perc(sum(ent_for2022$domicilios_V05012, na.rm = TRUE),
+         sum(ent_for2022$domicilios_V05000, na.rm = TRUE)),
+    perc(sum(ent_for2022$domicilios_V05009, na.rm = TRUE), 
+         sum(ent_for2022$domicilios_V05000, na.rm = TRUE))
   )
 ) |>
   mutate(`Variação (p.p.)` = `2022` - `2010`) |>
-  knitr::kable(digits = 1, align = c("l", "c", "c", "c"),
+  knitr::kable(digits = 1, align = c("c", "c", "c", "c"),
                format.args = list(decimal.mark = ",")) |>
   kableExtra::kable_styling(full_width = FALSE)
 ```
@@ -800,7 +816,7 @@ mapa2022 <- geo_for2022 |>
   )
 ```
 
-Cada figura será composta por dois gráficos independentes, um para cada ano, unidos lado a lado pelo operador `|` do `patchwork`. Há um cuidado que não pode ser negligenciado, pois os dois painéis precisam compartilhar **exatamente os mesmos limites de escala**. Se cada mapa ajustar a paleta ao próprio intervalo de valores, o mapa de 2010 ficará tão colorido quanto o de 2022 e a evolução desaparecerá da imagem. Por isso fixamos `limits = c(0, 100)` nos dois, e `plot_layout(guides = "collect")` recolhe as duas legendas idênticas em uma só.
+Cada figura será composta por dois gráficos independentes, um para cada ano, unidos lado a lado pelo operador `|` do pacote `patchwork` para visualizar múltiplos gráficos/mapas^[para entender melhor, consulte a página do pacote e explore as opções: https://patchwork.data-imaginist.com/]. Há um cuidado que não pode ser negligenciado, pois os dois painéis precisam compartilhar **exatamente os mesmos limites de escala**. Se cada mapa ajustar a paleta ao próprio intervalo de valores, o mapa de 2010 ficará tão colorido quanto o de 2022 e a evolução desaparecerá da imagem. Por isso fixamos `limits = c(0, 100)` nos dois. Com `plot_layout(guides = "collect")`, recolhemos as duas legendas idênticas em uma só.
 
 O primeiro par mostra a drenagem urbana, o item em que Fortaleza mais avançou.
 
@@ -810,6 +826,9 @@ O primeiro par mostra a drenagem urbana, o item em que Fortaleza mais avançou.
 #| fig-width: 8
 #| fig-height: 3.8
 #| message: false
+
+library(patchwork)
+
 bueiro2010 <- ggplot(mapa2010) +
   geom_sf(aes(fill = bueiro), color = NA) +
   scale_fill_distiller(palette = "PuBu", direction = 1,
@@ -832,14 +851,14 @@ bueiro2022 <- ggplot(mapa2022) +
 ```
 
 ::: {.callout-warning}
-## Os parênteses em torno do `|` não são decorativos
+## Importância dos parênteses em torno do `|` no `patchwork`
 
 Em R, o operador `+` tem precedência maior que o `|`. Sem os parênteses, a expressão `bueiro2010 | bueiro2022 + plot_layout(guides = "collect")` seria lida como `bueiro2010 | (bueiro2022 + plot_layout(...))`, ou seja, o ajuste de leiaute se aplicaria **apenas ao segundo gráfico**. O resultado não dá erro, os mapas aparecem lado a lado normalmente, mas as duas legendas continuam duplicadas. É um descuido fácil de cometer e difícil de perceber, já que a única pista é a legenda que não foi recolhida.
 :::
 
-O escurecimento geral entre os dois painéis é visível sem esforço, e o mapa acrescenta à tabela algo que ela não podia mostrar. O ganho de 16,6 pontos da média municipal não corresponde a uma frente territorial coerente, e sim a saltos localizados espalhados por toda a cidade. Agregando por bairro, o caso extremo é o Conjunto Ceará II, no vetor oeste, que passa de 9,7% para 86,9% dos domicílios, mas ganhos expressivos aparecem igualmente na orla nordeste, no miolo e nos bairros do sul. Uma média municipal que sobe pode, portanto, esconder tanto avanços muito concentrados quanto áreas estagnadas, e é essa heterogeneidade que justifica descer ao setor censitário em vez de parar no agregado.
+O escurecimento geral entre os dois painéis é visível sem esforço, e o mapa acrescenta a natureza intraurbana dos dados censitários que a tabela sumarizada para todo o município não podia mostrar. O ganho de 16,6 pontos da média municipal não corresponde a uma frente territorial coerente, e sim a saltos localizados espalhados por certas regiões da cidade. Agregando por bairro, os dois maiores saltos ocorrem em De Lourdes, que passa de 16,0% para 96,4% dos domicílios, e no Conjunto Ceará II, no vetor oeste, que vai de 9,7% para 86,9%, mas ganhos expressivos aparecem igualmente na orla nordeste, no miolo e nos bairros do sul. Uma média municipal que sobe pode, portanto, esconder tanto avanços muito concentrados quanto áreas estagnadas, e é essa heterogeneidade que justifica descer ao setor censitário em vez de parar no agregado.
 
-O segundo par mostra o contraste, ou seja, um item que praticamente não tinha para onde avançar.
+O segundo par mostra o contraste, ou seja, um item que praticamente não tinha para onde avançar:
 
 ```{r}
 #| label: fig-for-comp-ilum
@@ -868,18 +887,14 @@ ilum2022 <- ggplot(mapa2022) +
 (ilum2010 | ilum2022) + plot_layout(guides = "collect")
 ```
 
-Os dois painéis são quase indistinguíveis, e essa ausência de mudança é a informação. Um item universalizado produz um mapa sem gradiente, o que costuma ser sinal de que a política pública correspondente cumpriu seu objetivo e o indicador perdeu poder discriminante.
+Os dois painéis são quase indistinguíveis, e essa ausência de mudança é a informação, já que um item universalizado produz um mapa sem gradiente. Isso costuma ser sinal de que a política pública correspondente cumpriu seu objetivo e o indicador perdeu poder discriminante.
 
-Resta a ressalva final, que é independente dos itens escolhidos. Fortaleza passou de 3.020 para 4.381 setores pesquisados entre os dois censos, e a expansão recaiu sobre áreas que antes ficavam fora do universo da pesquisa. Parte da variação observada reflete esse alargamento, e não apenas mudança real no território.
-
-O efeito é verificável nos próprios dados. Entre os 87 bairros de Fortaleza com volume suficiente para comparação, cinco registram **queda** no percentual de domicílios com bueiro, o que é contraintuitivo para um item de infraestrutura permanente medido por critério mínimo. Os dois maiores recuos ocorrem justamente nos bairros em que o universo pesquisado mais cresceu, com o Dendê triplicando o número de domicílios pesquisados e o Benfica quase dobrando. Não se trata de bueiros que desapareceram, e sim de áreas antes não pesquisadas que passaram a compor o denominador. Quando o objetivo for medir evolução com rigor, o caminho mais seguro é examinar a variação do universo antes de interpretar a variação do indicador.
+Resta a ressalva final, que é independente dos itens escolhidos. Fortaleza passou de 3.020 para 4.381 setores pesquisados entre os dois censos, e a expansão recaiu sobre áreas que antes ficavam fora do universo da pesquisa. Parte da variação observada reflete esse alargamento. O efeito é verificável nos próprios dados, pois entre os 93 bairros de Fortaleza presentes nos dois censos, cinco registram **queda** no percentual de domicílios com bueiro, o que é contraintuitivo para um item de infraestrutura permanente medido por critério mínimo. Os dois maiores recuos ocorrem em bairros cujo universo pesquisado se expandiu bastante, com o Dendê triplicando o número de domicílios pesquisados e o Benfica quase dobrando. Não se trata de bueiros que desapareceram, e sim de áreas antes não pesquisadas que passaram a compor o denominador. Quando o objetivo for medir evolução com rigor, o caminho mais seguro é examinar a variação do universo antes de interpretar a variação do indicador.
 
 ## Exercícios {#sec-entorno-exercicios}
 
 1. Fortaleza tem 1.321 dos seus 4.381 setores pesquisados classificados como Favela e Comunidade Urbana, identificáveis pela variável `code_type` igual a 1. Calcule, por faces, os percentuais de pavimentação, calçada, rampa e arborização nesses setores e nos demais, e compare os resultados. Em seguida, explique por que essa mesma comparação não poderia ser feita com os dados de 2010, retomando o que foi discutido na @sec-entorno-intro sobre o Levantamento de Informações Territoriais.
 
-2. Reproduza o painel de pequenos múltiplos da @fig-for-painel para outra capital de sua escolha, mantendo os mesmos seis indicadores e a mesma escala. Compare o resultado com Fortaleza, prestando atenção especial ao item de sinalização cicloviária, e verifique se o valor encontrado se aproxima mais da média nacional de 1,5% das faces ou do caso fortalezense.
+2. Calcule a taxa de rampa para cadeirante nas duas versões apresentadas na @sec-entorno-nd, sobre o total de domicílios e condicionada à existência de calçada, para os cinco maiores municípios de sua unidade da federação. Discuta qual das duas você apresentaria em um relatório de acessibilidade urbana e por quê.
 
-3. Calcule a taxa de rampa para cadeirante nas duas versões apresentadas na @sec-entorno-nd, sobre o total de domicílios e condicionada à existência de calçada, para os cinco maiores municípios de sua unidade da federação. Discuta qual das duas você apresentaria em um relatório de acessibilidade urbana e por quê.
-
-4. Use o dicionário construído na @sec-entorno-r2010 para mapear, por setor censitário, o percentual de domicílios com esgoto a céu aberto no entorno em Fortaleza em 2010. Esse item não existe no Censo 2022, o que impede qualquer comparação temporal, mas não impede a análise do retrato de 2010. Compare o padrão espacial obtido com o do bueiro no mesmo ano e comente a relação entre os dois.
+3. Use o dicionário construído na @sec-entorno-r2010 para mapear, por setor censitário, o percentual de domicílios com esgoto a céu aberto no entorno em Fortaleza em 2010. Esse item não existe no Censo 2022, o que impede qualquer comparação temporal, mas não impede a análise do retrato de 2010. Compare o padrão espacial obtido com o do bueiro no mesmo ano e comente a relação entre os dois.
