@@ -384,14 +384,14 @@ Por fim, vamos mostrar como produzir uma nova variável a partir de uma existent
 - 5- Rio, lago ou mar
 - 6- Outro
 
-Produziremos uma nova variável denominada `esg_rede` que indica se o tipo de esgotamento sanitário é adequado (rede geral de esgoto/pluvial ou fossa séptica: 1 e 2) ou inadequado (demais categorias: 3 a 6), conforme preconizado no Índice de Vulnerabilidade Social [@ipea_ivs2015]:
+Produziremos uma nova variável denominada `esg_rede` que agrupa as seis categorias em duas, separando os domicílios ligados à rede geral de esgoto ou pluvial e os que usam fossa séptica (categorias 1 e 2) daqueles que destinam o esgoto de outras formas (categorias 3 a 6). O agrupamento é uma simplificação de trabalho, e os critérios técnicos que sustentam essa separação serão discutidos na Parte 3 do livro.
 
 ```{r}
 #| label: fig-esgoto-bh
 #| fig-cap: "Proporção de domicílios por tipo de esgotamento sanitário, Belo Horizonte (Censo 2010). Barras de erro indicam IC 95%."
 #| message: false
 pa_dom |>
-  mutate(esg_rede = factor(ifelse(V0207 %in% c('1','2'), 'Adequado', 'Inadequado'))) |>
+  mutate(esg_rede = factor(ifelse(V0207 %in% c('1','2'), 'Rede ou fossa', 'Outras formas'))) |>
   group_by(esg_rede) |>
   summarize(proporcao = survey_prop(vartype = "ci", level = 0.95)) |>
   ggplot(aes(x = esg_rede, y = proporcao,
@@ -438,21 +438,21 @@ ap_bh |>
   )
 ```
 
-O padrão espacial é marcante, com áreas com rendimentos mais altos concentrando-se na região sudeste do município, enquanto os menores rendimentos predominam em regiões mais periféricas ao Sul e ao Norte. O mapa da @fig-bh-esgoto apresenta, para as mesmas unidades espaciais, a proporção de domicílios atendidos por esgotamento sanitário adequado. O procedimento é idêntico ao do mapa anterior, substituindo `survey_median()` por `survey_prop()` e criando uma variável indicadora antes do agrupamento.
+O padrão espacial é marcante, com áreas com rendimentos mais altos concentrando-se na região sudeste do município, enquanto os menores rendimentos predominam em regiões mais periféricas ao Sul e ao Norte. O mapa da @fig-bh-esgoto apresenta, para as mesmas unidades espaciais, a proporção de domicílios com esgotamento por rede geral ou fossa séptica. O procedimento é idêntico ao do mapa anterior, substituindo `survey_median()` por `survey_prop()` e criando uma variável indicadora antes do agrupamento.
 
 ```{r}
 #| label: fig-bh-esgoto
-#| fig-cap: "Proporção de domicílios atendidos por rede geral de esgoto ou pluvial por área de ponderação, Belo Horizonte (Censo 2010)."
+#| fig-cap: "Proporção de domicílios com esgotamento por rede geral, rede pluvial ou fossa séptica, por área de ponderação, Belo Horizonte (Censo 2010)."
 #| cache: true
 #| message: false
 #| warning: false
 
 ## Estatística por área de ponderação
 esg_ap <- pa_dom |>
-  mutate(esg_rede = factor(ifelse(V0207 %in% c('1','2'), 'Adequado', 'Inadequado'))) |> 
+  mutate(esg_rede = factor(ifelse(V0207 %in% c('1','2'), 'Rede ou fossa', 'Outras formas'))) |> 
   group_by(code_weighting, esg_rede) |>
   summarize(proporcao = survey_prop()) |>
-  filter(esg_rede == 'Adequado')
+  filter(esg_rede == 'Rede ou fossa')
 
 ## Join com geometria e mapa
 ap_bh |>
@@ -462,7 +462,7 @@ ap_bh |>
   scale_fill_distiller(
     palette = "Blues",
     direction = 1,
-    name = "Proporção c/ Esg./n Sanitário Adequado",
+    name = "Proporção com\nrede ou fossa",
     labels = scales::label_percent(decimal.mark = ",")
   ) +
   theme_minimal() +
@@ -473,7 +473,7 @@ ap_bh |>
   )
 ```
 
-Comparando os dois mapas, observa-se uma correlação positiva entre renda e cobertura de saneamento. As áreas com maior rendimento tendem a apresentar maior proporção de domicílios atendidos pela rede geral de esgoto. A relação, contudo, não é perfeita, e identificar onde o saneamento está aquém do esperado dado o nível de renda é exatamente o tipo de diagnóstico que os microdados da amostra viabilizam.
+Comparando os dois mapas, observa-se uma associação positiva entre renda e cobertura de saneamento. As áreas com maior rendimento tendem a apresentar maior proporção de domicílios atendidos pela rede geral de esgoto. A relação, contudo, não é perfeita, e identificar onde o saneamento está aquém do esperado dado o nível de renda é exatamente o tipo de diagnóstico que os microdados da amostra viabilizam.
 
 ## Analisando microdados de *indivíduos* {#sec-ind}
 

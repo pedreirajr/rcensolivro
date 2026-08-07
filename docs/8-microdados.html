@@ -512,43 +512,48 @@ Tabela&nbsp;8.2: Funções equivalentes nos pacotes <code>survey</code> e <code>
 <div aria-describedby="tbl-survey-srvyr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 19%">
+<col style="width: 46%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Tarefa</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">`survey`</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">`srvyr`</th>
+<th style="text-align: left;">Tarefa</th>
+<th style="text-align: center;"><code>survey</code></th>
+<th style="text-align: center;"><code>srvyr</code></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Criar objeto de plano amostral</td>
-<td style="text-align: center;">`svydesign()`</td>
-<td style="text-align: center;">`as_survey_design()`</td>
+<td style="text-align: center;"><code>svydesign()</code></td>
+<td style="text-align: center;"><code>as_survey_design()</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Média</td>
-<td style="text-align: center;">`svymean()`</td>
-<td style="text-align: center;">`survey_mean()`</td>
+<td style="text-align: center;"><code>svymean()</code></td>
+<td style="text-align: center;"><code>survey_mean()</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Total</td>
-<td style="text-align: center;">`svytotal()`</td>
-<td style="text-align: center;">`survey_total()`</td>
+<td style="text-align: center;"><code>svytotal()</code></td>
+<td style="text-align: center;"><code>survey_total()</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Mediana / quantis</td>
-<td style="text-align: center;">`svyquantile()`</td>
-<td style="text-align: center;">`survey_median()` / `survey_quantile()`</td>
+<td style="text-align: center;"><code>svyquantile()</code></td>
+<td style="text-align: center;"><code>survey_median()</code> / <code>survey_quantile()</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Proporção</td>
-<td style="text-align: center;">`svymean()`</td>
-<td style="text-align: center;">`survey_prop()`</td>
+<td style="text-align: center;"><code>svymean()</code></td>
+<td style="text-align: center;"><code>survey_prop()</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Estatísticas por grupo</td>
-<td style="text-align: center;">`svyby()`</td>
-<td style="text-align: center;">`group_by()` + `summarize()`</td>
+<td style="text-align: center;"><code>svyby()</code></td>
+<td style="text-align: center;"><code>group_by()</code> + <code>summarize()</code></td>
 </tr>
 </tbody>
 </table>
@@ -643,13 +648,13 @@ Figura&nbsp;8.5: Áreas de ponderação de Belo Horizonte, Censo Demográfico 20
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 10
   V0300 V0010 V1006 code_weighting V4001 V0201 V6203 V0207 V6531 V0222
-  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;
-1   169  20.7 1     3106200005001  01    1       0.6 1      700  1    
-2 14998  23.4 1     3106200005001  01    1       0.8 1      637. 2    
-3 32175  20.8 1     3106200005001  01    1       0.9 1      507. 2    
-4 43533  19.8 1     3106200005001  01    3       0.6 1      170  2    
-5 68172  22.9 1     3106200005001  01    1       0.8 1      333. 1    
-6 72256  23.2 1     3106200005001  01    1       1   1      600  2    </code></pre>
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;
+1   169  20.7 1      3106200005001 01    1       0.6 1      700  1    
+2 14998  23.4 1      3106200005001 01    1       0.8 1      637. 2    
+3 32175  20.8 1      3106200005001 01    1       0.9 1      507. 2    
+4 43533  19.8 1      3106200005001 01    3       0.6 1      170  2    
+5 68172  22.9 1      3106200005001 01    1       0.8 1      333. 1    
+6 72256  23.2 1      3106200005001 01    1       1   1      600  2    </code></pre>
 </div>
 </div>
 <p>Na sequência, faremos a definição do plano amostral que nos permitirá explorar adequadamente essa base.</p>
@@ -683,13 +688,13 @@ Figura&nbsp;8.5: Áreas de ponderação de Belo Horizonte, Censo Demográfico 20
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 11
   V0300 V0010 V1006 code_weighting V4001 V0201 V6203 V0207 V6531 V0222 n_dom
-  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-1   169  20.7 1     3106200005001  01    1       0.6 1      700  1     13998
-2 14998  23.4 1     3106200005001  01    1       0.8 1      637. 2     13998
-3 32175  20.8 1     3106200005001  01    1       0.9 1      507. 2     13998
-4 43533  19.8 1     3106200005001  01    3       0.6 1      170  2     13998
-5 68172  22.9 1     3106200005001  01    1       0.8 1      333. 1     13998
-6 72256  23.2 1     3106200005001  01    1       1   1      600  2     13998</code></pre>
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+1   169  20.7 1      3106200005001 01    1       0.6 1      700  1     13998
+2 14998  23.4 1      3106200005001 01    1       0.8 1      637. 2     13998
+3 32175  20.8 1      3106200005001 01    1       0.9 1      507. 2     13998
+4 43533  19.8 1      3106200005001 01    3       0.6 1      170  2     13998
+5 68172  22.9 1      3106200005001 01    1       0.8 1      333. 1     13998
+6 72256  23.2 1      3106200005001 01    1       1   1      600  2     13998</code></pre>
 </div>
 </div>
 <p>Observe que os valores de <code>n_dom</code> são repetidos para todas as 6 primeiras linhas mostradas acima, pois essas observações são relativas a domicílios de uma mesma área de ponderação identificada pela coluna <code>code_weighting</code>. Com estas definições, podemos finalmente produzir o plano amostral da função <code>as_survey_design()</code>, de acordo com o código abaixo:</p>
@@ -730,14 +735,22 @@ Tabela&nbsp;8.3: Rendimento domiciliar per capita em Belo Horizonte (R$), Censo 
 <div aria-describedby="tbl-renda-bh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 9%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: right;" data-quarto-table-cell-role="th">Média</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">IC inf. (média)</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">IC sup. (média)</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Mediana</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">IC inf. (mediana)</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">IC sup. (mediana)</th>
+<th style="text-align: right;">Média</th>
+<th style="text-align: right;">IC inf. (média)</th>
+<th style="text-align: right;">IC sup. (média)</th>
+<th style="text-align: right;">Mediana</th>
+<th style="text-align: right;">IC inf. (mediana)</th>
+<th style="text-align: right;">IC sup. (mediana)</th>
 </tr>
 </thead>
 <tbody>
@@ -827,10 +840,10 @@ Figura&nbsp;8.7: Proporção de domicílios por condição de ocupação, Belo H
 </div>
 </div>
 <p>Por fim, vamos mostrar como produzir uma nova variável a partir de uma existente e computar algumas estatísticas. Utilizaremos a variável <code>V0207</code> (Tipo de esgotamento sanitário), cujas cateorias são: - 1- Rede geral de esgoto ou pluvial - 2- Fossa séptica - 3- Fossa rudimentar - 4- Vala - 5- Rio, lago ou mar - 6- Outro</p>
-<p>Produziremos uma nova variável denominada <code>esg_rede</code> que indica se o tipo de esgotamento sanitário é adequado (rede geral de esgoto/pluvial ou fossa séptica: 1 e 2) ou inadequado (demais categorias: 3 a 6), conforme preconizado no Índice de Vulnerabilidade Social <span class="citation" data-cites="ipea_ivs2015">(<a href="references.html#ref-ipea_ivs2015" role="doc-biblioref">Costa &amp; Marguti, 2015</a>)</span>:</p>
+<p>Produziremos uma nova variável denominada <code>esg_rede</code> que agrupa as seis categorias em duas, separando os domicílios ligados à rede geral de esgoto ou pluvial e os que usam fossa séptica (categorias 1 e 2) daqueles que destinam o esgoto de outras formas (categorias 3 a 6). O agrupamento é uma simplificação de trabalho, e os critérios técnicos que sustentam essa separação serão discutidos na Parte 3 do livro.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pa_dom <span class="sc">|&gt;</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">esg_rede =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(V0207 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'1'</span>,<span class="st">'2'</span>), <span class="st">'Adequado'</span>, <span class="st">'Inadequado'</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">esg_rede =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(V0207 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'1'</span>,<span class="st">'2'</span>), <span class="st">'Rede ou fossa'</span>, <span class="st">'Outras formas'</span>))) <span class="sc">|&gt;</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(esg_rede) <span class="sc">|&gt;</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> esg_rede, <span class="at">y =</span> proporcao,</span>
@@ -893,14 +906,14 @@ Figura&nbsp;8.9: Rendimento domiciliar per capita mediano por área de ponderaç
 </div>
 </div>
 </div>
-<p>O padrão espacial é marcante, com áreas com rendimentos mais altos concentrando-se na região sudeste do município, enquanto os menores rendimentos predominam em regiões mais periféricas ao Sul e ao Norte. O mapa da <a href="#fig-bh-esgoto" class="quarto-xref">Figura&nbsp;<span>8.10</span></a> apresenta, para as mesmas unidades espaciais, a proporção de domicílios atendidos por esgotamento sanitário adequado. O procedimento é idêntico ao do mapa anterior, substituindo <code>survey_median()</code> por <code>survey_prop()</code> e criando uma variável indicadora antes do agrupamento.</p>
+<p>O padrão espacial é marcante, com áreas com rendimentos mais altos concentrando-se na região sudeste do município, enquanto os menores rendimentos predominam em regiões mais periféricas ao Sul e ao Norte. O mapa da <a href="#fig-bh-esgoto" class="quarto-xref">Figura&nbsp;<span>8.10</span></a> apresenta, para as mesmas unidades espaciais, a proporção de domicílios com esgotamento por rede geral ou fossa séptica. O procedimento é idêntico ao do mapa anterior, substituindo <code>survey_median()</code> por <code>survey_prop()</code> e criando uma variável indicadora antes do agrupamento.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estatística por área de ponderação</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>esg_ap <span class="ot">&lt;-</span> pa_dom <span class="sc">|&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">esg_rede =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(V0207 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'1'</span>,<span class="st">'2'</span>), <span class="st">'Adequado'</span>, <span class="st">'Inadequado'</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">esg_rede =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(V0207 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'1'</span>,<span class="st">'2'</span>), <span class="st">'Rede ou fossa'</span>, <span class="st">'Outras formas'</span>))) <span class="sc">|&gt;</span> </span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting, esg_rede) <span class="sc">|&gt;</span></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(esg_rede <span class="sc">==</span> <span class="st">'Adequado'</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(esg_rede <span class="sc">==</span> <span class="st">'Rede ou fossa'</span>)</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Join com geometria e mapa</span></span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>ap_bh <span class="sc">|&gt;</span></span>
@@ -910,7 +923,7 @@ Figura&nbsp;8.9: Rendimento domiciliar per capita mediano por área de ponderaç
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(</span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Proporção c/ Esg./n Sanitário Adequado"</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Proporção com</span><span class="sc">\n</span><span class="st">rede ou fossa"</span>,</span>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
@@ -923,7 +936,7 @@ Figura&nbsp;8.9: Rendimento domiciliar per capita mediano por área de ponderaç
 <div id="fig-bh-esgoto" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-bh-esgoto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;8.10: Proporção de domicílios atendidos por rede geral de esgoto ou pluvial por área de ponderação, Belo Horizonte (Censo 2010).
+Figura&nbsp;8.10: Proporção de domicílios com esgotamento por rede geral, rede pluvial ou fossa séptica, por área de ponderação, Belo Horizonte (Censo 2010).
 </figcaption>
 <div aria-describedby="fig-bh-esgoto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="8-microdados_files/figure-html/fig-bh-esgoto-1.png" class="img-fluid figure-img" width="672">
@@ -932,7 +945,7 @@ Figura&nbsp;8.10: Proporção de domicílios atendidos por rede geral de esgoto 
 </div>
 </div>
 </div>
-<p>Comparando os dois mapas, observa-se uma correlação positiva entre renda e cobertura de saneamento. As áreas com maior rendimento tendem a apresentar maior proporção de domicílios atendidos pela rede geral de esgoto. A relação, contudo, não é perfeita, e identificar onde o saneamento está aquém do esperado dado o nível de renda é exatamente o tipo de diagnóstico que os microdados da amostra viabilizam.</p>
+<p>Comparando os dois mapas, observa-se uma associação positiva entre renda e cobertura de saneamento. As áreas com maior rendimento tendem a apresentar maior proporção de domicílios atendidos pela rede geral de esgoto. A relação, contudo, não é perfeita, e identificar onde o saneamento está aquém do esperado dado o nível de renda é exatamente o tipo de diagnóstico que os microdados da amostra viabilizam.</p>
 </section>
 </section>
 <section id="sec-ind" class="level2" data-number="8.5">
@@ -985,13 +998,13 @@ Figura&nbsp;8.10: Proporção de domicílios atendidos por rede geral de esgoto 
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 11
   V0300 V0010 V1006 code_weighting V0601 V0606 V6036 V6400 V0661 V0662  n_ind
-  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;
-1   169  20.7 1     3106200005001  1     1        65 1     1     2     45869.
-2   169  20.7 1     3106200005001  1     1         0 1     &lt;NA&gt;  &lt;NA&gt;  45869.
-3   169  20.7 1     3106200005001  2     1        21 3     1     2     45869.
-4   169  20.7 1     3106200005001  1     1        27 3     1     2     45869.
-5 14998  23.4 1     3106200005001  1     2        47 3     &lt;NA&gt;  &lt;NA&gt;  45869.
-6 14998  23.4 1     3106200005001  2     2        17 1     &lt;NA&gt;  &lt;NA&gt;  45869.</code></pre>
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;
+1   169  20.7 1      3106200005001 1     1        65 1     1     2     45869.
+2   169  20.7 1      3106200005001 1     1         0 1     &lt;NA&gt;  &lt;NA&gt;  45869.
+3   169  20.7 1      3106200005001 2     1        21 3     1     2     45869.
+4   169  20.7 1      3106200005001 1     1        27 3     1     2     45869.
+5 14998  23.4 1      3106200005001 1     2        47 3     &lt;NA&gt;  &lt;NA&gt;  45869.
+6 14998  23.4 1      3106200005001 2     2        17 1     &lt;NA&gt;  &lt;NA&gt;  45869.</code></pre>
 </div>
 </div>
 <p>Sendo assim, podemos então definir o plano amostral como:</p>
@@ -1155,9 +1168,6 @@ Figura&nbsp;8.13: Proporção de trabalhadores com tempo de deslocamento ao trab
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
 <div id="ref-bankier1992" class="csl-entry" role="listitem">
 Bankier, M. D., Rathwell, S., &amp; Majkowski, M. (1992). <em>Two Step Generalized Least Squares Estimation in the 1991 <span>Canadian</span> Census</em>. Statistics Canada.
-</div>
-<div id="ref-ipea_ivs2015" class="csl-entry" role="listitem">
-Costa, M. A., &amp; Marguti, B. O. (Org.). (2015). <em>Atlas da Vulnerabilidade Social nos Municípios Brasileiros</em>. IPEA.
 </div>
 <div id="ref-deville1993" class="csl-entry" role="listitem">
 Deville, J.-C., Särndal, C.-E., &amp; Sautory, O. (1993). Generalized Raking Procedures in Survey Sampling. <em>Journal of the American Statistical Association</em>, <em>88</em>(423), 1013–1020. <a href="https://doi.org/10.2307/2290793">https://doi.org/10.2307/2290793</a>

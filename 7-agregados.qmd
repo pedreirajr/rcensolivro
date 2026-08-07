@@ -264,10 +264,10 @@ tibble::tibble(
   )
 ```
 
-A partir dessas variáveis brutas, derivamos dois indicadores de inadequação. A definição de adequação segue o critério adotado pelo **Índice de Vulnerabilidade Social (IVS)** do Ipea [@ipea_ivs2015]. Utilizaremos dois indicadores do IVS Infraestrutura Urbana, um relacionado à abastecimento de água inadequado, quando o abastecimento de água não provém de rede geral, e outro relacionado à esgotamento sanitário inadequado, quando o esgotamento sanitário não é realizado por rede coletora ou fossa séptica:
+Essas variáveis brutas são contagens de domicílios, e contagens não se comparam entre setores de tamanhos diferentes. Por isso, transformamos cada uma delas em proporção sobre o total de domicílios particulares permanentes do próprio setor, obtendo dois indicadores de cobertura das redes de saneamento. Note que ambos são descritivos, ou seja, descrevem o que existe sem julgar se é suficiente. A discussão sobre o que caracteriza saneamento adequado, e sobre os critérios usados para essa definição, fica para a Parte 3 do livro.
 
--   **`perc_agua_inadeq`**: proporção de domicílios *sem* abastecimento de água pela rede geral (`1 - redger_a / dpp`)
--   **`perc_esg_inadeq`**: proporção de domicílios com esgotamento inadequado, ou seja, sem rede geral nem fossa séptica ligada (`1 - (redger_e + fossa_s) / dpp`)
+-   **`perc_sem_agua_rede`**: proporção de domicílios *sem* abastecimento de água pela rede geral (`1 - redger_a / dpp`)
+-   **`perc_sem_esg_rede_fossa`**: proporção de domicílios *sem* esgotamento por rede geral e *sem* fossa séptica ligada à rede (`1 - (redger_e + fossa_s) / dpp`)
 
 ```{r}
 #| eval: false
@@ -300,10 +300,10 @@ sc_recife_2022 <- sc2022 |>
     fossa_s  = domicilio02_V00310
   ) |>
   collect() |> # Observe que a base de dados é trazida para memória somente neste momento
-  # Cálculo dos indicadores finais com base no IVS:
+  # Cálculo das proporções sobre o total de domicílios do setor:
   mutate(
-    perc_agua_inadeq = 100 * (1 - redger_a / dpp),
-    perc_esg_inadeq  = 100 * (1 - (redger_e + fossa_s) / dpp)
+    perc_sem_agua_rede      = 100 * (1 - redger_a / dpp),
+    perc_sem_esg_rede_fossa = 100 * (1 - (redger_e + fossa_s) / dpp)
   )
 ```
 
@@ -340,8 +340,8 @@ if (!file.exists(rds_sc)) {
     ) |>
     collect() |>
     mutate(
-      perc_agua_inadeq = 100 * (1 - redger_a / dpp),
-      perc_esg_inadeq  = 100 * (1 - (redger_e + fossa_s) / dpp)
+      perc_sem_agua_rede      = 100 * (1 - redger_a / dpp),
+      perc_sem_esg_rede_fossa = 100 * (1 - (redger_e + fossa_s) / dpp)
     )
 
   rm(sc2022, sc2022_dom)
@@ -397,7 +397,7 @@ if (!file.exists(rds_geo)) {
 
 ### Visualizando os resultados em mapas
 
-Com a camada espacial pronta, usamos o `ggplot2` para gerar mapas coropléticos que mostram a distribuição espacial dos indicadores por setor. Os quatro mapas a seguir mostram, respectivamente, a população total, o total de domicílios particulares permanentes, a proporção de domicílios sem acesso à rede de água e a proporção de domicílios com esgotamento inadequado.
+Com a camada espacial pronta, usamos o `ggplot2` para gerar mapas coropléticos que mostram a distribuição espacial dos indicadores por setor. Os quatro mapas a seguir mostram, respectivamente, a população total, o total de domicílios particulares permanentes, a proporção de domicílios sem abastecimento pela rede de água e a proporção de domicílios sem esgotamento por rede geral ou fossa séptica ligada. Vale observar desde já que os dois primeiros são contagens e os dois últimos são proporções, e que essa diferença muda por completo o que cada mapa é capaz de responder.
 
 ::: {.callout-note}
 ## Escala de cor com transformação de raiz quadrada
@@ -445,12 +445,12 @@ ggplot(recife_sc_geo) +
 
 ```{r}
 #| label: fig-recife-agua
-#| fig-cap: "Proporção de domicílios com abastecimento de água inadequado por setor censitário, Recife (Censo 2022)."
+#| fig-cap: "Proporção de domicílios sem abastecimento de água pela rede geral, por setor censitário, Recife (Censo 2022)."
 #| fig-height: 5
 #| message: false
 #| warning: false
 ggplot(recife_sc_geo) +
-  geom_sf(aes(fill = perc_agua_inadeq), color = NA) +
+  geom_sf(aes(fill = perc_sem_agua_rede), color = NA) +
   scale_fill_distiller(palette = "Reds", direction = 1,
                        name = "% sem água\nda rede",
                        na.value = "gray90") +
@@ -463,14 +463,14 @@ ggplot(recife_sc_geo) +
 
 ```{r}
 #| label: fig-recife-esgoto
-#| fig-cap: "Proporção de domicílios com esgotamento sanitário inadequado por setor censitário, Recife (Censo 2022)."
+#| fig-cap: "Proporção de domicílios sem esgotamento por rede geral ou fossa séptica ligada à rede, por setor censitário, Recife (Censo 2022)."
 #| fig-height: 5
 #| message: false
 #| warning: false
 ggplot(recife_sc_geo) +
-  geom_sf(aes(fill = perc_esg_inadeq), color = NA) +
+  geom_sf(aes(fill = perc_sem_esg_rede_fossa), color = NA) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
-                       name = "% esgoto\ninadequado",
+                       name = "% sem rede\nou fossa",
                        na.value = "gray90") +
   coord_sf(expand = FALSE) +
   theme_minimal() +
@@ -479,7 +479,7 @@ ggplot(recife_sc_geo) +
         panel.grid = element_blank())
 ```
 
-Os mapas revelam padrões de desigualdade intraurbana típicos das grandes metrópoles brasileiras. Setores com maior proporção de domicílios sem acesso adequado a saneamento tendem a se concentrar em determinadas áreas do município, enquanto outros setores apresentam cobertura praticamente universal. Esse tipo de visualização é um ponto de partida valioso para diagnósticos de infraestrutura urbana.
+Os mapas revelam padrões de desigualdade intraurbana típicos das grandes metrópoles brasileiras. Setores com maior proporção de domicílios fora das redes tendem a se concentrar em determinadas áreas do município, enquanto outros apresentam cobertura praticamente universal. Esse tipo de visualização é um ponto de partida valioso para diagnósticos de infraestrutura urbana, e será retomado na Parte 3 do livro com um conjunto bem mais detalhado de variáveis de saneamento.
 
 ## Produção de mapas personalizados das variáveis dos Agregados
 
@@ -728,6 +728,6 @@ A segunda limitação refere-se às **unidades nas bordas municipais**. Quando u
 
 2.  Selecione duas variáveis de diferentes arquivos temáticos (por exemplo, uma de demografia e uma de domicílios) e construa um mapa coropléfico com `ggplot2` para um município de sua escolha. Inclua título, legenda e fonte nos atributos do mapa.
 
-3.  Para o município de Salvador, compare os mapas de inadequação de água e de esgoto produzidos neste capítulo. Em quais regiões do município as duas inadequações ocorrem simultaneamente? Como você interpretaria esse padrão em termos de planejamento urbano?
+3.  Para o município de Salvador, reproduza os dois mapas de proporção produzidos neste capítulo, o de domicílios sem abastecimento pela rede geral e o de domicílios sem esgotamento por rede geral ou fossa séptica ligada. Em quais regiões do município as duas carências ocorrem simultaneamente? Como você interpretaria esse padrão em termos de planejamento urbano?
 
 4.  Pesquise a documentação do pacote `cnefetools` e identifique quais variáveis estão disponíveis para interpolação dasimétrica com `tracts_to_h3()`. Aplique a função para gerar uma grade H3 (resolução 7) para **Salvador (BA)** com pelo menos duas variáveis e discuta esses resultados.
