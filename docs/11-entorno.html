@@ -23,7 +23,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -72,6 +127,13 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Procurar"
   }
 }</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 
 
 <link rel="stylesheet" href="custom.css">
@@ -216,8 +278,52 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice do Capítulo</h2>
+   
+  <ul>
+  <li><a href="#sec-entorno-intro" id="toc-sec-entorno-intro" class="nav-link active" data-scroll-target="#sec-entorno-intro"><span class="header-section-number">11.1</span> Introdução</a>
+  <ul>
+  <li><a href="#um-produto-com-três-idades" id="toc-um-produto-com-três-idades" class="nav-link" data-scroll-target="#um-produto-com-três-idades"><span class="header-section-number">11.1.1</span> Um produto com três idades</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-metodologia" id="toc-sec-entorno-metodologia" class="nav-link" data-scroll-target="#sec-entorno-metodologia"><span class="header-section-number">11.2</span> Conceitos e metodologia</a>
+  <ul>
+  <li><a href="#sec-entorno-face" id="toc-sec-entorno-face" class="nav-link" data-scroll-target="#sec-entorno-face"><span class="header-section-number">11.2.1</span> A face de quadra como unidade de investigação</a></li>
+  <li><a href="#sec-entorno-universo" id="toc-sec-entorno-universo" class="nav-link" data-scroll-target="#sec-entorno-universo"><span class="header-section-number">11.2.2</span> O universo da pesquisa</a></li>
+  <li><a href="#sec-entorno-questionario" id="toc-sec-entorno-questionario" class="nav-link" data-scroll-target="#sec-entorno-questionario"><span class="header-section-number">11.2.3</span> O questionário e o momento da coleta</a>
+  <ul class="collapse">
+  <li><a href="#sec-entorno-criterios" id="toc-sec-entorno-criterios" class="nav-link" data-scroll-target="#sec-entorno-criterios"><span class="header-section-number">11.2.3.1</span> Critérios de análise e área de observação</a></li>
+  <li><a href="#sec-entorno-fluxo" id="toc-sec-entorno-fluxo" class="nav-link" data-scroll-target="#sec-entorno-fluxo"><span class="header-section-number">11.2.3.2</span> O fluxo do questionário e seus saltos</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-variaveis" id="toc-sec-entorno-variaveis" class="nav-link" data-scroll-target="#sec-entorno-variaveis"><span class="header-section-number">11.2.4</span> As variáveis e sua disponibilização</a>
+  <ul class="collapse">
+  <li><a href="#sec-entorno-var2022" id="toc-sec-entorno-var2022" class="nav-link" data-scroll-target="#sec-entorno-var2022"><span class="header-section-number">11.2.4.1</span> Censo 2022, três blocos paralelos</a></li>
+  <li><a href="#sec-entorno-var2010" id="toc-sec-entorno-var2010" class="nav-link" data-scroll-target="#sec-entorno-var2010"><span class="header-section-number">11.2.4.2</span> Censo 2010, cinco arquivos e nenhuma face</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-niveis" id="toc-sec-entorno-niveis" class="nav-link" data-scroll-target="#sec-entorno-niveis"><span class="header-section-number">11.2.5</span> Níveis geográficos de coleta e de divulgação</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-dados" id="toc-sec-entorno-dados" class="nav-link" data-scroll-target="#sec-entorno-dados"><span class="header-section-number">11.3</span> Obtendo e integrando os dados</a>
+  <ul>
+  <li><a href="#sec-entorno-join" id="toc-sec-entorno-join" class="nav-link" data-scroll-target="#sec-entorno-join"><span class="header-section-number">11.3.1</span> Nem todo setor tem dado de entorno</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-denominador" id="toc-sec-entorno-denominador" class="nav-link" data-scroll-target="#sec-entorno-denominador"><span class="header-section-number">11.4</span> A escolha do denominador</a>
+  <ul>
+  <li><a href="#sec-entorno-nd" id="toc-sec-entorno-nd" class="nav-link" data-scroll-target="#sec-entorno-nd"><span class="header-section-number">11.4.1</span> Quando “Não Declarado” significa “não se aplica”</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-mapas2022" id="toc-sec-entorno-mapas2022" class="nav-link" data-scroll-target="#sec-entorno-mapas2022"><span class="header-section-number">11.5</span> Mapeando os indicadores de 2022</a>
+  <ul>
+  <li><a href="#sec-entorno-painel" id="toc-sec-entorno-painel" class="nav-link" data-scroll-target="#sec-entorno-painel"><span class="header-section-number">11.5.1</span> Um panorama em pequenos múltiplos</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-r2010" id="toc-sec-entorno-r2010" class="nav-link" data-scroll-target="#sec-entorno-r2010"><span class="header-section-number">11.6</span> Recuperando os dados de 2010</a>
+  <ul>
+  <li><a href="#sec-entorno-validacao" id="toc-sec-entorno-validacao" class="nav-link" data-scroll-target="#sec-entorno-validacao"><span class="header-section-number">11.6.1</span> Validar antes de confiar</a></li>
+  <li><a href="#sec-entorno-nan" id="toc-sec-entorno-nan" class="nav-link" data-scroll-target="#sec-entorno-nan"><span class="header-section-number">11.6.2</span> A armadilha do denominador zero</a></li>
+  </ul></li>
+  <li><a href="#sec-entorno-comparacao" id="toc-sec-entorno-comparacao" class="nav-link" data-scroll-target="#sec-entorno-comparacao"><span class="header-section-number">11.7</span> Comparando 2010 e 2022</a></li>
+  <li><a href="#sec-entorno-exercicios" id="toc-sec-entorno-exercicios" class="nav-link" data-scroll-target="#sec-entorno-exercicios"><span class="header-section-number">11.8</span> Exercícios</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -241,9 +347,1381 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Início</p>
+<section id="sec-entorno-intro" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="sec-entorno-intro"><span class="header-section-number">11.1</span> Introdução</h2>
+<p>Os quatro produtos do Censo apresentados até aqui têm algo em comum. Os Agregados por Setor Censitário, os Microdados da Amostra, a Grade Estatística e o CNEFE descrevem pessoas, domicílios e endereços, ou seja, aquilo que existe <strong>dentro</strong> do lote. A <em>Pesquisa Urbanística do Entorno dos Domicílios</em> faz o movimento inverso e descreve o que existe <strong>fora</strong> dele, na calçada, na via e no canteiro central. É o retrato do espaço público que cerca a moradia.</p>
+<p>Essa inversão de foco vem acompanhada de uma inversão de método. Enquanto todos os demais produtos nascem de uma resposta dada por um informante, as características do entorno nascem de <strong>observação direta</strong>, feita por um agente do IBGE que percorre a rua a pé e registra o que vê, sem entrevistar ninguém. Não há morador para dizer se a rua tem bueiro, mas sim um agente do IBGE olhando para a sarjeta e marcando “sim” ou “não” em um aplicativo.</p>
+<p>O interesse prático dessa informação é imediato para quem trabalha com o território. Saber quantos domicílios de um bairro estão em ruas sem calçada, sem rampa de acessibilidade, sem ponto de ônibus ou sem uma única árvore permite dimensionar carências de infraestrutura com a mesma granularidade com que se dimensiona população e renda. O próprio IBGE posiciona o produto como subsídio ao Estatuto da Cidade, à Agenda 2030 e à Nova Agenda Urbana, alinhando a estatística oficial às pautas de acessibilidade, drenagem pluvial, mobilidade ativa e enfrentamento das mudanças climáticas <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. <!-- São exatamente os temas que retomaremos na Parte 3 deste livro. --></p>
+<section id="um-produto-com-três-idades" class="level3" data-number="11.1.1">
+<h3 data-number="11.1.1" class="anchored" data-anchor-id="um-produto-com-três-idades"><span class="header-section-number">11.1.1</span> Um produto com três idades</h3>
+<p>A investigação do entorno começou no Censo 2000, mas o produto que usamos hoje só existe desde 2010, e mudou de forma substancial em 2022. Vale percorrer essa trajetória, porque cada etapa deixou marcas na estrutura dos dados que o leitor vai encontrar.</p>
+<p>No <strong>Censo 2000</strong>, o levantamento contemplava apenas três itens, a identificação dos logradouros, a iluminação pública e o calçamento ou pavimentação. A caracterização era feita de forma separada para o logradouro e para o setor censitário. Na Caderneta do Setor, ao encerrar seu trabalho, o recenseador indicava existência total, existência parcial ou inexistência de cada item. Na Folha de Coleta, usada para caracterizar o logradouro após percorrer a face ou o trecho, apenas o calçamento admitia a alternativa de existência parcial <span class="citation" data-cites="ibge_entorno2022 ibge_metodologia2000">(<a href="references.html#ref-ibge_metodologia2000" role="doc-biblioref">IBGE, 2003</a>, <a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">2025</a>)</span>. Esses resultados, porém, não chegaram ao usuário na forma de dados por setor censitário. O dicionário dos Agregados por Setor Censitário de 2000 não registra nenhuma variável de entorno<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Por isso, na prática, a série de dados começa em 2010.</p>
+<p>No <strong>Censo 2010</strong>, o levantamento ganhou escopo e virou uma etapa estruturada da operação. Foram dez itens investigados durante a <strong>pré-coleta</strong>, operação de campo inédita que antecedeu o recenseamento e cuja finalidade principal era montar a lista de endereços de cada setor. Cerca de 22 mil agentes censitários supervisores percorreram 222.541 setores censitários urbanos, nas áreas urbanizadas dos 5.565 municípios então existentes <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>. A restrição decisiva daquela edição foi metodológica. Como a coleta exigia percorrer faces de quadra, foram excluídos da pré-coleta os setores sem arruamento regular, o que deixou de fora tanto os setores rurais quanto os aglomerados subnormais sem quadras e faces identificáveis. Esses últimos foram caracterizados por um instrumento à parte, o Levantamento de Informações Territoriais (LIT), com metodologia própria e resultados que não podem ser confrontados com os do restante da cidade <span class="citation" data-cites="ibge_aglomerados2010">(<a href="references.html#ref-ibge_aglomerados2010" role="doc-biblioref">IBGE, 2013</a>)</span>.</p>
+<p>No <strong>Censo 2022</strong>, a pesquisa manteve os dez itens, mas trocou quatro deles, migrou para questionário eletrônico e ampliou o universo para 340.965 setores. A mudança conceitualmente mais relevante foi a <strong>unificação metodológica</strong>. Favelas e comunidades urbanas passaram a ser pesquisadas com o mesmo instrumento aplicado ao resto da cidade, corrigindo justamente a lacuna que o LIT havia contornado em 2010 <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. Pela primeira vez, portanto, é possível comparar a infraestrutura de uma favela com a do bairro vizinho usando a mesma régua.</p>
+<p>A <a href="#tbl-quesitos-censos" class="quarto-xref">Tabela&nbsp;<span>11.1</span></a> resume quais itens foram investigados em cada edição e registra também se o resultado chegou a ser divulgado por setor censitário, informação que costuma faltar aos quadros comparativos e que determina o que efetivamente dá para analisar.</p>
+<div class="cell">
+<div id="tbl-quesitos-censos" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-quesitos-censos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.1: Itens investigados pela Pesquisa Urbanística do Entorno dos Domicílios nos Censos de 2000, 2010 e 2022, e sua divulgação por setor censitário.
+</figcaption>
+<div aria-describedby="tbl-quesitos-censos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Quesito</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">2000</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">2010</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">2022</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Iluminação pública</td>
+<td style="text-align: center;">coletado, não divulgado</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Identificação do logradouro</td>
+<td style="text-align: center;">coletado, não divulgado</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Calçamento ou pavimentação</td>
+<td style="text-align: center;">coletado, não divulgado</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Calçada ou passeio</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rampa para cadeirante</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bueiro ou boca de lobo</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Arborização</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Meio-fio ou guia</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lixo acumulado nos logradouros</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Esgoto a céu aberto</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Capacidade de circulação da via</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ponto de ônibus ou van</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Via sinalizada para bicicletas</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Obstáculo na calçada</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">sim</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Duas leituras saltam do quadro. A primeira é que a continuidade temática é menor do que parece, já que apenas seis itens aparecem em 2010 e em 2022. A segunda é que 2022 deslocou o eixo do produto. Saíram os itens que descreviam <strong>degradação</strong> do espaço público, como lixo acumulado e esgoto a céu aberto, e entraram itens que descrevem <strong>oferta de mobilidade e acessibilidade</strong>, como capacidade da via, ponto de ônibus, ciclovia e obstáculo na calçada. Como veremos na <a href="#sec-entorno-variaveis" class="quarto-xref"><span>Seção 11.2.4</span></a>, a semelhança de nomes entre os itens que sobreviveram esconde armadilhas de comparação, e há apenas dois casos em que o confronto direto entre 2010 e 2022 é legítimo.</p>
+<p>As seções seguintes destrincham a metodologia da pesquisa, a estrutura das variáveis em cada censo e os níveis geográficos em que a informação é coletada e divulgada. Somente depois disso partiremos para a obtenção e a análise dos dados no R.</p>
+</section>
+</section>
+<section id="sec-entorno-metodologia" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="sec-entorno-metodologia"><span class="header-section-number">11.2</span> Conceitos e metodologia</h2>
+<section id="sec-entorno-face" class="level3" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored" data-anchor-id="sec-entorno-face"><span class="header-section-number">11.2.1</span> A face de quadra como unidade de investigação</h3>
+<p>Tudo na Pesquisa Urbanística gira em torno de uma unidade territorial que não aparece em nenhum outro capítulo deste livro como protagonista, a <strong>face de quadra</strong>. O IBGE a define como a linha que representa graficamente os alinhamentos das fachadas do parcelamento dos lotes distribuídos nas quadras. Em termos mais diretos, cada face é um dos lados de uma quadra, contenha ou não edificações <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>.</p>
+<p>A face é a mesma âncora espacial que sustenta o CNEFE, visto na <a href="10-cnefe.html#sec-cnefe-intro" class="quarto-xref"><span>Seção 10.1</span></a>. Lá, os campos <code>NUM_QUADRA</code> e <code>NUM_FACE</code> localizam cada endereço dentro do setor. Aqui, a face deixa de ser um atributo do endereço e passa a ser a própria unidade pesquisada. Cada quesionário preenchido do entorno equivale a uma face percorrida.</p>
+<p>Ao caminhar por uma face, o agente observa três elementos distintos, e é fundamental entender que <strong>nem todos os itens usam a mesma área de observação</strong>. Há a face percorrida, há a <strong>face confrontante</strong>, que é a face em frente, e há o <strong>canteiro central</strong>, quando existe. A definição de face confrontante adotada em 2010 traz uma consequência que passa despercebida com facilidade, pois a face em frente é considerada independentemente de pertencer ao setor que está sendo trabalhado <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>. Ou seja, para boa parte dos itens, o dado atribuído a um setor censitário incorpora observações feitas do outro lado da rua, que pode estar em outro setor. A <a href="#fig-face-quadra" class="quarto-xref">Figura&nbsp;<span>11.1</span></a> ilustra esses elementos.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-face-quadra" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-face-quadra-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.1: Elementos observados na Pesquisa Urbanística do Entorno dos Domicílios. A face percorrida é a unidade de investigação, e a área observada varia conforme o item pesquisado.
+</figcaption>
+<div aria-describedby="fig-face-quadra-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="11-entorno_files/figure-html/fig-face-quadra-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>O esquema acima é limpo porque a realidade que ele representa é regular. Em campo, o agente precisa reconhecer os mesmos elementos em tecidos urbanos muito diferentes entre si, e a <a href="#fig-face-real" class="quarto-xref">Figura&nbsp;<span>11.2</span></a> mostra dois extremos desse espectro. À esquerda, a perspectiva de quem percorre uma via de traçado regular, com a face em amarelo, a face confrontante em vermelho e a via entre as duas. À direita, a leitura aérea de uma área densamente ocupada, em que as faces existem e podem ser delimitadas, ainda que os lotes e as edificações não sigam um parcelamento regular.</p>
+<div id="fig-face-real" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-face-real-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.2: Identificação da face percorrida e da face confrontante em perspectiva de campo e em perspectiva aérea. Fonte: <span class="citation" data-cites="ibge_entorno2022">IBGE (<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">2025</a>)</span>.
+</figcaption>
+<div aria-describedby="fig-face-real-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/11-entorno/face.png" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+<p>A definição de face não exige a presença de edificações, e é aí que aparece uma situação que o leitor precisa ter em mente ao interpretar os dados. Quando a face percorrida ou a confrontante corresponde ao limite de um espaço não edificado, como um parque, uma praça ou a orla de uma praia, não há fachadas para servir de alinhamento. Nesses casos, o IBGE orientou que fossem considerados os itens avistados pelo agente enquanto percorria o caminho adjacente ao espaço observado, de modo que a área de análise passa a ser a calçada somada ao <strong>campo de visão</strong> do agente <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. A <a href="#fig-face-nao-edificada" class="quarto-xref">Figura&nbsp;<span>11.3</span></a> ilustra as duas situações.</p>
+<div id="fig-face-nao-edificada" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-face-nao-edificada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.3: Delimitação da área de observação em faces que limitam espaços não edificados, com a área analisada definida pelo campo de visão do agente. Fonte: <span class="citation" data-cites="ibge_entorno2022">IBGE (<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">2025</a>)</span>.
+</figcaption>
+<div aria-describedby="fig-face-nao-edificada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/11-entorno/face-nao-edificavel.png" class="img-fluid figure-img">
+</div>
+</figure>
+</div>
+<p>Duas implicações decorrem disso. A primeira é que faces sem nenhum domicílio entram normalmente na contagem de faces do setor, o que ajuda a explicar por que os percentuais calculados sobre faces e sobre domicílios divergem, ponto que retomaremos na parte prática. A segunda é que, nesses trechos, o registro depende de um julgamento visual do agente sobre o que está ao alcance da vista, e não de um limite físico bem definido.</p>
+</section>
+<section id="sec-entorno-universo" class="level3" data-number="11.2.2">
+<h3 data-number="11.2.2" class="anchored" data-anchor-id="sec-entorno-universo"><span class="header-section-number">11.2.2</span> O universo da pesquisa</h3>
+<p>A Pesquisa Urbanística nunca cobriu o país inteiro, e entender quem fica de fora é pré-requisito para interpretar qualquer percentual calculado a partir dela. Em 2010, o critério era a existência de arruamento regular. Setores rurais e setores urbanos sem quadras e faces identificáveis ficaram fora da pré-coleta <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>. Em 2022, o critério passou a ser a <strong>morfologia urbana observada</strong>, e não a classificação legal do setor. Além dos setores classificados como urbanos na Base Territorial, entraram setores com áreas urbanizadas mapeadas e setores que apresentassem concentração de estruturas, edificações e equipamentos urbanos ou sistema viário consolidado, independentemente de serem urbanos ou rurais. A identificação desses casos adicionais foi feita por análise de imagens de satélite de alta resolução <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. Nos setores rurais com pequenos núcleos de morfologia urbana ou situados em franja periurbana, a pesquisa alcançou apenas a porção urbanizada, onde havia faces definidas.</p>
+<p>O resultado é uma cobertura alta dentro do universo escolhido e parcial em relação ao país. Em 2022, dos 202.083.020 moradores de domicílios particulares permanentes enumerados pelo Censo, 174.162.485 residiam em setores selecionados para a pesquisa, o equivalente a 86,2%. Dentro desses setores, a coleta alcançou 99,7% dos domicílios particulares permanentes ocupados, com variação entre 99,5% no Rio de Janeiro e em Rondônia e 100,0% no Amapá <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. Em 2010, a pesquisa alcançou 96,9% dos domicílios particulares permanentes <strong>urbanos</strong> do país, com variação regional entre 94,7% no Nordeste e 99,7% no Centro-Oeste <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Aviso</span>Os percentuais do entorno não são percentuais do Brasil
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Quando este capítulo disser que determinado percentual de domicílios está em faces com calçada, o denominador serão sempre os domicílios <strong>do universo da pesquisa</strong>, e não todos os domicílios do município, do estado ou do país. Como a parcela excluída é justamente a de menor densidade urbana, tratar esses valores como se fossem nacionais superestima sistematicamente a infraestrutura disponível. Essa ressalva vale para 2010 e para 2022, com recortes de universo diferentes em cada ano.</p>
+</div>
+</div>
+</section>
+<section id="sec-entorno-questionario" class="level3" data-number="11.2.3">
+<h3 data-number="11.2.3" class="anchored" data-anchor-id="sec-entorno-questionario"><span class="header-section-number">11.2.3</span> O questionário e o momento da coleta</h3>
+<p>Como visto na <a href="6-conceitos-e-metodos-censo.html#sec-produtos_censo" class="quarto-xref"><span>Seção 6.4.2</span></a>, a Pesquisa Urbanística corresponde à etapa de reconhecimento do setor censitário, anterior à coleta domiciliar. Antes de tratar de quem executou essa etapa e quando, vale conhecer o próprio instrumento, reproduzido na <a href="#fig-questionario" class="quarto-xref">Figura&nbsp;<span>11.4</span></a>.</p>
+<div id="fig-questionario" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-questionario-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.4: Questionário da Pesquisa Urbanística do Entorno dos Domicílios aplicado no Censo Demográfico 2022. Fonte: <span class="citation" data-cites="ibge_entorno2022">IBGE (<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">2025</a>)</span>.
+</figcaption>
+<div aria-describedby="fig-questionario-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/11-entorno/quest-entorno.png" class="img-fluid figure-img" style="width:88.0%">
+</div>
+</figure>
+</div>
+<p>O questionário cabe em uma única página e está organizado em quatro blocos. O bloco 1 apenas identifica a quadra e a face dentro do setor censitário. Os três seguintes agrupam os itens não por tema, mas pela <strong>área que precisa ser observada</strong> para respondê-los, distinção que a <a href="#sec-entorno-criterios" class="quarto-xref"><span>Seção 11.2.3.1</span></a> vai detalhar. Repare ainda em dois detalhes que a imagem revela de imediato. Ao lado de cada item aparece, entre parênteses, o critério que rege o registro, com as indicações de Predominância, Mínimo e Contagem. Já as setas azuis à direita explicitam o encadeamento das perguntas, incluindo as instruções de encerrar o questionário ou pular um bloco inteiro.</p>
+<p>Quanto ao calendário da coleta, ele tem consequências analíticas que convém registrar. Em 2010, a operação de pré-coleta começou em 12 de abril para os municípios com mais de 1.500 endereços residenciais urbanos e em 7 de maio para os demais, estendendo-se até junho. Uma parte residual do levantamento foi realizada já durante a coleta do Censo, iniciada em agosto de 2010, em setores com características mistas de regularidade e irregularidade urbanas <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>. Em 2022, a coleta se deu prioritariamente na etapa de Reconhecimento do Setor Censitário, entre 20 de junho e 31 de julho, complementada por duas frentes. Durante as entrevistas domiciliares, os recenseadores puderam ajustar as informações registradas pelos agentes supervisores e indicar a inclusão de novas faces. Já a etapa conhecida como Entorno pós-coleta atendeu setores em que a pesquisa não pôde ser feita antes por razões logísticas, além das localidades de povos e comunidades tradicionais em áreas urbanas, onde se garantiu que o primeiro contato do IBGE com as lideranças fosse a reunião de abordagem do recenseador <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>.</p>
+<p>Daí decorre uma característica que merece atenção. As informações do entorno têm como referência a <strong>data efetiva da observação em campo</strong>, enquanto os questionários domiciliares têm como referência a meia-noite de 31 de julho para 1º de agosto. Entorno e domicílio de um mesmo setor, portanto, não são estritamente contemporâneos. Em 2022, embora a maior parte da coleta se concentre em pouco mais de um mês (20 de junho a 31 de julho de 2022), o período a que se referem as informações do entorno estende-se de 20 de junho de 2022 a 28 de maio de 2023 <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. Em 2010 a defasagem também alcançava alguns meses, já que a pré-coleta antecedeu em cerca de um trimestre a data de referência do censo.</p>
+<p>Três situações de campo fogem do padrão e explicam feições que o leitor encontrará nos dados. A primeira ocorre em favelas e comunidades urbanas muito adensadas, onde a ocorrência de faces era inexistente ou rarefeita. Nesses casos, a coleta se deu por captura de coordenadas geográficas, com um questionário aplicado a cada quinze edificações visíveis ao longo do percurso. A segunda é a inclusão de faces novas por <em>tracking</em> georreferenciado, quando o mapa não correspondia ao encontrado em campo. A terceira é o Distrito Federal, cuja estrutura de quadras exigiu duas metodologias específicas, denominadas Blocos Superquadras e Faces-quadras, além das faces tradicionais, que seguem o padrão nacional <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>.</p>
+<section id="sec-entorno-criterios" class="level4" data-number="11.2.3.1">
+<h4 data-number="11.2.3.1" class="anchored" data-anchor-id="sec-entorno-criterios"><span class="header-section-number">11.2.3.1</span> Critérios de análise e área de observação</h4>
+<p>Chegamos ao ponto que mais afeta a interpretação dos resultados. Os dez itens de 2022 não foram registrados da mesma maneira. Cada um combina um <strong>critério de análise</strong>, que define o que basta para considerar o item existente, com um <strong>local de investigação</strong>, que define até onde vai o olhar do agente. Os três critérios são os seguintes.</p>
+<ul>
+<li><strong>Mínimo</strong>, quando basta observar a existência do item em qualquer ponto da área analisada. Foi o critério de sete dos dez itens.</li>
+<li><strong>Contagem</strong>, quando foi preciso quantificar o elemento observado. Aplicou-se apenas à arborização, registrada em quatro classes.</li>
+<li><strong>Predominância</strong>, quando a característica precisava ser preponderante, ou seja, estar presente em mais de 50% do trecho. Aplicou-se à capacidade de circulação da via e à pavimentação.</li>
+</ul>
+<p>A <a href="#tbl-criterios" class="quarto-xref">Tabela&nbsp;<span>11.2</span></a> cruza esses critérios com a área observada em cada item.</p>
+<div class="cell">
+<div id="tbl-criterios" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-criterios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.2: Critério de análise e local de investigação de cada item da Pesquisa Urbanística do Entorno dos Domicílios no Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-criterios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Quesito</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Critério</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Local de investigação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Capacidade de circulação da via</td>
+<td style="text-align: left;">Predominância (mais de 50%)</td>
+<td style="text-align: left;">Face, face confrontante e canteiro central</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pavimentação da via</td>
+<td style="text-align: left;">Predominância (mais de 50%)</td>
+<td style="text-align: left;">Face, face confrontante e canteiro central</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bueiro ou boca de lobo</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Face, face confrontante e canteiro central</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Iluminação pública</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Face, face confrontante e canteiro central</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ponto de ônibus ou van</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Face, face confrontante e canteiro central</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Via sinalizada para bicicletas</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Face, face confrontante e canteiro central</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Calçada ou passeio</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Somente a face percorrida</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Obstáculo na calçada</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Somente a face percorrida</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rampa para cadeirante</td>
+<td style="text-align: left;">Mínimo</td>
+<td style="text-align: left;">Somente a face percorrida</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Arborização</td>
+<td style="text-align: left;">Contagem (0, 1 a 2, 3 a 4, 5+)</td>
+<td style="text-align: left;">Face percorrida e canteiro central</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>São três as consequências principais. Primeiro, os itens ligados à calçada olham <strong>apenas para a face percorrida</strong>, enquanto os itens ligados à via olham para os dois lados. Um percentual de calçadas e um percentual de iluminação, ainda que apresentados lado a lado, não descrevem a mesma extensão de espaço público. Segundo, a arborização é o único item que considera a face e o canteiro central sem considerar a face confrontante, escolha que, como veremos adiante, inviabiliza a comparação com 2010. Terceiro, e talvez o mais contraintuitivo, a pesquisa investiga <strong>existência, não estado de conservação, funcionamento ou eficácia</strong> <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. Um poste sem lâmpada conta como iluminação pública existente. Um bueiro entupido conta como bueiro existente. Os dados descrevem a presença do equipamento urbano, e não a sua qualidade.</p>
+</section>
+<section id="sec-entorno-fluxo" class="level4" data-number="11.2.3.2">
+<h4 data-number="11.2.3.2" class="anchored" data-anchor-id="sec-entorno-fluxo"><span class="header-section-number">11.2.3.2</span> O fluxo do questionário e seus saltos</h4>
+<p>O questionário de 2022 não é uma lista plana de dez perguntas. Ele possui uma lógica condicional que faz com que certos itens deixem de ser aplicados em determinadas faces, e essa lógica é a origem de uma categoria de resposta que confunde muitos usuários dos dados.</p>
+<p>Há dois saltos, ambos visíveis nas instruções impressas na <a href="#fig-questionario" class="quarto-xref">Figura&nbsp;<span>11.4</span></a>. O primeiro ocorre quando a capacidade de circulação da via é registrada como <strong>aquavia</strong>, situação em que o rio ou canal constitui a própria face e é a forma de acesso direto às edificações. O formulário instrui a encerrar o questionário ali mesmo, e nenhum outro item é preenchido. O segundo, muito mais frequente, ocorre quando <strong>não há calçada</strong> na face. Como obstáculo e rampa são características da calçada, não faz sentido investigá-los onde ela não existe, e o item 3.01 manda seguir direto para o bloco de arborização. A <a href="#fig-fluxo-questionario" class="quarto-xref">Figura&nbsp;<span>11.5</span></a> resume esse encadeamento.</p>
+<div id="fig-fluxo-questionario" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-fluxo-questionario-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.5: Fluxo do questionário da Pesquisa Urbanística do Entorno dos Domicílios no Censo 2022, com os dois pontos de salto. Elaborado a partir do questionário reproduzido na <a href="#fig-questionario" class="quarto-xref">Figura&nbsp;<span>11.4</span></a>.
+</figcaption>
+<div aria-describedby="fig-fluxo-questionario-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-fig-width="6.5" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A["&lt;b&gt;2.01&lt;/b&gt; Capacidade de circulação da via"] --&gt; B{"Aquavia?"}
+    B -- Sim --&gt; Z(["Encerra o questionário"])
+    B -- Não --&gt; C["&lt;b&gt;2.02 a 2.06&lt;/b&gt;&lt;br/&gt;Pavimentação, bueiro, iluminação,&lt;br/&gt;ponto de ônibus e ciclovia"]
+    C --&gt; D["&lt;b&gt;3.01&lt;/b&gt; Calçada ou passeio"]
+    D --&gt; E{"Existe calçada?"}
+    E -- Não --&gt; G["&lt;b&gt;4.01&lt;/b&gt; Arborização"]
+    E -- Sim --&gt; F["&lt;b&gt;3.02&lt;/b&gt; Obstáculo na calçada&lt;br/&gt;&lt;b&gt;3.03&lt;/b&gt; Rampa para cadeirante"]
+    F --&gt; G
+    G --&gt; H(["Encerra o questionário"])
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</figure>
+</div>
+<p>Guarde este fluxograma. Quando chegarmos aos dados, veremos que as faces que sofreram salto não desaparecem das tabelas. Elas são contabilizadas em categorias específicas de não resposta, e confundi-las com falhas de coleta produz percentuais errados.</p>
+</section>
+</section>
+<section id="sec-entorno-variaveis" class="level3" data-number="11.2.4">
+<h3 data-number="11.2.4" class="anchored" data-anchor-id="sec-entorno-variaveis"><span class="header-section-number">11.2.4</span> As variáveis e sua disponibilização</h3>
+<p>É importante salientar que as tabelas de 2010 e de 2022 <strong>não diferem apenas nos itens investigados</strong>. Elas têm arquiteturas incompatíveis, e quem tentar transportar o raciocínio de um ano para o outro vai errar. Vejamos cada uma.</p>
+<section id="sec-entorno-var2022" class="level4" data-number="11.2.4.1">
+<h4 data-number="11.2.4.1" class="anchored" data-anchor-id="sec-entorno-var2022"><span class="header-section-number">11.2.4.1</span> Censo 2022, três blocos paralelos</h4>
+<p>A tabela de 2022 organiza a informação em três blocos que medem os mesmos dez itens em <strong>unidades de contagem diferentes</strong>. O primeiro conta faces de quadra, ou seja, o dado como foi coletado. O segundo conta domicílios particulares permanentes ocupados situados naquelas faces. O terceiro conta os moradores desses domicílios. A <a href="#tbl-blocos-2022" class="quarto-xref">Tabela&nbsp;<span>11.3</span></a> resume a estrutura, já usando os nomes que o pacote <code>censobr</code> atribui às colunas.</p>
+<div class="cell">
+<div id="tbl-blocos-2022" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-blocos-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.3: Blocos de variáveis do arquivo Entorno do Censo 2022 e suas respectivas variáveis de total.
+</figcaption>
+<div aria-describedby="tbl-blocos-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Bloco</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Prefixo no censobr</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variável de total</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Unidade contada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Faces de quadra</td>
+<td style="text-align: left;">faces_V054xx</td>
+<td style="text-align: left;">faces_V05400</td>
+<td style="text-align: left;">Faces com questionário aplicado</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Domicílios</td>
+<td style="text-align: left;">domicilios_V050xx</td>
+<td style="text-align: left;">domicilios_V05000</td>
+<td style="text-align: left;">Domicílios particulares permanentes ocupados com entorno pesquisado</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Moradores</td>
+<td style="text-align: left;">moradores_V052xx</td>
+<td style="text-align: left;">moradores_V05200</td>
+<td style="text-align: left;">Moradores desses domicílios</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Os três blocos têm 35 variáveis cada e seguem exatamente o mesmo <em>layout</em>, com os itens na mesma ordem e na mesma posição relativa à variável de total. A existência de bueiro, por exemplo, ocupa o nono deslocamento nos três blocos, em <code>faces_V05409</code>, <code>domicilios_V05009</code> e <code>moradores_V05209</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>Dentro de cada bloco, os itens aparecem decompostos em categorias. Oito deles trazem a tríade <strong>Sim</strong>, <strong>Não</strong> e <strong>Não Declarado</strong>. Os dois restantes trazem classes múltiplas, pois a arborização é registrada em quatro faixas de contagem e a capacidade de circulação da via em quatro tipos de veículo, e ambos contam ainda com uma categoria reservada aos casos em que o item não chegou a ser perguntado. A propriedade que torna o cálculo simples é que, em todo item, <strong>as categorias somam a variável de total do bloco</strong>. O denominador de um percentual, portanto, é sempre a variável de total, e não uma soma que o analista precise montar.</p>
+<p>A contrapartida dessa simplicidade está na categoria “Não Declarado”, que carrega dois significados distintos. Na maioria dos itens ela reúne um resíduo pequeno de inconsistências e não validações. Nos itens de obstáculo na calçada e rampa para cadeirante, ela absorve também as faces que sofreram o salto do questionário, ou seja, aquelas em que não existe calçada. O que parece uma não resposta é, na verdade, um “não se aplica”. Voltaremos a esse ponto com números na parte prática, porque ele muda o resultado de forma perceptível.</p>
+</section>
+<section id="sec-entorno-var2010" class="level4" data-number="11.2.4.2">
+<h4 data-number="11.2.4.2" class="anchored" data-anchor-id="sec-entorno-var2010"><span class="header-section-number">11.2.4.2</span> Censo 2010, cinco arquivos e nenhuma face</h4>
+<p>A tabela de 2010 segue outra filosofia. São 1.062 variáveis distribuídas em cinco arquivos, de <code>Entorno01</code> a <code>Entorno05</code>, e três diferenças estruturais a separam de 2022.</p>
+<p>A primeira é que <strong>não existe contagem de faces</strong>. Embora a coleta tenha sido feita por face, o produto divulgado conta apenas domicílios e moradores. Não há como saber, em 2010, qual proporção das faces de um setor tinha calçada. A segunda é que <strong>não existe a categoria “Não Declarado”</strong>, já que cada item aparece apenas como “Existe” ou “Não existe”.</p>
+<p>A terceira é a mais complexa para quem abre o arquivo pela primeira vez. Em 2010, os itens do entorno <strong>nunca aparecem sozinhos</strong>. Eles vêm sempre cruzados com um atributo do domicílio ou do morador. Não há uma variável que informe quantos domicílios estão em faces com iluminação pública. Há variáveis que informam quantos domicílios <em>próprios</em> estão em faces com iluminação, quantos <em>alugados</em>, quantos <em>com responsável do sexo feminino</em>, quantos <em>de renda per capita até um quarto de salário mínimo</em>, e assim por diante. O arquivo é, na prática, uma coleção de tabulações cruzadas <span class="citation" data-cites="ibge_base2010">(<a href="references.html#ref-ibge_base2010" role="doc-biblioref">IBGE, 2011</a>)</span>.</p>
+<p>Essa organização em blocos tem uma consequência prática severa. Como não há uma variável de total de domicílios com entorno pesquisado, o denominador precisa ser reconstruído somando um bloco inteiro. E <strong>nem todos os blocos são exaustivos</strong>. Os blocos de condição de ocupação, de abastecimento de água e de existência de banheiro e esgotamento sanitário deixam categorias de fora, de modo que somá-los produz um total menor que o correto. Já os blocos de sexo do responsável, adequação da moradia, renda per capita, grupos de idade e cor ou raça cobrem todos os domicílios ou moradores pesquisados. A escolha do bloco de referência é, portanto, uma decisão metodológica, e não um detalhe de implementação. Trataremos disso com código na parte prática.</p>
+<p>A <a href="#tbl-estrutura" class="quarto-xref">Tabela&nbsp;<span>11.4</span></a> contronta estruturalmente os resultados do Entorno para ambos os censos e sintetiza o que muda de um censo para o outro.</p>
+<div class="cell">
+<div id="tbl-estrutura" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-estrutura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.4: Diferenças estruturais entre os arquivos de entorno dos Censos de 2010 e 2022.
+</figcaption>
+<div aria-describedby="tbl-estrutura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Aspecto</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Censo 2010</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Censo 2022</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Contagem de faces</td>
+<td style="text-align: left;">Ausente</td>
+<td style="text-align: left;">Presente, em bloco próprio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Unidades de contagem</td>
+<td style="text-align: left;">Domicílios e moradores</td>
+<td style="text-align: left;">Faces, domicílios e moradores</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Categorias de resposta</td>
+<td style="text-align: left;">Existe e Não existe</td>
+<td style="text-align: left;">Sim, Não e Não Declarado</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Total de pesquisados</td>
+<td style="text-align: left;">Não divulgado, precisa ser reconstruído</td>
+<td style="text-align: left;">Variável explícita em cada bloco</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Forma de apresentação</td>
+<td style="text-align: left;">Sempre cruzado com atributo do domicílio ou morador</td>
+<td style="text-align: left;">Item isolado</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Número de variáveis</td>
+<td style="text-align: left;">1.062, em cinco arquivos</td>
+<td style="text-align: left;">105, em um arquivo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Itens com classes múltiplas</td>
+<td style="text-align: left;">Nenhum</td>
+<td style="text-align: left;">Arborização e capacidade da via</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Para entender o que é possível ou não comparar, vale mencionar que seis itens aparecem nos dois censos, o que sugere uma série histórica confortável. No entanto, a realidade é bem mais restrita, já que o próprio IBGE alerta que apenas <strong>dois</strong> itens admitem comparação direta, e a <a href="#tbl-comparabilidade" class="quarto-xref">Tabela&nbsp;<span>11.5</span></a> explica o motivo caso a caso.</p>
+<div class="cell">
+<div id="tbl-comparabilidade" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-comparabilidade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.5: Comparabilidade dos itens investigados nos Censos de 2010 e 2022. Elaborado a partir da Tabela 2 de <span class="citation" data-cites="ibge_entorno2022">IBGE (<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">2025</a>)</span>.
+</figcaption>
+<div aria-describedby="tbl-comparabilidade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Quesito</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Comparável?</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Iluminação pública</td>
+<td style="text-align: center;">Sim</td>
+<td style="text-align: left;">Mesmo conceito e mesmo critério de coleta nos dois censos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bueiro ou boca de lobo</td>
+<td style="text-align: center;">Sim</td>
+<td style="text-align: left;">Mesmo conceito e mesmo critério de coleta nos dois censos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rampa para cadeirante</td>
+<td style="text-align: center;">Com ressalva</td>
+<td style="text-align: left;">Em 2010 foi investigada em todas as faces e em 2022 apenas nas faces com calçada</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Calçada ou passeio</td>
+<td style="text-align: center;">Não</td>
+<td style="text-align: left;">Em 2010 exigia caminho calçado ou pavimentado e em 2022 aceita calçada sem pavimentação</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pavimentação da via</td>
+<td style="text-align: center;">Não</td>
+<td style="text-align: left;">Em 2010 bastava qualquer trecho pavimentado e em 2022 exige-se predominância</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Arborização</td>
+<td style="text-align: center;">Não</td>
+<td style="text-align: left;">Em 2010 considerava a face confrontante e em 2022 considera apenas a face e o canteiro central</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Note que as três incomparabilidades apontam em direções previsíveis. A mudança no conceito de calçada tende a <strong>inflar</strong> o resultado de 2022, porque o conceito ficou mais abrangente. As mudanças em pavimentação e arborização tendem a <strong>reduzi-lo</strong>, porque o critério ficou mais exigente em um caso e a área observada diminuiu no outro. Uma queda aparente na arborização entre 2010 e 2022 pode ser inteiramente artefato metodológico.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Aviso</span>O universo também mudou, e isso independe dos itens
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Mesmo nos dois itens comparáveis, a comparação exige cautela adicional. O número de setores pesquisados passou de 223.666 em 2010 para 340.965 em 2022<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>, crescimento de mais de 50% que decorre da expansão das cidades e, principalmente, da decisão de incluir áreas urbanizadas de setores rurais e setores de favelas e comunidades urbanas <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>. Como essas áreas incorporadas tendem a apresentar infraestrutura mais precária, um percentual nacional que fique estável entre os dois censos pode estar escondendo uma melhora real, e uma piora aparente pode refletir apenas o alargamento do universo. Comparações por recortes territoriais estáveis são sempre preferíveis às comparações de médias nacionais.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-entorno-niveis" class="level3" data-number="11.2.5">
+<h3 data-number="11.2.5" class="anchored" data-anchor-id="sec-entorno-niveis"><span class="header-section-number">11.2.5</span> Níveis geográficos de coleta e de divulgação</h3>
+<p>Resta esclarecer uma assimetria que atravessa todo o produto: <strong>a coleta ocorre na face, mas a divulgação é feita no setor</strong>. Isso quer dizer que a face de quadra é a unidade de investigação, mas não é unidade de divulgação. Não existe, no conjunto de dados públicos, uma tabela que informe as características urbanísticas de uma face específica. O que se publica é a <strong>contagem de faces por categoria dentro de cada setor censitário</strong>, que passa a ser a maior resolução espacial disponível. Essa diferença tem uma implicação analítica que convém fixar desde já, pois o valor de um setor é uma síntese de faces que podem ser bastante heterogêneas entre si. Um setor em que 70% das faces têm calçada não é um setor uniformemente atendido. É um setor em que três de cada dez trechos de rua não têm por onde caminhar, e a leitura do mapa precisa levar isso em conta.</p>
+<p>A partir do setor censitário, a informação pode ser agregada para os recortes já discutidos na <a href="6-conceitos-e-metodos-censo.html#sec-recortes" class="quarto-xref"><span>Seção 6.3</span></a>, na sequência bairro, subdistrito, distrito e município, e daí para concentração urbana, unidade da federação, grande região e Brasil. A publicação de 2022 apresenta resultados até o nível de município e de concentração urbana, além de uma leitura segundo a hierarquia urbana definida em Regiões de Influência das Cidades <span class="citation" data-cites="ibge_entorno2022">(<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">IBGE, 2025</a>)</span>.</p>
+<p>Há três caminhos de acesso aos dados, com alcances distintos:</p>
+<ul>
+<li><strong>Agregados por Setor Censitário:</strong> É o único caminho que chega ao setor e, por ser o mais desagregado espacialmente, é o que usaremos neste livro. Em 2022 as variáveis do entorno foram incorporadas ao conjunto dos Agregados. Em 2010 elas vinham em cinco planilhas por unidade da federação, de <code>Entorno01_UF</code> a <code>Entorno05_UF</code>, dentro do mesmo pacote. Nos dois casos, o acesso se dá pela função <code>read_tracts()</code> do pacote <code>censobr</code> <span class="citation" data-cites="censobr">(<a href="references.html#ref-censobr" role="doc-biblioref">Pereira &amp; Barbosa, 2023</a>)</span>.</li>
+<li><strong>SIDRA:</strong> Oferece tabelas prontas até o nível de município e de concentração urbana, incluindo os indicadores de cobertura da pesquisa. É a via mais rápida para consultas pontuais, sem a flexibilidade da manipulação programática.</li>
+<li><strong>Plataforma Geográfica Interativa (PGI):</strong> Disponibiliza arquivos vetoriais e temas relacionados para <em>download</em>, voltada a quem trabalha diretamente em ambiente de geoprocessamento.</li>
+</ul>
+<p>Com o terreno conceitual preparado, podemos partir para os dados. Na próxima seção obteremos os arquivos de entorno dos dois censos com o <code>censobr</code>, montaremos os indicadores respeitando os denominadores corretos de cada ano e levaremos os resultados ao mapa.</p>
+</section>
+</section>
+<section id="sec-entorno-dados" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="sec-entorno-dados"><span class="header-section-number">11.3</span> Obtendo e integrando os dados</h2>
+<p>Usaremos <strong>Fortaleza</strong> como pano de fundo do restante do capítulo. A escolha não é arbitrária, pois a capital cearense reúne, em um mesmo território, situações que exercitam quase tudo o que foi discutido até aqui. Ela tem um dos maiores contingentes de população em favelas e comunidades urbanas entre as capitais brasileiras, apresenta um passivo de drenagem urbana bem acima da média nacional e, ao mesmo tempo, é um caso atípico e positivo em sinalização cicloviária.</p>
+<p>O ponto de partida é a leitura dos arquivos de entorno dos dois censos com a função <code>read_tracts()</code>, já apresentada no <a href="7-agregados.html#sec-obtendo" class="quarto-xref"><span>Seção 7.4.1</span></a>. O argumento <code>dataset</code> recebe o valor <code>"Entorno"</code>, e o retorno é um <em>Dataset</em> do Arrow, e não um <code>data.frame</code>. Isso importa porque o arquivo de 2022 tem quase 345 mil linhas e o de 2010 tem 310 mil, com mais de mil colunas no caso de 2010. Filtrar antes de materializar evita carregar o país inteiro na memória.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Código IBGE de Fortaleza (CE)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cod_for <span class="ot">&lt;-</span> <span class="dv">2304400</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Os objetos abaixo ainda não são data.frames, e sim Datasets do Arrow</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ent2010 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">dataset =</span> <span class="st">"Entorno"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>ent2022 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">dataset =</span> <span class="st">"Entorno"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># O filtro é aplicado antes do collect(), que só então traz os dados à memória</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ent_for2010 <span class="ot">&lt;-</span> ent2010 <span class="sc">|&gt;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> cod_for) <span class="sc">|&gt;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>ent_for2022 <span class="ot">&lt;-</span> ent2022 <span class="sc">|&gt;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> cod_for) <span class="sc">|&gt;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Por que não existe <code>read_tracts(year = 2000, dataset = "Entorno")</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Como registrado na <a href="#tbl-quesitos-censos" class="quarto-xref">Tabela&nbsp;<span>11.1</span></a>, o Censo 2000 investigou três itens do entorno, mas não os divulgou nos Agregados por Setor Censitário. Por isso o <code>censobr</code> não oferece o conjunto <code>Entorno</code> para aquele ano, e a chamada retorna erro. A série utilizável começa em 2010.</p>
+</div>
+</div>
+<p>Antes de qualquer cálculo, o dicionário precisa estar aberto ao lado. A função <code>data_dictionary()</code> cuida disso, com a diferença de que para 2010 ela abre um PDF, cujas seções 6.22 a 6.26 descrevem os cinco arquivos de entorno, e para 2022 abre uma pasta de trabalho <code>.xlsx</code>, cuja última aba, chamada <code>Entorno</code>, traz as variáveis que nos interessam.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_dictionary</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">dataset =</span> <span class="st">"tracts"</span>)  <span class="co"># abre um PDF</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data_dictionary</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">dataset =</span> <span class="st">"tracts"</span>)  <span class="co"># abre um .xlsx, ver aba "Entorno"</span></span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Lembre-se que até a versão do <code>censobr</code> trabalhada no nosso texto (v0.6.0), os arquivos não vem com uma coluna de geometria. Deste modo, precisamos obter os polígonos dos setores vêm do <code>geobr</code>, com <code>read_census_tract()</code>. O argumento <code>code_tract</code> aceita o código do município para devolver todos os seus setores. Usamos <code>simplified = FALSE</code> para preservar o traçado original.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>geo_for2010 <span class="ot">&lt;-</span> <span class="fu">read_census_tract</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">code_tract =</span> cod_for,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">simplified =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>geo_for2022 <span class="ot">&lt;-</span> <span class="fu">read_census_tract</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">code_tract =</span> cod_for,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">simplified =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="sec-entorno-join" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="sec-entorno-join"><span class="header-section-number">11.3.1</span> Nem todo setor tem dado de entorno</h3>
+<p>Aqui aparece a primeira consequência prática da <a href="#sec-entorno-universo" class="quarto-xref"><span>Seção 11.2.2</span></a>. O <code>geobr</code> devolve <strong>todos</strong> os setores do município, enquanto o arquivo de entorno traz apenas os que entraram no universo da pesquisa. Um <code>left_join()</code> entre os dois produz valores ausentes, e é muito melhor contá-los de forma deliberada do que descobri-los depois como buracos inexplicados no mapa.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Censo =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2022</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Setores na malha</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">nrow</span>(geo_for2010), <span class="fu">nrow</span>(geo_for2022)),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Setores no Entorno</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">nrow</span>(ent_for2010), <span class="fu">nrow</span>(ent_for2022)),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Sem correspondência</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="sc">!</span>geo_for2010<span class="sc">$</span>code_tract <span class="sc">%in%</span> ent_for2010<span class="sc">$</span>code_tract),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="sc">!</span>geo_for2022<span class="sc">$</span>code_tract <span class="sc">%in%</span> ent_for2022<span class="sc">$</span>code_tract)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">align =</span> <span class="fu">c</span>(<span class="st">"c"</span>, <span class="st">"c"</span>, <span class="st">"c"</span>, <span class="st">"c"</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-entorno-cobertura" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-entorno-cobertura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.6: Setores censitários de Fortaleza disponíveis na malha do <code>geobr</code> e no arquivo de entorno do <code>censobr</code>, nos dois censos.
+</figcaption>
+<div aria-describedby="tbl-entorno-cobertura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Censo</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Setores na malha</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Setores no Entorno</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Sem correspondência</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2.010</td>
+<td style="text-align: center;">3.043</td>
+<td style="text-align: center;">3.020</td>
+<td style="text-align: center;">23</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2.022</td>
+<td style="text-align: center;">4.408</td>
+<td style="text-align: center;">4.381</td>
+<td style="text-align: center;">27</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Os 23 setores de 2010 e os 27 de 2022 que ficam sem par <strong>não são falha de dado</strong>. São setores que não foram selecionados para a pesquisa, e aparecerão nos mapas com a cor reservada a valores ausentes. Repare também que a malha de Fortaleza cresceu de 3.043 para 4.408 setores entre os dois censos, informação que será decisiva na <a href="#sec-entorno-comparacao" class="quarto-xref"><span>Seção 11.7</span></a>.</p>
+<p>Em 2022 existe ainda um segundo tipo de ausência, mais sutil, que não vem do <code>join</code> e sim do próprio arquivo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(ent_for2022<span class="sc">$</span>domicilios_V05000))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 111</code></pre>
+</div>
+</div>
+<p>São 111 setores com faces pesquisadas mas sem total de domicílios, tipicamente setores sem uso residencial, como grandes áreas de parque, equipamentos e concentrações de comércio. A consequência é direta e vale antecipar. <strong>Um indicador calculado sobre faces existe nesses setores, enquanto o mesmo indicador calculado sobre domicílios não existe.</strong> Somando os 27 setores não pareados aos 111 sem domicílios, um mapa por domicílios terá 138 setores em branco, contra apenas 27 de um mapa por faces.</p>
+</section>
+</section>
+<section id="sec-entorno-denominador" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="sec-entorno-denominador"><span class="header-section-number">11.4</span> A escolha do denominador</h2>
+<p>A <a href="#sec-entorno-var2022" class="quarto-xref"><span>Seção 11.2.4.1</span></a> estabeleceu a regra de cálculo de 2022, ou seja, as categorias de todo item somam a variável de total do bloco, de modo que o denominador é sempre essa variável. O que a regra não resolve é a pergunta anterior a ela, que é decidir <strong>qual bloco usar</strong>. Vamos medir os mesmos itens nas duas unidades e comparar.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Função auxiliar que protege a divisão contra denominador zero ou ausente.</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Será reaproveitada adiante, quando tratarmos do Censo 2010.</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>perc <span class="ot">&lt;-</span> <span class="cf">function</span>(numerador, total) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  total <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(total) <span class="sc">|</span> total <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA_real_</span>, total)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="dv">100</span> <span class="sc">*</span> numerador <span class="sc">/</span> total</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Totais municipais de cada variável dos três blocos</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>tot_for2022 <span class="ot">&lt;-</span> ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="fu">c</span>(<span class="st">"faces_"</span>, <span class="st">"domicilios_"</span>)),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                   \(x) <span class="fu">sum</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="fu">c</span>(<span class="st">"Via pavimentada"</span>, <span class="st">"Iluminação pública"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Bueiro ou boca de lobo"</span>, <span class="st">"Calçada ou passeio"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Ponto de ônibus ou van"</span>, <span class="st">"Via sinalizada para bicicletas"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Rampa para cadeirante"</span>, <span class="st">"Sem árvores"</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">face =</span> <span class="fu">c</span>(<span class="st">"faces_V05406"</span>, <span class="st">"faces_V05412"</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>           <span class="st">"faces_V05409"</span>, <span class="st">"faces_V05421"</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>           <span class="st">"faces_V05415"</span>, <span class="st">"faces_V05418"</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>           <span class="st">"faces_V05427"</span>, <span class="st">"faces_V05430"</span>),</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">domicilio =</span> <span class="fu">c</span>(<span class="st">"domicilios_V05006"</span>, <span class="st">"domicilios_V05012"</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                <span class="st">"domicilios_V05009"</span>, <span class="st">"domicilios_V05021"</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                <span class="st">"domicilios_V05015"</span>, <span class="st">"domicilios_V05018"</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                <span class="st">"domicilios_V05027"</span>, <span class="st">"domicilios_V05030"</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">% das faces</span><span class="st">`</span>      <span class="ot">=</span> <span class="fu">perc</span>(<span class="fu">as.numeric</span>(tot_for2022[face]),</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                              tot_for2022<span class="sc">$</span>faces_V05400),</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">% dos domicílios</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">perc</span>(<span class="fu">as.numeric</span>(tot_for2022[domicilio]),</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>                              tot_for2022<span class="sc">$</span>domicilios_V05000),</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">face =</span> <span class="cn">NULL</span>, <span class="at">domicilio =</span> <span class="cn">NULL</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>, <span class="st">"c"</span>, <span class="st">"c"</span>),</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>               <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-entorno-unidades" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-entorno-unidades-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.7: Os mesmos itens do entorno medidos sobre faces de quadra e sobre domicílios, Fortaleza (Censo 2022).
+</figcaption>
+<div aria-describedby="tbl-entorno-unidades-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Item</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">% das faces</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">% dos domicílios</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Via pavimentada</td>
+<td style="text-align: center;">88,6</td>
+<td style="text-align: center;">93,9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Iluminação pública</td>
+<td style="text-align: center;">96,3</td>
+<td style="text-align: center;">99,0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bueiro ou boca de lobo</td>
+<td style="text-align: center;">28,4</td>
+<td style="text-align: center;">33,1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Calçada ou passeio</td>
+<td style="text-align: center;">79,5</td>
+<td style="text-align: center;">89,0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ponto de ônibus ou van</td>
+<td style="text-align: center;">10,5</td>
+<td style="text-align: center;">12,0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Via sinalizada para bicicletas</td>
+<td style="text-align: center;">7,9</td>
+<td style="text-align: center;">7,2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rampa para cadeirante</td>
+<td style="text-align: center;">10,1</td>
+<td style="text-align: center;">12,2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sem árvores</td>
+<td style="text-align: center;">49,0</td>
+<td style="text-align: center;">39,8</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Três novidades de sintaxe no código acima
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong><code>across()</code></strong> aplica a mesma operação a várias colunas de uma só vez, dentro de um <code>summarise()</code> ou de um <code>mutate()</code>. Sem ela, seria preciso escrever uma linha de <code>sum()</code> para cada uma das 70 variáveis dos blocos de faces e de domicílios.</li>
+<li><strong><code>starts_with()</code></strong> é uma das funções de seleção auxiliar do <code>tidyselect</code>, que escolhe colunas por padrão no nome. Aqui ela captura de uma vez todas as colunas iniciadas por <code>faces_</code> e por <code>domicilios_</code>. Existem outras da mesma família, como <code>ends_with()</code>, <code>contains()</code> e <code>all_of()</code>, esta última usada mais adiante neste capítulo.</li>
+<li><strong><code>\(x) sum(x, na.rm = TRUE)</code></strong> é a forma abreviada de escrever uma função anônima em R, equivalente a <code>function(x) sum(x, na.rm = TRUE)</code>. Ela é útil quando precisamos passar como argumento uma função que não existe pronta, no caso a soma que ignora valores ausentes.</li>
+</ul>
+</div>
+</div>
+<p>A tabela revela um padrão sistemático. Em quase todos os itens, o percentual medido sobre domicílios é <strong>maior</strong> que o medido sobre faces, e a diferença chega a quase dez pontos no caso da calçada. A explicação é geográfica, pois as faces mais bem servidas de infraestrutura concentram mais moradias, enquanto as faces mal servidas tendem a ser trechos de baixa densidade, terrenos vazios ou vias de borda. Ao contar domicílios, damos peso maior justamente às faces onde mais gente vive.</p>
+<p>O item de sinalização cicloviária é a única exceção, e ela é instrutiva. Ali a relação se inverte, com 7,9% das faces contra 7,2% dos domicílios, porque a sinalização para bicicletas se concentra em vias arteriais e orlas, onde há proporcionalmente menos residências. A regra prática que decorre disso pode ser resumida assim. Faces medem <strong>oferta de infraestrutura no território</strong>, e domicílios medem <strong>população atendida por ela</strong>. Nenhuma das duas é mais correta, mas responder à pergunta errada com a unidade errada é um erro comum, e a escolha precisa ser declarada explicitamente em qualquer análise.</p>
+<section id="sec-entorno-nd" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="sec-entorno-nd"><span class="header-section-number">11.4.1</span> Quando “Não Declarado” significa “não se aplica”</h3>
+<p>A <a href="#sec-entorno-fluxo" class="quarto-xref"><span>Seção 11.2.3.2</span></a> antecipou que os saltos do questionário não fazem as faces sumirem das tabelas. Chegou o momento de verificar isso nos dados. Vamos comparar o tamanho da categoria “Não Declarado” em um item comum e nos dois itens que dependem da existência de calçada.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">total          =</span> <span class="fu">sum</span>(domicilios_V05000, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">com_calcada    =</span> <span class="fu">sum</span>(domicilios_V05021, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">nd_bueiro      =</span> <span class="fu">sum</span>(domicilios_V05011, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">nd_obstaculo   =</span> <span class="fu">sum</span>(domicilios_V05026, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">nd_rampa       =</span> <span class="fu">sum</span>(domicilios_V05029, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sem_calcada =</span> total <span class="sc">-</span> com_calcada) <span class="sc">|&gt;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1
+Columns: 6
+$ total        &lt;dbl&gt; 858884
+$ com_calcada  &lt;dbl&gt; 764358
+$ nd_bueiro    &lt;dbl&gt; 794
+$ nd_obstaculo &lt;dbl&gt; 94526
+$ nd_rampa     &lt;dbl&gt; 94526
+$ sem_calcada  &lt;dbl&gt; 94526</code></pre>
+</div>
+</div>
+<p>O contraste é brutal. No item de bueiro, o “Não Declarado” reúne 794 domicílios, um resíduo de menos de 0,1% que corresponde a inconsistências de coleta. Nos itens de obstáculo e de rampa, ele reúne 94.526 domicílios, e esse número não é arbitrário, pois é <strong>exatamente</strong> a diferença entre o total de domicílios e os que estão em faces com calçada. Não se trata de informação perdida, e sim de domicílios para os quais a pergunta não fazia sentido.</p>
+<p>Daí decorrem duas taxas legítimas e bem diferentes para a rampa de acessibilidade em Fortaleza.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">rampa_sobre_total       =</span> <span class="fu">perc</span>(<span class="fu">sum</span>(domicilios_V05027, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">sum</span>(domicilios_V05000, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">rampa_sobre_com_calcada =</span> <span class="fu">perc</span>(<span class="fu">sum</span>(domicilios_V05027, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">sum</span>(domicilios_V05021, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">1</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  rampa_sobre_total rampa_sobre_com_calcada
+1              12.2                    13.8</code></pre>
+</div>
+</div>
+<p>A primeira, de 12,2%, é a que o IBGE publica e responde à pergunta “que parcela da população mora em rua com rampa”. A segunda, de 13,8%, responde a “onde há calçada, com que frequência ela é acessível”. Um relatório de acessibilidade urbana pode precisar das duas, mas apresentar uma no lugar da outra distorce o diagnóstico. Novamente, o essencial é declarar qual está sendo usada.</p>
+</section>
+</section>
+<section id="sec-entorno-mapas2022" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="sec-entorno-mapas2022"><span class="header-section-number">11.5</span> Mapeando os indicadores de 2022</h2>
+<p>Com os denominadores resolvidos, o caminho até o mapa é curto. Basta calcular o indicador no objeto tabular, uni-lo à geometria e passar a variável ao <code>fill</code>. Começamos pelo percentual de faces com calçada, medido sobre faces por se tratar de uma pergunta sobre oferta de infraestrutura no território.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geo_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">transmute</span>(code_tract, <span class="at">perc_calcada =</span> <span class="fu">perc</span>(faces_V05421, faces_V05400)),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"code_tract"</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> perc_calcada), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% das faces"</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-for-calcada" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-for-calcada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.6: Percentual de faces de quadra com calçada ou passeio, por setor censitário, Fortaleza (Censo 2022). Setores em cinza não integram o universo da pesquisa.
+</figcaption>
+<div aria-describedby="fig-for-calcada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="11-entorno_files/figure-html/fig-for-calcada-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span><code>transmute()</code>, o <code>mutate()</code> que descarta o resto
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A função <strong><code>transmute()</code></strong> cria colunas exatamente como o <code>mutate()</code>, com uma diferença importante. Ela <strong>mantém apenas as colunas criadas</strong>, descartando todas as demais, e por isso equivale a um <code>mutate()</code> seguido de <code>select()</code>. Aqui isso é conveniente, pois o objeto <code>ent_for2022</code> tem 134 colunas e queremos levar para o <code>left_join()</code> somente o <code>code_tract</code>, necessário para a união, e o indicador recém-calculado. Usar <code>mutate()</code> no lugar funcionaria, mas arrastaria as outras 133 colunas para dentro do objeto espacial sem qualquer utilidade.</p>
+</div>
+</div>
+<p>O mapa mostra uma cidade majoritariamente calçada com bolsões bem definidos de carência. A mediana municipal é de 91,7% das faces por setor e 53,4% dos setores estão acima de 90%, mas 554 setores, ou 12,6% do total, ficam abaixo da metade. Agregando por bairro, os extremos superiores ficam na malha consolidada, com Dionísio Torres em 97,8%, Cidade 2000 em 97,6% e Centro em 97,1%, enquanto os inferiores se concentram na frente de expansão litorânea a leste e sudeste, com Sabiaguaba em 19,1%, Manuel Dias Branco em 38,5% e Praia do Futuro II em 42,6%. É essa faixa leste que aparece em tons claros na ponta direita do mapa.</p>
+<p>Vale insistir na leitura correta de um valor intermediário, retomando a <a href="#sec-entorno-niveis" class="quarto-xref"><span>Seção 11.2.5</span></a>. Um setor com 60% de faces calçadas não é um setor com calçadas de má qualidade, e sim um setor em que quatro de cada dez trechos de rua não têm por onde caminhar.</p>
+<p>O segundo mapa muda de unidade e de sentido. Ele mostra o percentual de domicílios em faces sem nenhuma árvore, medido sobre domicílios por ser uma pergunta sobre exposição da população, e aqui valores altos são ruins, o que justifica uma paleta em tons quentes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>geo_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">transmute</span>(code_tract,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">perc_sem_arvore =</span> <span class="fu">perc</span>(domicilios_V05030, domicilios_V05000)),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"code_tract"</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> perc_sem_arvore), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"OrRd"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% dos</span><span class="sc">\n</span><span class="st">domicílios"</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-for-arvores" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-for-arvores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.7: Percentual de domicílios em faces de quadra sem nenhuma árvore, por setor censitário, Fortaleza (Censo 2022). Valores altos indicam pior situação.
+</figcaption>
+<div aria-describedby="fig-for-arvores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="11-entorno_files/figure-html/fig-for-arvores-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Compare a quantidade de cinza nos dois mapas. O primeiro tem 27 setores sem valor e o segundo tem 138, exatamente a diferença antecipada na <a href="#sec-entorno-join" class="quarto-xref"><span>Seção 11.3.1</span></a>. Trocar o denominador de faces para domicílios não muda apenas a escala do indicador, mas também a <strong>cobertura</strong> do mapa.</p>
+<section id="sec-entorno-painel" class="level3" data-number="11.5.1">
+<h3 data-number="11.5.1" class="anchored" data-anchor-id="sec-entorno-painel"><span class="header-section-number">11.5.1</span> Um panorama em pequenos múltiplos</h3>
+<p>Mapear item por item fica repetitivo depois do terceiro. Uma alternativa é montar um painel de pequenos múltiplos, em que os indicadores compartilham a mesma escala de cor e podem ser lidos em conjunto. Para que a comparação visual funcione, todos os itens precisam apontar no mesmo sentido, e por isso usamos arborização com <strong>ao menos uma árvore</strong>, somando as três classes positivas, em vez do “sem árvores” do mapa anterior. Assim, em todos os painéis, mais escuro significa melhor.</p>
+<p>Um detalhe de implementação merece atenção. A união com a geometria deve vir <strong>antes</strong> do <code>pivot_longer()</code>, e não depois. Na ordem inversa, os setores sem correspondência geram uma faceta espúria rotulada como ausente, em vez de aparecerem em cinza dentro de cada painel.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>indicadores_for <span class="ot">&lt;-</span> ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    code_tract,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Iluminação pública</span><span class="st">`</span>             <span class="ot">=</span> <span class="fu">perc</span>(faces_V05412, faces_V05400),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Via pavimentada</span><span class="st">`</span>                <span class="ot">=</span> <span class="fu">perc</span>(faces_V05406, faces_V05400),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Calçada ou passeio</span><span class="st">`</span>             <span class="ot">=</span> <span class="fu">perc</span>(faces_V05421, faces_V05400),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Arborização (1+ árvore)</span><span class="st">`</span>        <span class="ot">=</span> <span class="fu">perc</span>(faces_V05431 <span class="sc">+</span> faces_V05432 <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                                              faces_V05433, faces_V05400),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Bueiro ou boca de lobo</span><span class="st">`</span>         <span class="ot">=</span> <span class="fu">perc</span>(faces_V05409, faces_V05400),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Via sinalizada para bicicletas</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">perc</span>(faces_V05418, faces_V05400)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>geo_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract) <span class="sc">|&gt;</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(indicadores_for, <span class="at">by =</span> <span class="st">"code_tract"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(code_tract, geometry),</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"indicador"</span>, <span class="at">values_to =</span> <span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">indicador =</span> <span class="fu">factor</span>(indicador, <span class="at">levels =</span> <span class="fu">names</span>(indicadores_for)[<span class="sc">-</span><span class="dv">1</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> valor), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> indicador, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% das faces"</span>,</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-for-painel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-for-painel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.8: Panorama da infraestrutura do entorno em Fortaleza (Censo 2022), medida como percentual de faces de quadra por setor censitário. Escala compartilhada entre os seis painéis.
+</figcaption>
+<div aria-describedby="fig-for-painel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="11-entorno_files/figure-html/fig-for-painel-1.png" class="img-fluid figure-img" width="768">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span><code>pivot_longer()</code> e o formato longo
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A função <strong><code>pivot_longer()</code></strong>, do pacote <code>tidyr</code>, converte a tabela do formato <strong>largo</strong> para o formato <strong>longo</strong>. No formato largo, cada indicador ocupa uma coluna própria, que é como o objeto <code>indicadores_for</code> foi construído. No formato longo, todos os valores passam a ocupar <strong>uma única coluna</strong>, e uma segunda coluna guarda o nome do indicador ao qual cada valor pertence. O argumento <code>cols</code> diz quais colunas devem ser empilhadas, e aqui usamos a notação negativa para empilhar todas menos <code>code_tract</code> e a geometria. Os argumentos <code>names_to</code> e <code>values_to</code> dão os nomes às duas colunas resultantes.</p>
+<p>Essa conversão é o que viabiliza o <code>facet_wrap()</code>, listado entre as camadas da gramática dos gráficos na <a href="4-visualizacao-de-dados-tabulares.html#tbl-camadas" class="quarto-xref">Tabela&nbsp;<span>4.1</span></a> e aqui usado pela primeira vez, porque a criação de facetas exige que a variável usada para dividir os painéis exista como <strong>uma coluna</strong>. Com seis indicadores em seis colunas separadas, não haveria o que passar a <code>~ indicador</code>. A tabela sai de 4.408 linhas e sete colunas para 26.448 linhas e três colunas, ou seja, seis vezes mais linhas, uma para cada combinação de setor e indicador.</p>
+</div>
+</div>
+<p>O painel conta a história da cidade em uma imagem. Iluminação pública e pavimentação estão praticamente universalizadas, com 96,3% e 88,6% das faces. A calçada vem logo atrás, com 79,5%, e a arborização atinge metade das faces. A drenagem destoa do conjunto, presente em apenas 28,4% das faces, bem abaixo da média nacional de 40,9%, e o mapa mostra que a carência é generalizada e não se concentra em um setor da cidade. A sinalização cicloviária, com 7,9%, parece baixa em termos absolutos, mas é mais de cinco vezes a média brasileira de 1,5%, o que faz de Fortaleza um caso nacionalmente atípico nesse item. O desenho linear e contínuo que as ciclovias formam no painel revela a lógica em rede desse tipo de infraestrutura, bem distinta da distribuição difusa dos demais itens.</p>
+</section>
+</section>
+<section id="sec-entorno-r2010" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="sec-entorno-r2010"><span class="header-section-number">11.6</span> Recuperando os dados de 2010</h2>
+<p>Passamos agora ao censo anterior, e o primeiro obstáculo aparece antes de qualquer cálculo. Enquanto em 2022 os nomes de coluna já indicam o bloco, em 2010 eles não dizem absolutamente nada.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ent_for2010)[<span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">100</span>, <span class="dv">500</span>, <span class="dv">900</span>)]</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "entorno01_V002" "entorno01_V072" "entorno03_V432" "entorno04_V812"</code></pre>
+</div>
+</div>
+<p>A <a href="#sec-entorno-var2010" class="quarto-xref"><span>Seção 11.2.4.2</span></a> descreveu a lógica que organiza essas 1.062 variáveis. Vamos agora convertê-la em código. A regra é que, dentro de cada bloco, os dez itens aparecem sempre na mesma ordem, e cada um ocupa <code>2 × número de categorias</code> colunas consecutivas. Adotaremos o bloco de <strong>sexo do responsável</strong>, do arquivo <code>Entorno02</code>, por duas razões. Ele é exaustivo, portanto serve de denominador, e é o mais econômico, com apenas duas categorias e quatro colunas por item.</p>
+<p>Esse bloco começa em <code>V382</code>, e dentro de cada item a ordem é masculino-Existe, masculino-Não existe, feminino-Existe, feminino-Não existe. Em vez de digitar quarenta nomes de coluna, construímos o dicionário por aritmética.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>quesitos_2010 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Identificação do logradouro"</span>, <span class="st">"Iluminação pública"</span>, <span class="st">"Pavimentação"</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Calçada"</span>, <span class="st">"Meio-fio ou guia"</span>, <span class="st">"Bueiro ou boca de lobo"</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Rampa para cadeirante"</span>, <span class="st">"Arborização"</span>, <span class="st">"Esgoto a céu aberto"</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Lixo acumulado nos logradouros"</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>dic_2010 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">quesito =</span> quesitos_2010,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">inicio  =</span> <span class="dv">382</span> <span class="sc">+</span> <span class="dv">4</span> <span class="sc">*</span> (<span class="fu">seq_along</span>(quesitos_2010) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">masc_existe =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio),</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">masc_nao    =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">fem_existe  =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">2</span>),</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">fem_nao     =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">3</span>),</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">inicio      =</span> <span class="cn">NULL</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>dic_2010</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 5
+   quesito                        masc_existe    masc_nao     fem_existe fem_nao
+   &lt;chr&gt;                          &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;  
+ 1 Identificação do logradouro    entorno02_V382 entorno02_V… entorno02… entorn…
+ 2 Iluminação pública             entorno02_V386 entorno02_V… entorno02… entorn…
+ 3 Pavimentação                   entorno02_V390 entorno02_V… entorno02… entorn…
+ 4 Calçada                        entorno02_V394 entorno02_V… entorno02… entorn…
+ 5 Meio-fio ou guia               entorno02_V398 entorno02_V… entorno02… entorn…
+ 6 Bueiro ou boca de lobo         entorno02_V402 entorno02_V… entorno02… entorn…
+ 7 Rampa para cadeirante          entorno02_V406 entorno02_V… entorno02… entorn…
+ 8 Arborização                    entorno02_V410 entorno02_V… entorno02… entorn…
+ 9 Esgoto a céu aberto            entorno02_V414 entorno02_V… entorno02… entorn…
+10 Lixo acumulado nos logradouros entorno02_V418 entorno02_V… entorno02… entorn…</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span><code>sprintf()</code> para montar nomes de coluna
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A função <strong><code>sprintf()</code></strong> monta textos a partir de um molde com marcadores de posição, e vem do C, estando disponível em praticamente toda linguagem de programação. O molde <code>"entorno02_V%03d"</code> tem duas partes. O trecho literal <code>entorno02_V</code> é copiado como está, e o marcador <code>%03d</code> é substituído pelo número passado adiante, formatado como inteiro (<code>d</code>) com três dígitos (<code>3</code>) e preenchido com zeros à esquerda (<code>0</code>).</p>
+<p>É esse preenchimento que interessa aqui. O código 382 vira <code>V382</code> naturalmente, mas o número 9 precisaria virar <code>V009</code>, e não <code>V9</code>, para casar com os nomes reais das colunas. Escrever <code>paste0("entorno02_V", inicio)</code> produziria <code>entorno02_V9</code> e a coluna não seria encontrada. Como <code>sprintf()</code> é vetorizada, os dez códigos são gerados de uma vez.</p>
+</div>
+</div>
+<section id="sec-entorno-validacao" class="level3" data-number="11.6.1">
+<h3 data-number="11.6.1" class="anchored" data-anchor-id="sec-entorno-validacao"><span class="header-section-number">11.6.1</span> Validar antes de confiar</h3>
+<p>Um mapa de códigos construído por dedução precisa ser testado, e o teste aqui é simples e poderoso. Se o bloco é realmente exaustivo e a ordem dos itens está correta, a soma das quatro colunas tem de dar <strong>exatamente o mesmo total</strong> nos dez itens, porque todas elas repartem o mesmo conjunto de domicílios. Se algum total destoar, o mapeamento está errado.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>resumo_2010 <span class="ot">&lt;-</span> dic_2010 <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">existe =</span> <span class="fu">sum</span>(ent_for2010[[masc_existe]], ent_for2010[[fem_existe]],</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">total  =</span> existe <span class="sc">+</span> <span class="fu">sum</span>(ent_for2010[[masc_nao]], ent_for2010[[fem_nao]],</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Um único valor de total significa que o mapeamento está consistente</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(resumo_2010<span class="sc">$</span>total)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>resumo_2010 <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">Quesito =</span> quesito,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Domicílios</span><span class="st">`</span> <span class="ot">=</span> total,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">% com o item</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">perc</span>(existe, total)) <span class="sc">|&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>, <span class="st">"c"</span>, <span class="st">"c"</span>),</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-entorno-2010" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-entorno-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.8: Características do entorno dos domicílios em Fortaleza no Censo 2010, reconstruídas a partir do bloco de sexo do responsável do arquivo Entorno02.
+</figcaption>
+<div aria-describedby="tbl-entorno-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Quesito</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Domicílios</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">% com o item</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Identificação do logradouro</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">63,5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Iluminação pública</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">97,9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pavimentação</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">90,1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Calçada</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">83,5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Meio-fio ou guia</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">72,9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bueiro ou boca de lobo</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">16,5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rampa para cadeirante</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">1,6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Arborização</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">75,3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Esgoto a céu aberto</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">19,3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lixo acumulado nos logradouros</td>
+<td style="text-align: center;">684.389</td>
+<td style="text-align: center;">7,7</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span><code>rowwise()</code>, <code>ungroup()</code> e <code>n_distinct()</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong><code>rowwise()</code></strong> faz o <code>dplyr</code> processar a tabela <strong>uma linha por vez</strong>, em vez de operar sobre colunas inteiras como de costume. Precisamos disso porque cada linha de <code>dic_2010</code> guarda nomes de coluna diferentes, e a expressão <code>ent_for2010[[masc_existe]]</code> precisa ser avaliada com o valor daquela linha específica. Sem <code>rowwise()</code>, o R tentaria usar os dez nomes de uma vez e devolveria erro.</li>
+<li><strong><code>ungroup()</code></strong> desfaz esse comportamento e devolve a tabela ao processamento normal. É uma boa prática encerrar sempre um <code>rowwise()</code> ou um <code>group_by()</code> com ele, pois o agrupamento fica pendurado no objeto e afeta em silêncio as operações seguintes.</li>
+<li><strong><code>n_distinct()</code></strong> conta quantos valores diferentes existem em um vetor, e é a forma curta de escrever <code>length(unique(x))</code>. Aqui ela é o teste em si, já que o resultado 1 significa que os dez itens compartilham o mesmo total.</li>
+</ul>
+<p>Vale registrar que o <code>rowwise()</code> é conveniente para tabelas pequenas como esta, com dez linhas, e não é a ferramenta indicada para grandes volumes, porque processar linha a linha é bem mais lento que a operação vetorizada padrão do R.</p>
+</div>
+</div>
+<p>O teste passa, com um único total de 684.389 domicílios nos dez itens. Esse hábito de validar mapeamentos deduzidos vale muito além deste capítulo, e é o que separa uma leitura confiável de um palpite bem-intencionado.</p>
+<p>Os resultados de 2010 já antecipam o que veremos adiante. A iluminação pública alcançava 97,9% dos domicílios, praticamente saturada, enquanto o bueiro chegava a apenas 16,5%. Note ainda que aparecem aqui os quatro itens que não sobreviveram a 2022, e o esgoto a céu aberto, presente no entorno de 19,3% dos domicílios de Fortaleza em 2010, é um retrato que o Censo 2022 simplesmente não permite refazer.</p>
+</section>
+<section id="sec-entorno-nan" class="level3" data-number="11.6.2">
+<h3 data-number="11.6.2" class="anchored" data-anchor-id="sec-entorno-nan"><span class="header-section-number">11.6.2</span> A armadilha do denominador zero</h3>
+<p>Em 2022, o denominador podia estar ausente, mas nunca era zero. Em 2010, ele pode ser zero, e é aí que mora um erro silencioso. O arquivo inclui setores com domicílios registrados na variável <code>entorno01_V001</code> cujas faces não foram pesquisadas, e neles a soma do bloco dá zero.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cols_total <span class="ot">&lt;-</span> dic_2010 <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(quesito <span class="sc">==</span> <span class="st">"Iluminação pública"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(masc_existe, masc_nao, fem_existe, fem_nao) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>(<span class="at">use.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>ent_for2010 <span class="ot">&lt;-</span> ent_for2010 <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total_entorno =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(cols_total)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">setores                =</span> <span class="fu">nrow</span>(ent_for2010),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">denominador_zero       =</span> <span class="fu">sum</span>(ent_for2010<span class="sc">$</span>total_entorno <span class="sc">==</span> <span class="dv">0</span>),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">domicilios_no_arquivo  =</span> <span class="fu">sum</span>(ent_for2010<span class="sc">$</span>entorno01_V001, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">domicilios_pesquisados =</span> <span class="fu">sum</span>(ent_for2010<span class="sc">$</span>total_entorno)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  setores denominador_zero domicilios_no_arquivo domicilios_pesquisados
+    &lt;int&gt;            &lt;int&gt;                 &lt;dbl&gt;                  &lt;dbl&gt;
+1    3020              119                709680                 684389</code></pre>
+</div>
+</div>
+<p>São 119 setores com denominador igual a zero, e a diferença entre os 709.680 domicílios do arquivo e os 684.389 com entorno pesquisado corresponde a 96,4% de cobertura, coerente com os 96,9% que o IBGE reporta para o conjunto do país <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>. Uma divisão ingênua nesses 119 setores devolveria <code>NaN</code>, que o <code>ggplot2</code> pinta com a cor de ausente sem emitir aviso algum. O erro passaria despercebido. É justamente para isso que serve a função <code>perc()</code> definida na <a href="#sec-entorno-denominador" class="quarto-xref"><span>Seção 11.4</span></a>, que converte o denominador zero em ausente antes de dividir, tornando a ausência explícita em vez de acidental.</p>
+</section>
+</section>
+<section id="sec-entorno-comparacao" class="level2" data-number="11.7">
+<h2 data-number="11.7" class="anchored" data-anchor-id="sec-entorno-comparacao"><span class="header-section-number">11.7</span> Comparando 2010 e 2022</h2>
+<p>Chegamos ao ponto em que todas as ressalvas metodológicas do capítulo cobram sua conta. Antes de sobrepor qualquer resultado, três travas precisam ser respeitadas.</p>
+<p>A primeira vem da <a href="#tbl-comparabilidade" class="quarto-xref">Tabela&nbsp;<span>11.5</span></a>, ou seja, apenas <strong>iluminação pública</strong> e <strong>bueiro</strong> mantiveram conceito e critério nos dois censos. Calçada, pavimentação e arborização mudaram e não devem ser confrontadas.</p>
+<p>A segunda decorre da <a href="#sec-entorno-var2010" class="quarto-xref"><span>Seção 11.2.4.2</span></a>, pois 2010 não tem contagem de faces. A comparação tem de ser feita <strong>por domicílios</strong> nos dois anos. Confrontar o percentual de faces de 2022 com o percentual de domicílios de 2010 seria um erro grosseiro, e a <a href="#tbl-entorno-unidades" class="quarto-xref">Tabela&nbsp;<span>11.7</span></a> mostra que a distância entre as duas unidades chega a dez pontos percentuais, mais que suficiente para inventar uma tendência inexistente.</p>
+<p>A terceira é geográfica. A malha de Fortaleza passou de 3.043 para 4.408 setores, de modo que os setores de 2010 e de 2022 <strong>não são as mesmas unidades</strong>. Isso inviabiliza um mapa de diferença por setor, recurso que no <a href="9-grade-estatistica.html#sec-ge-maceio" class="quarto-xref"><span>Seção 9.5</span></a> foi possível justamente porque as células da Grade Estatística permanecem estáveis entre as edições. Aqui o caminho é apresentar dois mapas independentes lado a lado.</p>
+<p>Começamos pelo retrato municipal dos dois itens comparáveis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sum</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="fu">c</span>(<span class="st">"Iluminação pública"</span>, <span class="st">"Bueiro ou boca de lobo"</span>),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2010</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">perc</span>(<span class="fu">S</span>(ent_for2010<span class="sc">$</span>entorno02_V386) <span class="sc">+</span> <span class="fu">S</span>(ent_for2010<span class="sc">$</span>entorno02_V388),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">S</span>(ent_for2010<span class="sc">$</span>total_entorno)),</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">perc</span>(<span class="fu">S</span>(ent_for2010<span class="sc">$</span>entorno02_V402) <span class="sc">+</span> <span class="fu">S</span>(ent_for2010<span class="sc">$</span>entorno02_V404),</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>         <span class="fu">S</span>(ent_for2010<span class="sc">$</span>total_entorno))</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2022</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">perc</span>(<span class="fu">S</span>(ent_for2022<span class="sc">$</span>domicilios_V05012), <span class="fu">S</span>(ent_for2022<span class="sc">$</span>domicilios_V05000)),</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">perc</span>(<span class="fu">S</span>(ent_for2022<span class="sc">$</span>domicilios_V05009), <span class="fu">S</span>(ent_for2022<span class="sc">$</span>domicilios_V05000))</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Variação (p.p.)</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">2022</span><span class="st">`</span> <span class="sc">-</span> <span class="st">`</span><span class="at">2010</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>, <span class="st">"c"</span>, <span class="st">"c"</span>, <span class="st">"c"</span>),</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-entorno-comparacao" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-entorno-comparacao-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;11.9: Percentual de domicílios com entorno pesquisado segundo os dois itens comparáveis entre os Censos de 2010 e 2022, Fortaleza.
+</figcaption>
+<div aria-describedby="tbl-entorno-comparacao-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table cell caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Item</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">2010</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">2022</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Variação (p.p.)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Iluminação pública</td>
+<td style="text-align: center;">97,9</td>
+<td style="text-align: center;">99,0</td>
+<td style="text-align: center;">1,1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bueiro ou boca de lobo</td>
+<td style="text-align: center;">16,5</td>
+<td style="text-align: center;">33,1</td>
+<td style="text-align: center;">16,6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Os dois itens que sobrevivem à comparação contam histórias opostas, e é essa oposição que torna o par interessante. A iluminação pública sobe apenas 1,1 ponto porque já estava perto do teto em 2010, sem para onde crescer. O bueiro dobra em doze anos, com um ganho de 16,6 pontos, e ainda assim os 33,1% de 2022 permanecem bem abaixo dos 55,0% da média nacional. O avanço é real e o passivo continua grande.</p>
+<p>Para levar isso ao mapa, calculamos os dois indicadores em cada ano e já os unimos à geometria correspondente.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mapa2010 <span class="ot">&lt;-</span> geo_for2010 <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    ent_for2010 <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">transmute</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        code_tract,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">ilum   =</span> <span class="fu">perc</span>(entorno02_V386 <span class="sc">+</span> entorno02_V388, total_entorno),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">bueiro =</span> <span class="fu">perc</span>(entorno02_V402 <span class="sc">+</span> entorno02_V404, total_entorno)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"code_tract"</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>mapa2022 <span class="ot">&lt;-</span> geo_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    ent_for2022 <span class="sc">|&gt;</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">transmute</span>(</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>        code_tract,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">ilum   =</span> <span class="fu">perc</span>(domicilios_V05012, domicilios_V05000),</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">bueiro =</span> <span class="fu">perc</span>(domicilios_V05009, domicilios_V05000)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"code_tract"</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Cada figura será composta por dois gráficos independentes, um para cada ano, unidos lado a lado pelo operador <code>|</code> do <code>patchwork</code>. Há um cuidado que não pode ser negligenciado, pois os dois painéis precisam compartilhar <strong>exatamente os mesmos limites de escala</strong>. Se cada mapa ajustar a paleta ao próprio intervalo de valores, o mapa de 2010 ficará tão colorido quanto o de 2022 e a evolução desaparecerá da imagem. Por isso fixamos <code>limits = c(0, 100)</code> nos dois, e <code>plot_layout(guides = "collect")</code> recolhe as duas legendas idênticas em uma só.</p>
+<p>O primeiro par mostra a drenagem urbana, o item em que Fortaleza mais avançou.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>bueiro2010 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mapa2010) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> bueiro), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"PuBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% dos</span><span class="sc">\n</span><span class="st">domicílios"</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Censo 2010"</span>) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>bueiro2022 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mapa2022) <span class="sc">+</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> bueiro), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"PuBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% dos</span><span class="sc">\n</span><span class="st">domicílios"</span>,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Censo 2022"</span>) <span class="sc">+</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>(bueiro2010 <span class="sc">|</span> bueiro2022) <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">guides =</span> <span class="st">"collect"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-for-comp-bueiro" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-for-comp-bueiro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.9: Percentual de domicílios em faces com bueiro ou boca de lobo, por setor censitário, Fortaleza. Escala de cor idêntica nos dois anos.
+</figcaption>
+<div aria-describedby="fig-for-comp-bueiro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="11-entorno_files/figure-html/fig-for-comp-bueiro-1.png" class="img-fluid figure-img" width="768">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Aviso</span>Os parênteses em torno do <code>|</code> não são decorativos
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Em R, o operador <code>+</code> tem precedência maior que o <code>|</code>. Sem os parênteses, a expressão <code>bueiro2010 | bueiro2022 + plot_layout(guides = "collect")</code> seria lida como <code>bueiro2010 | (bueiro2022 + plot_layout(...))</code>, ou seja, o ajuste de leiaute se aplicaria <strong>apenas ao segundo gráfico</strong>. O resultado não dá erro, os mapas aparecem lado a lado normalmente, mas as duas legendas continuam duplicadas. É um descuido fácil de cometer e difícil de perceber, já que a única pista é a legenda que não foi recolhida.</p>
+</div>
+</div>
+<p>O escurecimento geral entre os dois painéis é visível sem esforço, e o mapa acrescenta à tabela algo que ela não podia mostrar. O ganho de 16,6 pontos da média municipal não corresponde a uma frente territorial coerente, e sim a saltos localizados espalhados por toda a cidade. Agregando por bairro, o caso extremo é o Conjunto Ceará II, no vetor oeste, que passa de 9,7% para 86,9% dos domicílios, mas ganhos expressivos aparecem igualmente na orla nordeste, no miolo e nos bairros do sul. Uma média municipal que sobe pode, portanto, esconder tanto avanços muito concentrados quanto áreas estagnadas, e é essa heterogeneidade que justifica descer ao setor censitário em vez de parar no agregado.</p>
+<p>O segundo par mostra o contraste, ou seja, um item que praticamente não tinha para onde avançar.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ilum2010 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mapa2010) <span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> ilum), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"YlOrBr"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% dos</span><span class="sc">\n</span><span class="st">domicílios"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Censo 2010"</span>) <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>ilum2022 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mapa2022) <span class="sc">+</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> ilum), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"YlOrBr"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% dos</span><span class="sc">\n</span><span class="st">domicílios"</span>,</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Censo 2022"</span>) <span class="sc">+</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>(ilum2010 <span class="sc">|</span> ilum2022) <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">guides =</span> <span class="st">"collect"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-for-comp-ilum" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-for-comp-ilum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.10: Percentual de domicílios em faces com iluminação pública, por setor censitário, Fortaleza. Escala de cor idêntica nos dois anos.
+</figcaption>
+<div aria-describedby="fig-for-comp-ilum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="11-entorno_files/figure-html/fig-for-comp-ilum-1.png" class="img-fluid figure-img" width="768">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Os dois painéis são quase indistinguíveis, e essa ausência de mudança é a informação. Um item universalizado produz um mapa sem gradiente, o que costuma ser sinal de que a política pública correspondente cumpriu seu objetivo e o indicador perdeu poder discriminante.</p>
+<p>Resta a ressalva final, que é independente dos itens escolhidos. Fortaleza passou de 3.020 para 4.381 setores pesquisados entre os dois censos, e a expansão recaiu sobre áreas que antes ficavam fora do universo da pesquisa. Parte da variação observada reflete esse alargamento, e não apenas mudança real no território.</p>
+<p>O efeito é verificável nos próprios dados. Entre os 87 bairros de Fortaleza com volume suficiente para comparação, cinco registram <strong>queda</strong> no percentual de domicílios com bueiro, o que é contraintuitivo para um item de infraestrutura permanente medido por critério mínimo. Os dois maiores recuos ocorrem justamente nos bairros em que o universo pesquisado mais cresceu, com o Dendê triplicando o número de domicílios pesquisados e o Benfica quase dobrando. Não se trata de bueiros que desapareceram, e sim de áreas antes não pesquisadas que passaram a compor o denominador. Quando o objetivo for medir evolução com rigor, o caminho mais seguro é examinar a variação do universo antes de interpretar a variação do indicador.</p>
+</section>
+<section id="sec-entorno-exercicios" class="level2" data-number="11.8">
+<h2 data-number="11.8" class="anchored" data-anchor-id="sec-entorno-exercicios"><span class="header-section-number">11.8</span> Exercícios</h2>
+<ol type="1">
+<li><p>Fortaleza tem 1.321 dos seus 4.381 setores pesquisados classificados como Favela e Comunidade Urbana, identificáveis pela variável <code>code_type</code> igual a 1. Calcule, por faces, os percentuais de pavimentação, calçada, rampa e arborização nesses setores e nos demais, e compare os resultados. Em seguida, explique por que essa mesma comparação não poderia ser feita com os dados de 2010, retomando o que foi discutido na <a href="#sec-entorno-intro" class="quarto-xref"><span>Seção 11.1</span></a> sobre o Levantamento de Informações Territoriais.</p></li>
+<li><p>Reproduza o painel de pequenos múltiplos da <a href="#fig-for-painel" class="quarto-xref">Figura&nbsp;<span>11.8</span></a> para outra capital de sua escolha, mantendo os mesmos seis indicadores e a mesma escala. Compare o resultado com Fortaleza, prestando atenção especial ao item de sinalização cicloviária, e verifique se o valor encontrado se aproxima mais da média nacional de 1,5% das faces ou do caso fortalezense.</p></li>
+<li><p>Calcule a taxa de rampa para cadeirante nas duas versões apresentadas na <a href="#sec-entorno-nd" class="quarto-xref"><span>Seção 11.4.1</span></a>, sobre o total de domicílios e condicionada à existência de calçada, para os cinco maiores municípios de sua unidade da federação. Discuta qual das duas você apresentaria em um relatório de acessibilidade urbana e por quê.</p></li>
+<li><p>Use o dicionário construído na <a href="#sec-entorno-r2010" class="quarto-xref"><span>Seção 11.6</span></a> para mapear, por setor censitário, o percentual de domicílios com esgoto a céu aberto no entorno em Fortaleza em 2010. Esse item não existe no Censo 2022, o que impede qualquer comparação temporal, mas não impede a análise do retrato de 2010. Compare o padrão espacial obtido com o do bueiro no mesmo ano e comente a relação entre os dois.</p></li>
+</ol>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-ibge_metodologia2000" class="csl-entry" role="listitem">
+IBGE. (2003). <em>Metodologia do Censo Demográfico 2000</em> (V. 25, p. 574). IBGE. <a href="https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&amp;id=284173">https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo?view=detalhes&amp;id=284173</a>
+</div>
+<div id="ref-ibge_base2010" class="csl-entry" role="listitem">
+IBGE. (2011). <em>Base de informações do Censo Demográfico 2010: Resultados do Universo por setor censitário — Documentação do arquivo</em>. IBGE, Centro de Documentação e Disseminação de Informações. <a href="https://ftp.ibge.gov.br/Censos/Censo_Demografico_2010/Resultados_do_Universo/Agregados_por_Setores_Censitarios/">https://ftp.ibge.gov.br/Censos/Censo_Demografico_2010/Resultados_do_Universo/Agregados_por_Setores_Censitarios/</a>
+</div>
+<div id="ref-ibge_entorno2010" class="csl-entry" role="listitem">
+IBGE. (2012). <em>Censo Demográfico 2010: Características urbanísticas do entorno dos domicílios</em>. IBGE. <a href="https://biblioteca.ibge.gov.br/visualizacao/periodicos/96/cd_2010_entorno_domicilios.pdf">https://biblioteca.ibge.gov.br/visualizacao/periodicos/96/cd_2010_entorno_domicilios.pdf</a>
+</div>
+<div id="ref-ibge_aglomerados2010" class="csl-entry" role="listitem">
+IBGE. (2013). <em>Censo Demográfico 2010: Aglomerados subnormais — Informações territoriais</em>. IBGE. <a href="https://biblioteca.ibge.gov.br/pt/biblioteca-catalogo?view=detalhes&amp;id=7552">https://biblioteca.ibge.gov.br/pt/biblioteca-catalogo?view=detalhes&amp;id=7552</a>
+</div>
+<div id="ref-ibge_entorno2022" class="csl-entry" role="listitem">
+IBGE. (2025). <em>Características Urbanísticas do Entorno dos Domicílios: Censo Demográfico 2022</em>. IBGE. <a href="https://biblioteca.ibge.gov.br/visualizacao/livros/liv102168.pdf">https://biblioteca.ibge.gov.br/visualizacao/livros/liv102168.pdf</a>
+</div>
+<div id="ref-censobr" class="csl-entry" role="listitem">
+Pereira, R. H. M., &amp; Barbosa, R. J. (2023). <em>censobr: <span>D</span>ownload <span>D</span>ata from <span>B</span>razil’s <span>P</span>opulation <span>C</span>ensus</em>. <a href="https://CRAN.R-project.org/package=censobr">https://CRAN.R-project.org/package=censobr</a>
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>O leitor pode confirmar isso abrindo o dicionário com <code>censobr::data_dictionary(year = 2000, dataset = "tracts")</code> e procurando por qualquer um dos três itens.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Essa regularidade é uma boa notícia para quem programa, porque permite escrever uma única rotina que atende aos três blocos.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Esse total de 2010 é o que consta na Tabela 3 de <span class="citation" data-cites="ibge_entorno2022">IBGE (<a href="references.html#ref-ibge_entorno2022" role="doc-biblioref">2025</a>)</span>. A publicação original de 2010 informa 222.541 setores <span class="citation" data-cites="ibge_entorno2010">(<a href="references.html#ref-ibge_entorno2010" role="doc-biblioref">IBGE, 2012</a>)</span>, diferença de pouco mais de mil setores que provavelmente decorre de revisões posteriores da base territorial. A ordem de grandeza da comparação não se altera.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
