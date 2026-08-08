@@ -922,22 +922,20 @@ Figura&nbsp;6.5: Bairros de Salvador (BA), recorte intraurbano legal.
 <p>Para visualizar os setores censitários e as áreas de ponderação de forma comparada e interativa, utilizaremos o pacote <code>mapview</code> em conjunto com o <code>leafsync</code>, que permite sincronizar dois mapas lado a lado de modo que o zoom e o deslocamento em um deles reflitam automaticamente no outro<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. O código a seguir baixa as áreas de ponderação e os setores censitários de Maceió (AL) e os exibe em painéis sincronizados.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leafsync)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: pacote 'leafsync' foi compilado no R versão 4.6.1</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Código IBGE de Maceió: 2704302</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>areas_pond <span class="ot">&lt;-</span> <span class="fu">read_weighting_area</span>(<span class="at">code_weighting =</span> <span class="dv">2704302</span>, <span class="at">year =</span> <span class="dv">2010</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>setores    <span class="ot">&lt;-</span> <span class="fu">read_census_tract</span>(<span class="at">code_tract =</span> <span class="dv">2704302</span>, <span class="at">year =</span> <span class="dv">2010</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>m_pond    <span class="ot">&lt;-</span> <span class="fu">mapview</span>(areas_pond, <span class="at">layer.name =</span> <span class="st">"Áreas de ponderação"</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">col.regions =</span> <span class="st">"gray80"</span>, <span class="at">color =</span> <span class="st">"gray40"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">alpha.regions =</span> <span class="fl">0.5</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>m_setores <span class="ot">&lt;-</span> <span class="fu">mapview</span>(setores, <span class="at">layer.name =</span> <span class="st">"Setores censitários"</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">col.regions =</span> <span class="st">"gray80"</span>, <span class="at">color =</span> <span class="st">"gray40"</span>, <span class="at">lwd =</span> <span class="fl">0.5</span>,</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">alpha.regions =</span> <span class="fl">0.5</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sync</span>(m_pond, m_setores)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leafsync)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Código IBGE de Maceió: 2704302</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>areas_pond <span class="ot">&lt;-</span> <span class="fu">read_weighting_area</span>(<span class="at">code_weighting =</span> <span class="dv">2704302</span>, <span class="at">year =</span> <span class="dv">2010</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>setores    <span class="ot">&lt;-</span> <span class="fu">read_census_tract</span>(<span class="at">code_tract =</span> <span class="dv">2704302</span>, <span class="at">year =</span> <span class="dv">2010</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>m_pond    <span class="ot">&lt;-</span> <span class="fu">mapview</span>(areas_pond, <span class="at">layer.name =</span> <span class="st">"Áreas de ponderação"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">col.regions =</span> <span class="st">"gray80"</span>, <span class="at">color =</span> <span class="st">"gray40"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">alpha.regions =</span> <span class="fl">0.5</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>m_setores <span class="ot">&lt;-</span> <span class="fu">mapview</span>(setores, <span class="at">layer.name =</span> <span class="st">"Setores censitários"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">col.regions =</span> <span class="st">"gray80"</span>, <span class="at">color =</span> <span class="st">"gray40"</span>, <span class="at">lwd =</span> <span class="fl">0.5</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">alpha.regions =</span> <span class="fl">0.5</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">sync</span>(m_pond, m_setores)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div style="display:inline;width:49%;float:left;border-style:solid;border-color:#BEBEBE;border-width:1px 1px 1px 1px;">
 <div class="leaflet html-widget html-fill-item" id="htmlwidget-5357" style="width:100%;height:400px;"></div>
