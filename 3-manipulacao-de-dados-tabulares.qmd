@@ -662,13 +662,13 @@ Ao carregar com `readRDS()`, o objeto retorna exatamente no estado em que foi sa
 
 ## Dados em formato *long* e *wide*
 
-Uma mesma informação pode ser organizada de maneiras diferentes em uma tabela, e a escolha entre elas determina quais operações ficam fáceis e quais ficam trabalhosas. As duas organizações mais comuns são o formato *wide* (largo) e o formato *long* (longo). No formato *wide*, cada unidade de análise ocupa uma única linha e as demais colunas guardam suas medições. No formato long, cada linha corresponde a uma combinação entre a unidade de análise e uma medição, de modo que a tabela fica mais alta e mais estreita.
+Uma mesma informação pode ser organizada de maneiras diferentes em uma tabela, e a escolha entre elas determina quais operações ficam fáceis e quais ficam trabalhosas. As duas organizações mais comuns são o formato *wide* (largo) e o formato *long* (longo). No formato *wide*, cada unidade de análise ocupa uma única linha e as demais colunas guardam suas medições. No formato *long*, cada linha corresponde a uma combinação entre a unidade de análise e uma medição, de modo que a tabela fica mais alta e mais estreita.
 
 Para tornar a diferença concreta, vamos criar uma pequena tabela fictícia com o número de viagens diárias por modo de transporte em três municípios.
 
 ```{r}
 viagens <- tibble(
-  municipio = c("Município A", "Município B", "Município C"),
+  municipio = c("mun_a", "mun_b", "mun_c"),
   a_pe      = c(120,  90,  60),
   bicicleta = c( 30,  45,  20),
   carro     = c(200, 150, 260),
@@ -679,14 +679,20 @@ viagens
 
 Essa é a apresentação *wide*, e ela é confortável para leitura humana. Relatórios impressos e planilhas de divulgação quase sempre chegam nesse formato, porque a comparação entre municípios se faz percorrendo a coluna e a comparação entre modos se faz percorrendo a linha. Do ponto de vista da manipulação, porém, há um problema. Os nomes `a_pe`, `bicicleta`, `carro` e `tp` não são variáveis, são valores de uma variável que poderíamos chamar de **modo de transporte**. O número de viagens, única medição de fato registrada, está espalhado por quatro colunas.
 
-Foi essa distinção que motivou o princípio *tidy* mencionado no início do capítulo, segundo o qual cada variável deve ocupar uma coluna e cada observação deve ocupar uma linha. A tabela acima viola esse princípio, e a consequência prática é que operações simples ficam trabalhosas. Calcular o total de viagens por município exige somar quatro colunas nomeadas uma a uma, e a inclusão de um quinto modo na pesquisa obrigaria a reescrever esse código.
+Foi essa distinção que motivou o princípio *tidy*^[também presente no `tidyverse`] mencionado no início do capítulo, segundo o qual cada variável deve ocupar uma coluna e cada observação deve ocupar uma linha. A tabela acima viola esse princípio, e a consequência prática é que operações simples ficam trabalhosas. Calcular o total de viagens por município exige somar quatro colunas nomeadas uma a uma, e a inclusão de um quinto modo na pesquisa obrigaria a reescrever esse código.
 
-A função `pivot_longer()`, do pacote `tidyr`, reorganiza a tabela para o formato *long*. Ela precisa saber quais colunas devem ser empilhadas (`cols`), qual será o nome da nova coluna que receberá os nomes antigos (`names_to`) e qual será o nome da nova coluna que receberá os valores (`values_to`). No exemplo abaixo, empilhamos todas as colunas exceto `municipio`, usando a mesma notação de negação já vista no `select()`.
+A função `pivot_longer()`, do pacote `tidyr`, reorganiza a tabela para o formato *long*. Geralmente, são necesários informar 3 aspectos:
+
+- Quais colunas devem ser empilhadas (`cols`).
+- Qual será o nome da nova coluna que receberá os nomes antigos (`names_to`), que corresponderão aos níveis dessa nova variável.
+- Qual será o nome da nova coluna que receberá os valores (`values_to`) que existiam na tabela original.
+
+Observe no exemplo para os nossos dados abaixo:
 
 ```{r}
 viagens_long <- viagens |>
   pivot_longer(
-    cols      = -municipio,
+    cols      = c(a_pe, bicicleta, carro), # poderia ser somente cols = -municipio
     names_to  = "modo_viagem",
     values_to = "viagens"
   )
@@ -711,7 +717,7 @@ viagens_long |>
   mutate(prop = viagens / sum(viagens))
 ```
 
-Nenhum desses dois códigos menciona os nomes dos modos. Se a pesquisa passasse a registrar viagens de motocicleta, bastaria acrescentar as linhas correspondentes e ambos continuariam funcionando sem qualquer alteração. Essa independência em relação aos valores das categorias é a principal razão pela qual o formato *long* domina o trabalho de análise no R. É também o formato esperado pelo `ggplot2`, o que veremos em detalhe no próximo capítulo.
+Nenhum desses dois códigos menciona os nomes dos modos. Se a pesquisa passasse a registrar viagens de motocicleta, bastaria acrescentar as linhas correspondentes e ambos continuariam funcionando sem qualquer alteração. Essa independência em relação aos valores das categorias é a principal razão pela qual o formato *long* domina o trabalho de análise no R. É também o formato esperado pelo `ggplot2` para a elaboração de gráficos, o que veremos em detalhe no próximo capítulo.
 
 A operação inversa é feita por `pivot_wider()`, que espalha uma coluna de categorias por várias colunas novas. Os argumentos centrais são `names_from`, que indica de qual coluna sairão os nomes das novas colunas, e `values_from`, que indica de qual coluna sairão os valores que as preencherão. Aplicada sobre `viagens_long`, a função devolve exatamente a tabela original.
 
@@ -722,6 +728,8 @@ viagens_long |>
     values_from = viagens
   )
 ```
+
+<!-- Acho que a informação abaixo é desnecessária para um capítulo introdutório:
 
 O uso mais frequente do `pivot_wider()`, porém, não é desfazer um `pivot_longer()`. É produzir a tabela final de apresentação depois que os cálculos já foram feitos em formato *long*. O código abaixo calcula a repartição modal em porcentagem, descarta os valores absolutos e espalha o resultado, gerando uma tabela pronta para leitura. O `ungroup()` desfaz o agrupamento deixado ativo pelo `group_by()`, conforme discutimos na seção de sumarização, para que o resultado seja um *tibble* comum.
 
@@ -736,13 +744,9 @@ viagens_long |>
     values_from = prop
   )
 ```
-
+--> 
 :::{.callout-tip}
 Nem toda tabela em formato *long* contém todas as combinações possíveis. Quando uma combinação está ausente, o `pivot_wider()` preenche a célula correspondente com `NA`. Se o valor ausente significar zero, como costuma ocorrer em contagens, o argumento `values_fill = 0` resolve a questão em uma linha.
-:::
-
-:::{.callout-note}
-Em códigos mais antigos, é comum encontrar as funções `gather()` e `spread()`, que cumpriam esses mesmos papéis antes da versão 1.0.0 do `tidyr`, lançada em 2019. Elas continuam funcionando, mas foram substituídas por `pivot_longer()` e `pivot_wider()`, de sintaxe mais explícita e desenvolvimento ativo.
 :::
 
 A alternância entre os dois formatos reaparecerá com frequência na segunda parte do livro. As tabelas do Censo Demográfico costumam ser divulgadas em formato *wide*, com uma coluna para cada faixa etária, cada classe de rendimento ou cada tipo de domicílio, e a primeira providência ao analisá-las quase sempre é empilhá-las com `pivot_longer()`.

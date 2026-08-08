@@ -1330,11 +1330,11 @@ Dica
 </section>
 <section id="dados-em-formato-long-e-wide" class="level2" data-number="3.10">
 <h2 data-number="3.10" class="anchored" data-anchor-id="dados-em-formato-long-e-wide"><span class="header-section-number">3.10</span> Dados em formato <em>long</em> e <em>wide</em></h2>
-<p>Uma mesma informação pode ser organizada de maneiras diferentes em uma tabela, e a escolha entre elas determina quais operações ficam fáceis e quais ficam trabalhosas. As duas organizações mais comuns são o formato <em>wide</em> (largo) e o formato <em>long</em> (longo). No formato <em>wide</em>, cada unidade de análise ocupa uma única linha e as demais colunas guardam suas medições. No formato long, cada linha corresponde a uma combinação entre a unidade de análise e uma medição, de modo que a tabela fica mais alta e mais estreita.</p>
+<p>Uma mesma informação pode ser organizada de maneiras diferentes em uma tabela, e a escolha entre elas determina quais operações ficam fáceis e quais ficam trabalhosas. As duas organizações mais comuns são o formato <em>wide</em> (largo) e o formato <em>long</em> (longo). No formato <em>wide</em>, cada unidade de análise ocupa uma única linha e as demais colunas guardam suas medições. No formato <em>long</em>, cada linha corresponde a uma combinação entre a unidade de análise e uma medição, de modo que a tabela fica mais alta e mais estreita.</p>
 <p>Para tornar a diferença concreta, vamos criar uma pequena tabela fictícia com o número de viagens diárias por modo de transporte em três municípios.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>viagens <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipio =</span> <span class="fu">c</span>(<span class="st">"Município A"</span>, <span class="st">"Município B"</span>, <span class="st">"Município C"</span>),</span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">municipio =</span> <span class="fu">c</span>(<span class="st">"mun_a"</span>, <span class="st">"mun_b"</span>, <span class="st">"mun_c"</span>),</span>
 <span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">a_pe      =</span> <span class="fu">c</span>(<span class="dv">120</span>,  <span class="dv">90</span>,  <span class="dv">60</span>),</span>
 <span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bicicleta =</span> <span class="fu">c</span>( <span class="dv">30</span>,  <span class="dv">45</span>,  <span class="dv">20</span>),</span>
 <span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">carro     =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">150</span>, <span class="dv">260</span>),</span>
@@ -1343,40 +1343,43 @@ Dica
 <span id="cb99-8"><a href="#cb99-8" aria-hidden="true" tabindex="-1"></a>viagens</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 5
-  municipio    a_pe bicicleta carro    tp
-  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 Município A   120        30   200   150
-2 Município B    90        45   150   110
-3 Município C    60        20   260    80</code></pre>
+  municipio  a_pe bicicleta carro    tp
+  &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 mun_a       120        30   200   150
+2 mun_b        90        45   150   110
+3 mun_c        60        20   260    80</code></pre>
 </div>
 </div>
 <p>Essa é a apresentação <em>wide</em>, e ela é confortável para leitura humana. Relatórios impressos e planilhas de divulgação quase sempre chegam nesse formato, porque a comparação entre municípios se faz percorrendo a coluna e a comparação entre modos se faz percorrendo a linha. Do ponto de vista da manipulação, porém, há um problema. Os nomes <code>a_pe</code>, <code>bicicleta</code>, <code>carro</code> e <code>tp</code> não são variáveis, são valores de uma variável que poderíamos chamar de <strong>modo de transporte</strong>. O número de viagens, única medição de fato registrada, está espalhado por quatro colunas.</p>
-<p>Foi essa distinção que motivou o princípio <em>tidy</em> mencionado no início do capítulo, segundo o qual cada variável deve ocupar uma coluna e cada observação deve ocupar uma linha. A tabela acima viola esse princípio, e a consequência prática é que operações simples ficam trabalhosas. Calcular o total de viagens por município exige somar quatro colunas nomeadas uma a uma, e a inclusão de um quinto modo na pesquisa obrigaria a reescrever esse código.</p>
-<p>A função <code>pivot_longer()</code>, do pacote <code>tidyr</code>, reorganiza a tabela para o formato <em>long</em>. Ela precisa saber quais colunas devem ser empilhadas (<code>cols</code>), qual será o nome da nova coluna que receberá os nomes antigos (<code>names_to</code>) e qual será o nome da nova coluna que receberá os valores (<code>values_to</code>). No exemplo abaixo, empilhamos todas as colunas exceto <code>municipio</code>, usando a mesma notação de negação já vista no <code>select()</code>.</p>
+<p>Foi essa distinção que motivou o princípio <em>tidy</em><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> mencionado no início do capítulo, segundo o qual cada variável deve ocupar uma coluna e cada observação deve ocupar uma linha. A tabela acima viola esse princípio, e a consequência prática é que operações simples ficam trabalhosas. Calcular o total de viagens por município exige somar quatro colunas nomeadas uma a uma, e a inclusão de um quinto modo na pesquisa obrigaria a reescrever esse código.</p>
+<p>A função <code>pivot_longer()</code>, do pacote <code>tidyr</code>, reorganiza a tabela para o formato <em>long</em>. Geralmente, são necesários informar 3 aspectos:</p>
+<ul>
+<li>Quais colunas devem ser empilhadas (<code>cols</code>).</li>
+<li>Qual será o nome da nova coluna que receberá os nomes antigos (<code>names_to</code>), que corresponderão aos níveis dessa nova variável.</li>
+<li>Qual será o nome da nova coluna que receberá os valores (<code>values_to</code>) que existiam na tabela original.</li>
+</ul>
+<p>Observe no exemplo para os nossos dados abaixo:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>viagens_long <span class="ot">&lt;-</span> viagens <span class="sc">|&gt;</span></span>
 <span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="sc">-</span>municipio,</span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="fu">c</span>(a_pe, bicicleta, carro), <span class="co"># poderia ser somente cols = -municipio</span></span>
 <span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to  =</span> <span class="st">"modo_viagem"</span>,</span>
 <span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"viagens"</span></span>
 <span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb101-7"><a href="#cb101-7" aria-hidden="true" tabindex="-1"></a>viagens_long</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 12 × 3
-   municipio   modo_viagem viagens
-   &lt;chr&gt;       &lt;chr&gt;         &lt;dbl&gt;
- 1 Município A a_pe            120
- 2 Município A bicicleta        30
- 3 Município A carro           200
- 4 Município A tp              150
- 5 Município B a_pe             90
- 6 Município B bicicleta        45
- 7 Município B carro           150
- 8 Município B tp              110
- 9 Município C a_pe             60
-10 Município C bicicleta        20
-11 Município C carro           260
-12 Município C tp               80</code></pre>
+<pre><code># A tibble: 9 × 4
+  municipio    tp modo_viagem viagens
+  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;
+1 mun_a       150 a_pe            120
+2 mun_a       150 bicicleta        30
+3 mun_a       150 carro           200
+4 mun_b       110 a_pe             90
+5 mun_b       110 bicicleta        45
+6 mun_b       110 carro           150
+7 mun_c        80 a_pe             60
+8 mun_c        80 bicicleta        20
+9 mun_c        80 carro           260</code></pre>
 </div>
 </div>
 <p>As três linhas com quatro colunas de medição viraram doze linhas. Nenhuma informação foi criada ou perdida, apenas redistribuída. Agora existe uma coluna <code>modo_viagem</code> que guarda a categoria e uma coluna <code>viagens</code> que guarda a medição, e ambas podem ser usadas diretamente pelas funções estudadas nas seções anteriores.</p>
@@ -1386,13 +1389,12 @@ Dica
 <span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(modo_viagem) <span class="sc">|&gt;</span></span>
 <span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total =</span> <span class="fu">sum</span>(viagens))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 2
+<pre><code># A tibble: 3 × 2
   modo_viagem total
   &lt;chr&gt;       &lt;dbl&gt;
 1 a_pe          270
 2 bicicleta      95
-3 carro         610
-4 tp            340</code></pre>
+3 carro         610</code></pre>
 </div>
 </div>
 <p>Da mesma forma, a repartição modal de cada município sai de um <code>group_by()</code> com <code>mutate()</code>, exatamente como fizemos na seção de sumarização.</p>
@@ -1401,25 +1403,22 @@ Dica
 <span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span></span>
 <span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> viagens <span class="sc">/</span> <span class="fu">sum</span>(viagens))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 12 × 4
+<pre><code># A tibble: 9 × 5
 # Groups:   municipio [3]
-   municipio   modo_viagem viagens   prop
-   &lt;chr&gt;       &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;
- 1 Município A a_pe            120 0.24  
- 2 Município A bicicleta        30 0.06  
- 3 Município A carro           200 0.4   
- 4 Município A tp              150 0.3   
- 5 Município B a_pe             90 0.228 
- 6 Município B bicicleta        45 0.114 
- 7 Município B carro           150 0.380 
- 8 Município B tp              110 0.278 
- 9 Município C a_pe             60 0.143 
-10 Município C bicicleta        20 0.0476
-11 Município C carro           260 0.619 
-12 Município C tp               80 0.190 </code></pre>
+  municipio    tp modo_viagem viagens   prop
+  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;
+1 mun_a       150 a_pe            120 0.343 
+2 mun_a       150 bicicleta        30 0.0857
+3 mun_a       150 carro           200 0.571 
+4 mun_b       110 a_pe             90 0.316 
+5 mun_b       110 bicicleta        45 0.158 
+6 mun_b       110 carro           150 0.526 
+7 mun_c        80 a_pe             60 0.176 
+8 mun_c        80 bicicleta        20 0.0588
+9 mun_c        80 carro           260 0.765 </code></pre>
 </div>
 </div>
-<p>Nenhum desses dois códigos menciona os nomes dos modos. Se a pesquisa passasse a registrar viagens de motocicleta, bastaria acrescentar as linhas correspondentes e ambos continuariam funcionando sem qualquer alteração. Essa independência em relação aos valores das categorias é a principal razão pela qual o formato <em>long</em> domina o trabalho de análise no R. É também o formato esperado pelo <code>ggplot2</code>, o que veremos em detalhe no próximo capítulo.</p>
+<p>Nenhum desses dois códigos menciona os nomes dos modos. Se a pesquisa passasse a registrar viagens de motocicleta, bastaria acrescentar as linhas correspondentes e ambos continuariam funcionando sem qualquer alteração. Essa independência em relação aos valores das categorias é a principal razão pela qual o formato <em>long</em> domina o trabalho de análise no R. É também o formato esperado pelo <code>ggplot2</code> para a elaboração de gráficos, o que veremos em detalhe no próximo capítulo.</p>
 <p>A operação inversa é feita por <code>pivot_wider()</code>, que espalha uma coluna de categorias por várias colunas novas. Os argumentos centrais são <code>names_from</code>, que indica de qual coluna sairão os nomes das novas colunas, e <code>values_from</code>, que indica de qual coluna sairão os valores que as preencherão. Aplicada sobre <code>viagens_long</code>, a função devolve exatamente a tabela original.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>viagens_long <span class="sc">|&gt;</span></span>
@@ -1429,33 +1428,48 @@ Dica
 <span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 5
-  municipio    a_pe bicicleta carro    tp
-  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 Município A   120        30   200   150
-2 Município B    90        45   150   110
-3 Município C    60        20   260    80</code></pre>
+  municipio    tp  a_pe bicicleta carro
+  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
+1 mun_a       150   120        30   200
+2 mun_b       110    90        45   150
+3 mun_c        80    60        20   260</code></pre>
 </div>
 </div>
-<p>O uso mais frequente do <code>pivot_wider()</code>, porém, não é desfazer um <code>pivot_longer()</code>. É produzir a tabela final de apresentação depois que os cálculos já foram feitos em formato <em>long</em>. O código abaixo calcula a repartição modal em porcentagem, descarta os valores absolutos e espalha o resultado, gerando uma tabela pronta para leitura. O <code>ungroup()</code> desfaz o agrupamento deixado ativo pelo <code>group_by()</code>, conforme discutimos na seção de sumarização, para que o resultado seja um <em>tibble</em> comum.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>viagens_long <span class="sc">|&gt;</span></span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(municipio) <span class="sc">|&gt;</span></span>
-<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> viagens <span class="sc">/</span> <span class="fu">sum</span>(viagens), <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>viagens) <span class="sc">|&gt;</span></span>
-<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
-<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from  =</span> modo_viagem,</span>
-<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> prop</span>
-<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 5
-  municipio    a_pe bicicleta carro    tp
-  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 Município A  24         6    40    30  
-2 Município B  22.8      11.4  38    27.8
-3 Município C  14.3       4.8  61.9  19  </code></pre>
-</div>
-</div>
+<!-- Acho que a informação abaixo é desnecessária para um capítulo introdutório:
+
+O uso mais frequente do `pivot_wider()`, porém, não é desfazer um `pivot_longer()`. É produzir a tabela final de apresentação depois que os cálculos já foram feitos em formato *long*. O código abaixo calcula a repartição modal em porcentagem, descarta os valores absolutos e espalha o resultado, gerando uma tabela pronta para leitura. O `ungroup()` desfaz o agrupamento deixado ativo pelo `group_by()`, conforme discutimos na seção de sumarização, para que o resultado seja um *tibble* comum.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+viagens_long |>
+  group_by(municipio) |>
+  mutate(prop = round(100 * viagens / sum(viagens), 1)) |>
+  ungroup() |>
+  select(-viagens) |>
+  pivot_wider(
+    names_from  = modo_viagem,
+    values_from = prop
+  )
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 3 × 5
+  municipio    tp  a_pe bicicleta carro
+  <chr>     <dbl> <dbl>     <dbl> <dbl>
+1 mun_a       150  34.3       8.6  57.1
+2 mun_b       110  31.6      15.8  52.6
+3 mun_c        80  17.6       5.9  76.5
+```
+
+
+:::
+:::
+
+-->
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1467,19 +1481,6 @@ Dica
 </div>
 <div class="callout-body-container callout-body">
 <p>Nem toda tabela em formato <em>long</em> contém todas as combinações possíveis. Quando uma combinação está ausente, o <code>pivot_wider()</code> preenche a célula correspondente com <code>NA</code>. Se o valor ausente significar zero, como costuma ocorrer em contagens, o argumento <code>values_fill = 0</code> resolve a questão em uma linha.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Nota
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Em códigos mais antigos, é comum encontrar as funções <code>gather()</code> e <code>spread()</code>, que cumpriam esses mesmos papéis antes da versão 1.0.0 do <code>tidyr</code>, lançada em 2019. Elas continuam funcionando, mas foram substituídas por <code>pivot_longer()</code> e <code>pivot_wider()</code>, de sintaxe mais explícita e desenvolvimento ativo.</p>
 </div>
 </div>
 <p>A alternância entre os dois formatos reaparecerá com frequência na segunda parte do livro. As tabelas do Censo Demográfico costumam ser divulgadas em formato <em>wide</em>, com uma coluna para cada faixa etária, cada classe de rendimento ou cada tipo de domicílio, e a primeira providência ao analisá-las quase sempre é empilhá-las com <code>pivot_longer()</code>.</p>
@@ -1509,6 +1510,7 @@ Nota
 <hr>
 <ol>
 <li id="fn1"><p>Não confunda com a função <code>summary()</code>. Também pode ser escrita com “s”, ou seja, <code>summarise()</code>, em aderência ao inglês britânico.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>também presente no <code>tidyverse</code><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
