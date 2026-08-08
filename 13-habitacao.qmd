@@ -262,8 +262,7 @@ Podemos verificar a hipótese da orla usando as coordenadas dos bairros. Em Joã
 #| label: orla
 #| message: false
 #| warning: false
-bairros_geo <- read_neighborhood(year = 2022) |>
-  filter(code_muni == joao_pessoa)
+bairros_geo <- read_neighborhood(year = 2022, code_muni = joao_pessoa)
 
 coords <- st_coordinates(st_centroid(st_geometry(bairros_geo)))
 

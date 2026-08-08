@@ -8,9 +8,12 @@ title: "Estatística Descritiva"
 library(tidyverse)
 ```
 
-Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 02 e 03.
+<!--Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 02 e 03.
 
 [▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE)
+-->
+
+No capítulo anterior conhecemos a linguagem R e demos os primeiros passos com seus objetos e estruturas. Este capítulo inaugura a análise exploratória propriamente dita, começando pela pergunta mais elementar que se pode dirigir a um conjunto de dados, a de como descrevê-lo. Uma base com milhares de linhas não cabe na cabeça de ninguém, e o primeiro movimento diante dela é reduzi-la a algumas poucas medidas capazes de revelar onde os valores se concentram e o quanto se espalham. Começaremos pelas medidas de posição, percorrendo média, mediana, moda, percentis e quartis. Em seguida trataremos das medidas de dispersão, com variância, desvio-padrão, amplitude e intervalo interquartil. Ao final, veremos o que muda quando a variável é categórica e calcular uma média deixa de fazer sentido.
 
 ## Introdução
 

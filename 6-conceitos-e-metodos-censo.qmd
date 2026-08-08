@@ -82,7 +82,7 @@ A @fig-recortes-legais-institucionais ilustra como é simples baixar algumas mal
 #| fig-cap: "Municípios (recorte legal) e regiões intermediárias (recorte institucional) do Brasil."
 #| fig-subcap:
 #|   - "Os 5.570 municípios brasileiros"
-#|   - "As 137 regiões intermediárias brasileiras"
+#|   - "As 133 regiões intermediárias brasileiras"
 #| layout-ncol: 2
 #| message: false
 #| cache: true
@@ -101,7 +101,7 @@ ggplot(regiao_intermed) +
   theme_minimal()
 ```
 
-É possível explorar as malhas geográficas disponibilizadas pelo `geobr` por meio da função `list_geobr()`, que retorna um `data.frame` com todos os conjuntos de dados disponíveis, seus anos e uma breve descrição. É importante destacar além de trazer os recortes geográficos previstos pelo IBGE, o pacote também traz bases espaciais vinculadas a outras áreas, a exemplo da malha de polígonos das regiões de saúde (`read_health_region`) e da malha de pontos das escolas (`read_schools`). Sendo assim, o `list_geobr()` é um bom ponto de partida para descobrir o que o pacote oferece.
+É possível explorar as malhas geográficas disponibilizadas pelo `geobr` por meio da função `list_geobr()`, que retorna um `data.frame` com uma linha para cada conjunto de dados disponível, informando a função que o baixa, uma descrição sucinta da geografia, a instituição de origem e os anos de referência oferecidos. É importante destacar que, além de trazer os recortes geográficos previstos pelo IBGE, o pacote também traz bases espaciais vinculadas a outras áreas, a exemplo da malha de polígonos das regiões de saúde (`read_health_region`) e da malha de pontos das escolas (`read_schools`). A coluna de origem deixa isso evidente, pois nem todas as camadas vêm do IBGE. Sendo assim, o `list_geobr()` é um bom ponto de partida para descobrir o que o pacote oferece e, principalmente, para conferir quais anos estão disponíveis antes de escrever a chamada.
 
 ```{r}
 #| label: tbl-list-geobr
@@ -117,7 +117,7 @@ kable(list_geobr())
 
 Um aspecto interessante do `geobr` é que a maioria das funções relativas aos recortes geográficos do IBGE compartilha os mesmos parâmetros:
 
-- `year`: o ano de referência da malha, no formato YYYY; 
+- `year`: o ano de referência da malha, no formato YYYY. A partir da versão 2.0.0 do `geobr`, esse parâmetro passou a ser obrigatório em todas as funções de leitura, justamente para que a escolha do ano seja sempre uma decisão consciente de quem escreve o código;
 
 - `code_*`: código IBGE ou sigla do estado com 2 dígitos ou código IBGE do município com 7 dígitos. Em geral, omitir esse parâmetro retorna a malha para o país inteiro. A propósito, quando não souber o código IBGE do município, é possível utilizar a função `lookup_muni`. Para encontrar o código IBGE de Fortaleza, por exemplo, execute o código `lookup_muni(name_muni = 'Fortaleza', year = 2022)$code_muni`. A partir da versão 2.0.0 do `geobr`, o argumento `year` passou a ser obrigatório nessa função, porque a malha municipal muda entre as edições <!-- Adiconar footnote: ^[Se você fizer somente `lookup_muni(name_muni = 'Feira de Santana', year = 2022)`, sem `$code_muni`, será retornada toda a linha da tabela de municípios do `geobr`. A adição do `$code_muni` retorna somente o valor do código IBGE do município que se encontra na coluna `code_muni`]-->.
 
@@ -125,7 +125,11 @@ Um aspecto interessante do `geobr` é que a maioria das funções relativas aos 
 
 - `showProgress`: exibe barra de progresso no download;
 
-- `cache`: parâmero que é `TRUE` por padrão, reutilizando dados já baixados localmente, evitando downloads repetidos. 
+- `cache`: parâmero que é `TRUE` por padrão, reutilizando dados já baixados localmente, evitando downloads repetidos;
+
+- `output`: define o formato do objeto retornado, sendo `"sf"` o padrão, adequado a praticamente tudo o que faremos neste livro;
+
+- `verbose`: parâmetro que é `TRUE` por padrão, exibindo mensagens informativas durante a execução, como o ano de referência efetivamente utilizado.
 
 Os exemplos a seguir exploram as principais funções, organizados do nível supramunicipal ao intraurbano.
 
@@ -157,7 +161,7 @@ ggplot(metros) +
   theme_minimal()
 ```
 
-Caso você queria somente os estados do Ceará e a Região Metropolitana do Rio de Janeiro, é possível utilizar o `code_state` no primeiro caso e um `filter` do pacote `dplyr` no segundo, conforme a @fig-recortes-supra-legais-2.
+Caso você queira somente o estado do Ceará e a Região Metropolitana do Rio de Janeiro, o parâmetro `code_state` atende aos dois casos, conforme a @fig-recortes-supra-legais-2. No caso metropolitano, porém, um estado pode conter mais de uma região metropolitana, de modo que ainda é preciso isolar a de interesse com um `filter` do pacote `dplyr` sobre a coluna `name_metro`.
 
 ```{r}
 #| label: fig-recortes-supra-legais-2
@@ -172,9 +176,9 @@ Caso você queria somente os estados do Ceará e a Região Metropolitana do Rio 
 library(ggplot2)
 
 ceara <- read_state(year = 2020, code_state = "CE")
-rmrj  <- read_metro_area(year = 2018) |> 
-  filter(name_metro == "RM Rio de Janeiro")
-  
+rmrj  <- read_metro_area(year = 2018, code_state = "RJ") |>
+  filter(name_metro == "Rm Rio de Janeiro")
+
 
 ggplot(ceara) +
   geom_sf(fill = "gray92", color = "gray70", linewidth = 0.3) +
@@ -184,6 +188,10 @@ ggplot(rmrj) +
   geom_sf(fill = "gray92", color = "gray70", linewidth = 0.3) +
   theme_minimal()
 ```
+
+::: {.callout-warning}
+Os valores de `name_metro` seguem exatamente a grafia entregue pelo `geobr`, que nem sempre coincide com a usual. A Região Metropolitana do Rio de Janeiro aparece como `"Rm Rio de Janeiro"`, e não como `"RM Rio de Janeiro"`. Antes de filtrar por nome, convém inspecionar os valores disponíveis com `unique(metros$name_metro)`, já que qualquer divergência de grafia devolve uma tabela vazia e, com ela, um mapa em branco sem qualquer mensagem de erro.
+:::
 
 ### Recortes supramunicipais institucionais
 
@@ -208,7 +216,7 @@ ggplot() +
 
 ### Recortes intramunicipais legais
 
-No nível intraurbano, `read_neighborhood()` disponibiliza os limites de bairros. A função não possui parâmetro de filtragem por município, retornando os bairros de todos os 720 municípios cobertos de uma vez, e o filtro é feito depois no `data.frame` resultante (assim como em `read_metro_area()`). A cobertura é parcial, uma vez que nem todos os municípios disponibilizaram seus limites oficiais de bairros ao IBGE.
+No nível intraurbano, `read_neighborhood()` disponibiliza os limites de bairros. O parâmetro `code_muni` recebe o código IBGE do município de interesse, e omiti-lo retorna de uma vez os bairros de todos os municípios cobertos, que somam 895 na edição de 2022. A cobertura é parcial, uma vez que nem todos os municípios disponibilizaram seus limites oficiais de bairros ao IBGE.
 
 ```{r}
 #| label: fig-bairros-salvador
@@ -218,11 +226,11 @@ No nível intraurbano, `read_neighborhood()` disponibiliza os limites de bairros
 
 library(dplyr)
 
-bairros <- read_neighborhood(year = 2022, showProgress = FALSE)
+# Código IBGE de Salvador: 2927408
+bairros <- read_neighborhood(year = 2022, code_muni = 2927408,
+                             showProgress = FALSE)
 
-bairros |>
-  filter(name_muni == "Salvador") |>
-  ggplot() +
+ggplot(bairros) +
   geom_sf(fill = "gray92", color = "gray70", linewidth = 0.3) +
   theme_minimal()
 ```
@@ -236,7 +244,6 @@ Para visualizar os setores censitários e as áreas de ponderação de forma com
 ```{r}
 #| label: map-recortes-intra-institucionais
 #| message: false
-#| cache: true
 
 library(mapview)
 library(leafsync)

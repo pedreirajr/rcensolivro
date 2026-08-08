@@ -238,15 +238,7 @@ head(piramide)
 ```
 
 ::: callout-note
-## `pivot_longer()`, de tabela larga para tabela longa
-
-Uma mesma informação pode ser guardada de duas formas. No **formato largo**, cada variável ocupa uma coluna, que é como os Agregados chegam até nós, com uma coluna por combinação de sexo e faixa etária. No **formato longo**, cada linha guarda uma única observação, com uma coluna dizendo qual variável é e outra dizendo qual o valor.
-
-A função `pivot_longer()`, do pacote `tidyr`, converte do largo para o longo. Seus três argumentos principais são `cols`, que indica quais colunas devem ser empilhadas, `names_to`, que dá o nome da coluna que guardará os nomes originais, e `values_to`, que dá o nome da coluna que guardará os valores.
-
-A conversão é necessária porque o `ggplot2` mapeia **colunas** para elementos visuais. Para colorir as barras por sexo, o sexo precisa estar em uma coluna, e não espalhado por vinte e duas colunas diferentes. Sempre que um gráfico exigir uma variável que hoje está codificada nos nomes das colunas, o caminho passa pelo `pivot_longer()`.
-
-A operação inversa existe e se chama `pivot_wider()`, útil quando se quer transformar categorias de uma coluna em colunas próprias, como ao montar uma tabela de dupla entrada.
+Lembre-se de que o `pivot_longer()`, visto no Capítulo 3, empilha em duas colunas aquelas indicadas em `cols`, guardando os nomes originais na coluna nomeada por `names_to` e os valores na coluna nomeada por `values_to`. A conversão é necessária aqui porque o `ggplot2` mapeia colunas para elementos visuais. Para colorir as barras por sexo, o sexo precisa estar em uma coluna, e não espalhado por vinte e duas colunas diferentes.
 :::
 
 Duas escolhas no código acima merecem explicação. A conversão de `faixa` para fator com `levels = faixas_etarias` garante que as barras apareçam em ordem etária, e não em ordem alfabética, que colocaria "10 a 14" antes de "5 a 9". E os valores masculinos são multiplicados por menos um, o que empurra essas barras para a esquerda do eixo e produz o formato característico da pirâmide.

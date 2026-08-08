@@ -745,14 +745,11 @@ Tabela&nbsp;12.1: Variáveis dos Agregados por Setor Censitário utilizadas nest
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span><code>pivot_longer()</code>, de tabela larga para tabela longa
+Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Uma mesma informação pode ser guardada de duas formas. No <strong>formato largo</strong>, cada variável ocupa uma coluna, que é como os Agregados chegam até nós, com uma coluna por combinação de sexo e faixa etária. No <strong>formato longo</strong>, cada linha guarda uma única observação, com uma coluna dizendo qual variável é e outra dizendo qual o valor.</p>
-<p>A função <code>pivot_longer()</code>, do pacote <code>tidyr</code>, converte do largo para o longo. Seus três argumentos principais são <code>cols</code>, que indica quais colunas devem ser empilhadas, <code>names_to</code>, que dá o nome da coluna que guardará os nomes originais, e <code>values_to</code>, que dá o nome da coluna que guardará os valores.</p>
-<p>A conversão é necessária porque o <code>ggplot2</code> mapeia <strong>colunas</strong> para elementos visuais. Para colorir as barras por sexo, o sexo precisa estar em uma coluna, e não espalhado por vinte e duas colunas diferentes. Sempre que um gráfico exigir uma variável que hoje está codificada nos nomes das colunas, o caminho passa pelo <code>pivot_longer()</code>.</p>
-<p>A operação inversa existe e se chama <code>pivot_wider()</code>, útil quando se quer transformar categorias de uma coluna em colunas próprias, como ao montar uma tabela de dupla entrada.</p>
+<p>Lembre-se de que o <code>pivot_longer()</code>, visto no Capítulo 3, empilha em duas colunas aquelas indicadas em <code>cols</code>, guardando os nomes originais na coluna nomeada por <code>names_to</code> e os valores na coluna nomeada por <code>values_to</code>. A conversão é necessária aqui porque o <code>ggplot2</code> mapeia colunas para elementos visuais. Para colorir as barras por sexo, o sexo precisa estar em uma coluna, e não espalhado por vinte e duas colunas diferentes.</p>
 </div>
 </div>
 <p>Duas escolhas no código acima merecem explicação. A conversão de <code>faixa</code> para fator com <code>levels = faixas_etarias</code> garante que as barras apareçam em ordem etária, e não em ordem alfabética, que colocaria “10 a 14” antes de “5 a 9”. E os valores masculinos são multiplicados por menos um, o que empurra essas barras para a esquerda do eixo e produz o formato característico da pirâmide.</p>

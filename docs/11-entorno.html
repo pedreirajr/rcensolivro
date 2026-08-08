@@ -1225,11 +1225,11 @@ Figura&nbsp;11.6: Percentual de faces de quadra com calçada ou passeio, por set
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span><code>transmute()</code>, o <code>mutate()</code> que descarta o resto
+Nota
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A função <strong><code>transmute()</code></strong> cria colunas exatamente como o <code>mutate()</code>, com uma diferença importante. Ela <strong>mantém apenas as colunas criadas</strong>, descartando todas as demais, e por isso equivale a um <code>mutate()</code> seguido de <code>select()</code>. Aqui isso é conveniente, pois o objeto <code>ent_for2022</code> tem 134 colunas e queremos levar para o <code>left_join()</code> somente o <code>code_tract</code>, necessário para a união, e o indicador recém-calculado. Usar <code>mutate()</code> no lugar funcionaria, mas arrastaria as outras 133 colunas para dentro do objeto espacial sem qualquer utilidade.</p>
+<p>Lembre-se de que o <code>transmute()</code>, visto no Capítulo 3, é um <code>mutate()</code> que preserva apenas as variáveis calculadas ou mencionadas. Aqui isso é conveniente, pois o objeto <code>ent_for2022</code> tem 134 colunas e queremos levar para o <code>left_join()</code> somente o <code>code_tract</code>, necessário para a união, e o indicador recém-calculado. Usar <code>mutate()</code> no lugar funcionaria, mas arrastaria as outras 133 colunas para dentro do objeto espacial sem qualquer utilidade.</p>
 </div>
 </div>
 <p>O mapa mostra uma cidade majoritariamente calçada com bolsões bem definidos de carência. A mediana municipal é de 91,7% das faces por setor e 53,4% dos setores têm 90% ou mais de suas faces calçadas, mas 554 setores, ou 12,6% do total, ficam abaixo da metade. Observe como obter esses resultados com o código abaixo:</p>
@@ -1586,7 +1586,7 @@ Tabela&nbsp;11.9: Características do entorno dos domicílios em Fortaleza no Ce
 <div class="callout-body-container callout-body">
 <ul>
 <li><strong><code>rowwise()</code></strong> faz o <code>dplyr</code> processar a tabela <strong>uma linha por vez</strong>, em vez de operar sobre colunas inteiras como de costume. Precisamos disso porque cada linha de <code>dic_2010</code> guarda nomes de coluna diferentes, e a expressão <code>ent_for2010[[masc_existe]]</code> precisa ser avaliada com o valor daquela linha específica. Sem <code>rowwise()</code>, o R tentaria usar os dez nomes de uma vez e devolveria erro.</li>
-<li><strong><code>ungroup()</code></strong> desfaz esse comportamento e devolve a tabela ao processamento normal. É uma boa prática encerrar sempre um <code>rowwise()</code> ou um <code>group_by()</code> com ele, pois o agrupamento fica pendurado no objeto e afeta em silêncio as operações seguintes.</li>
+<li><strong><code>ungroup()</code></strong>, visto no Capítulo 3, desfaz esse comportamento e devolve a tabela ao processamento normal. Vale encerrar sempre um <code>rowwise()</code> ou um <code>group_by()</code> com ele, pois o agrupamento fica pendurado no objeto e afeta em silêncio as operações seguintes.</li>
 <li><strong><code>n_distinct()</code></strong> conta quantos valores diferentes existem em um vetor, e é a forma curta de escrever <code>length(unique(x))</code>. Aqui ela é o teste em si, já que o resultado 1 significa que os dez itens compartilham o mesmo total.</li>
 </ul>
 <p>Vale registrar que o <code>rowwise()</code> é conveniente para tabelas pequenas como esta, com dez linhas, e não é a ferramenta indicada para grandes volumes, porque processar linha a linha é bem mais lento que a operação vetorizada padrão do R.</p>

@@ -4,9 +4,12 @@ title: "Introdução ao R"
 
 O R é a linguagem de programação central deste livro. Desenvolvido para análise estatística e visualização de dados, o R se tornou uma das ferramentas mais utilizadas em ciências sociais aplicadas, epidemiologia, economia e ciência de dados. Ao longo dos capítulos que se seguem, utilizaremos o R para explorar bases de dados institucionais brasileiras: desde os agregados por setor censitário do Censo Demográfico até pesquisas de mobilidade e saúde.
 
-Este capítulo cobre os fundamentos da linguagem: instalação, ambiente de desenvolvimento, tipos de dados, estruturas de dados e leitura de arquivos externos. O conteúdo é complementado por uma *playlist* de videoaulas no YouTube, que acompanha o mesmo roteiro deste capítulo. Recomenda-se assistir aos vídeos em paralelo à leitura, usando cada um para reforçar o outro.
+Este capítulo cobre os fundamentos da linguagem: instalação, ambiente de desenvolvimento, tipos de dados, estruturas de dados e leitura de arquivos externos.
+
+<!--O conteúdo é complementado por uma *playlist* de videoaulas no YouTube, que acompanha o mesmo roteiro deste capítulo. Recomenda-se assistir aos vídeos em paralelo à leitura, usando cada um para reforçar o outro.
 
 [▶ Abrir playlist no YouTube](https://www.youtube.com/watch?v=lS9-yrs51Ac&list=PL_v-tArg0FZjeQMDtbDTc5M88vH7DqK9_)
+-->
 
 ## Instalação do R e do RStudio
 

@@ -2,9 +2,12 @@
 title: "Manipulação de Dados Tabulares"
 ---
 
-Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 4 a 13.
+<!--Para quem preferir esta aula em formato audiovisual, há uma *playlist* de videoaulas do meu canal do YouTube sobre Análise Exploratória de Dados com R. O conteúdo deste capítulo está compreendido nos vídeos 4 a 13.
 
 [▶️ Abrir playlist no YouTube](https://www.youtube.com/playlist?list=PL_v-tArg0FZhA6dqbGv1uQMQqFOUPlryE)
+-->
+
+Nos dois capítulos anteriores conhecemos a linguagem R e aprendemos a calcular estatísticas sobre os dados que temos em mãos. Antes de chegar a esse ponto, porém, quase nenhuma base de dados real está pronta para ser resumida. Este capítulo trata do trabalho que antecede e sustenta toda análise, que é deixar os dados no formato em que a pergunta possa ser respondida. Começaremos pela leitura de arquivos em diferentes formatos e pelo operador que encadeia operações no R. Em seguida percorreremos os verbos que formam o vocabulário básico da manipulação, com os quais se filtram linhas, selecionam colunas, ordenam registros, criam variáveis, calculam resumos por grupo e combinam tabelas diferentes. Ao final, veremos como encadear tudo em uma única sequência legível, como guardar o resultado sem perder informação e como reorganizar uma tabela entre os formatos *long* e *wide*, decisão que determina o quão  fácil ou será realizar certos tipos de tarefa de exploração de dados que veremos nos capítulos mais aplicados deste livro.
 
 Neste capítulo, trabalharemos com dois conjuntos de dados: `escolha_modal.csv` e `velocidades.xlsx`. Faça o download de ambos pelos links abaixo e salve-os em uma pasta onde você irá criar o projeto no RStudio no qual executará esta aula. Assim que salvá-los, crie um novo script do R para iniciarmos o estudo.
 
@@ -417,9 +420,41 @@ vel <- vel |>
 
 A sintaxe do `case_when()` segue o padrão `condição ~ valor`, com `.default` definindo o valor para os casos que não atendem a nenhuma condição explícita. Uma alternativa equivalente ao `.default` é usar `TRUE ~ "N"`, notação mais antiga que ainda é amplamente encontrada em códigos R.
 
+Há situações em que o interesse não está em acrescentar colunas à base original, mas em produzir uma tabela nova contendo apenas as variáveis derivadas. Para isso existe o `transmute()`, que calcula exatamente como o `mutate()` e descarta todas as colunas que não forem mencionadas. O exemplo abaixo monta uma tabela compacta com o modo de transporte, a distância em quilômetros, o tempo convertido de volta para minutos e a velocidade média, deixando de fora as demais variáveis de `em`.
+
+```{r}
+em |>
+  transmute(
+    modo_viagem,
+    dist_km   = dist_viagem,
+    tempo_min = tempo_viagem * 60,
+    vel_kmh   = vel_media_viagem
+  )
+```
+
+Observe que colunas já existentes podem ser mantidas apenas citando seu nome, como `modo_viagem`, ou renomeadas no caminho, como `dist_viagem`, que passou a se chamar `dist_km`. Note também que nada foi atribuído a um objeto, de modo que a tabela `em` original permanece intacta e o resultado apenas foi impresso no console.
+
+:::{.callout-note}
+A partir da versão 1.1.0 do `dplyr`, o `transmute()` passou à condição de *superseded*, ou seja, continua funcionando e não será removido, mas deixou de receber novos desenvolvimentos. A recomendação atual é obter o mesmo resultado com o argumento `.keep = "none"` do próprio `mutate()`. A única diferença de escrita está nas colunas já existentes, que precisam ser atribuídas a si mesmas.
+
+```{r}
+#| eval: false
+em |>
+  mutate(
+    modo_viagem = modo_viagem,
+    dist_km     = dist_viagem,
+    tempo_min   = tempo_viagem * 60,
+    vel_kmh     = vel_media_viagem,
+    .keep = "none"
+  )
+```
+
+Vale conhecer as duas formas, já que o `transmute()` aparece com frequência em códigos escritos antes dessa mudança.
+:::
+
 ## Sumarização de Dados
 
-A sumarização reduz uma tabela a um conjunto de estatísticas calculadas a partir dos valores das colunas. No `dplyr`, a combinação de `group_by()` e `summarize()` é o principal mecanismo para isso.
+A sumarização reduz uma tabela a um conjunto de estatísticas calculadas a partir dos valores das colunas. No `dplyr`, a combinação de `group_by()` e `summarize()`^[Não confunda com a função `summary()`. Também pode ser escrita com "s", ou seja, `summarise()`, em aderência ao inglês britânico.] é o principal mecanismo para isso.
 
 Vamos calcular a velocidade média de viagem por modo de transporte na base `em`:
 
@@ -471,7 +506,7 @@ em |>
   mutate(prop = quant / sum(quant))
 ```
 
-O `mutate()` é aplicado com o agrupamento por `sexo` ainda ativo, então `sum(quant)` é calculado dentro de cada categoria de sexo, gerando proporções que somam 1 dentro de cada grupo.
+O `mutate()` é aplicado com o agrupamento por `sexo` ainda ativo, então `sum(quant)` é calculado dentro de cada categoria de sexo, gerando proporções que somam 1 dentro de cada grupo. Repare que o `dplyr` imprime uma mensagem informativa antes do resultado, avisando que a saída permaneceu agrupada por `sexo`. Não é erro nem sinal de problema, é o pacote tornando explícito um comportamento que passaria despercebido. A mensagem, porém, denuncia algo incômodo, pois o resultado depende de uma regra que não está escrita em lugar nenhum do código.
 
 Para contrastar, veja o que acontece ao usar `count()` e encadear o mesmo `mutate()`:
 
@@ -481,7 +516,32 @@ em |>
   mutate(prop = n / sum(n))
 ```
 
-Como `count()` retorna um *tibble* sem agrupamento, `sum(n)` é calculado sobre todas as linhas da tabela, gerando proporções em relação ao total geral, não dentro de cada sexo.
+Como `count()` retorna um *tibble* sem agrupamento, `sum(n)` é calculado sobre todas as linhas da tabela, gerando proporções em relação ao total geral, não dentro de cada sexo. As quatro proporções agora somam 1 entre si.
+
+Nenhum dos dois resultados está errado, eles simplesmente respondem a perguntas diferentes. O problema do primeiro é de outra natureza. Quem lê aquele código precisa saber de cor que o `summarize()` descarta apenas o último nível de agrupamento para conseguir prever o que o `mutate()` seguinte vai fazer. Para este cálculo de proporção dentro de cada grupo existe uma terceira forma, que produz exatamente os mesmos números da primeira sem depender dessa memória e sem gerar mensagem nenhuma. Ela consiste em contar com `count()`, que devolve a tabela já limpa, e declarar explicitamente o agrupamento desejado antes do `mutate()`:
+
+```{r}
+em |>
+  count(sexo, posse_auto) |>
+  group_by(sexo) |>
+  mutate(prop = n / sum(n))
+```
+
+Os valores são idênticos aos da primeira versão. A diferença está em que o agrupamento por `sexo` aparece escrito no código, em vez de sobrar de uma operação anterior. Quem lê não precisa reconstruir mentalmente o que restou do `group_by()` inicial, e quem escreve pode trocar `group_by(sexo)` por `group_by(posse_auto)` para inverter a pergunta sem mexer em mais nada. É a forma que recomendamos como padrão sempre que o objetivo for calcular proporções dentro de grupos.
+
+O resultado continua agrupado por `sexo`, como indica a linha `# Groups: sexo [2]` logo abaixo do cabeçalho. Quando as etapas seguintes não dependerem desse agrupamento, encerre a cadeia com `ungroup()` para devolver um *tibble* comum.
+
+```{r}
+em |>
+  count(sexo, posse_auto) |>
+  group_by(sexo) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup()
+```
+
+:::{.callout-note}
+A própria mensagem do `summarize()` sugere dois caminhos para silenciá-la. O argumento `.groups` controla o que acontece com o agrupamento na saída, sendo `.groups = "drop"` a opção que remove todos os níveis e `.groups = "drop_last"` a que apenas confirma o comportamento padrão de descartar o último. Já o argumento `.by` permite declarar o agrupamento dentro da própria função, como em `summarize(quant = n(), .by = c(sexo, posse_auto))`, dispensando o `group_by()` anterior e devolvendo sempre um resultado sem agrupamento. Vale conhecer as duas alternativas, porque aparecem com frequência, mas nenhuma delas deixa o código mais legível do que a sequência com `count()` apresentada acima.
+:::
 
 ## Junção de Tabelas
 
@@ -599,6 +659,93 @@ vel <- readRDS("vel.rds")
 ```
 
 Ao carregar com `readRDS()`, o objeto retorna exatamente no estado em que foi salvo, com todos os tipos e ordenamentos preservados. Isso torna o `.rds` especialmente útil para armazenar bases de trabalho intermediárias, evitando reprocessar as transformações a cada sessão.
+
+## Dados em formato *long* e *wide*
+
+Uma mesma informação pode ser organizada de maneiras diferentes em uma tabela, e a escolha entre elas determina quais operações ficam fáceis e quais ficam trabalhosas. As duas organizações mais comuns são o formato *wide* (largo) e o formato *long* (longo). No formato *wide*, cada unidade de análise ocupa uma única linha e as demais colunas guardam suas medições. No formato long, cada linha corresponde a uma combinação entre a unidade de análise e uma medição, de modo que a tabela fica mais alta e mais estreita.
+
+Para tornar a diferença concreta, vamos criar uma pequena tabela fictícia com o número de viagens diárias por modo de transporte em três municípios.
+
+```{r}
+viagens <- tibble(
+  municipio = c("Município A", "Município B", "Município C"),
+  a_pe      = c(120,  90,  60),
+  bicicleta = c( 30,  45,  20),
+  carro     = c(200, 150, 260),
+  tp        = c(150, 110,  80)
+)
+viagens
+```
+
+Essa é a apresentação *wide*, e ela é confortável para leitura humana. Relatórios impressos e planilhas de divulgação quase sempre chegam nesse formato, porque a comparação entre municípios se faz percorrendo a coluna e a comparação entre modos se faz percorrendo a linha. Do ponto de vista da manipulação, porém, há um problema. Os nomes `a_pe`, `bicicleta`, `carro` e `tp` não são variáveis, são valores de uma variável que poderíamos chamar de **modo de transporte**. O número de viagens, única medição de fato registrada, está espalhado por quatro colunas.
+
+Foi essa distinção que motivou o princípio *tidy* mencionado no início do capítulo, segundo o qual cada variável deve ocupar uma coluna e cada observação deve ocupar uma linha. A tabela acima viola esse princípio, e a consequência prática é que operações simples ficam trabalhosas. Calcular o total de viagens por município exige somar quatro colunas nomeadas uma a uma, e a inclusão de um quinto modo na pesquisa obrigaria a reescrever esse código.
+
+A função `pivot_longer()`, do pacote `tidyr`, reorganiza a tabela para o formato *long*. Ela precisa saber quais colunas devem ser empilhadas (`cols`), qual será o nome da nova coluna que receberá os nomes antigos (`names_to`) e qual será o nome da nova coluna que receberá os valores (`values_to`). No exemplo abaixo, empilhamos todas as colunas exceto `municipio`, usando a mesma notação de negação já vista no `select()`.
+
+```{r}
+viagens_long <- viagens |>
+  pivot_longer(
+    cols      = -municipio,
+    names_to  = "modo_viagem",
+    values_to = "viagens"
+  )
+viagens_long
+```
+
+As três linhas com quatro colunas de medição viraram doze linhas. Nenhuma informação foi criada ou perdida, apenas redistribuída. Agora existe uma coluna `modo_viagem` que guarda a categoria e uma coluna `viagens` que guarda a medição, e ambas podem ser usadas diretamente pelas funções estudadas nas seções anteriores.
+
+Veja que o ganho aparece de imediato. O total de viagens por modo, que na tabela *wide* exigiria somar colunas manualmente, sai de um `group_by()` com `summarize()`.
+
+```{r}
+viagens_long |>
+  group_by(modo_viagem) |>
+  summarize(total = sum(viagens))
+```
+
+Da mesma forma, a repartição modal de cada município sai de um `group_by()` com `mutate()`, exatamente como fizemos na seção de sumarização.
+
+```{r}
+viagens_long |>
+  group_by(municipio) |>
+  mutate(prop = viagens / sum(viagens))
+```
+
+Nenhum desses dois códigos menciona os nomes dos modos. Se a pesquisa passasse a registrar viagens de motocicleta, bastaria acrescentar as linhas correspondentes e ambos continuariam funcionando sem qualquer alteração. Essa independência em relação aos valores das categorias é a principal razão pela qual o formato *long* domina o trabalho de análise no R. É também o formato esperado pelo `ggplot2`, o que veremos em detalhe no próximo capítulo.
+
+A operação inversa é feita por `pivot_wider()`, que espalha uma coluna de categorias por várias colunas novas. Os argumentos centrais são `names_from`, que indica de qual coluna sairão os nomes das novas colunas, e `values_from`, que indica de qual coluna sairão os valores que as preencherão. Aplicada sobre `viagens_long`, a função devolve exatamente a tabela original.
+
+```{r}
+viagens_long |>
+  pivot_wider(
+    names_from  = modo_viagem,
+    values_from = viagens
+  )
+```
+
+O uso mais frequente do `pivot_wider()`, porém, não é desfazer um `pivot_longer()`. É produzir a tabela final de apresentação depois que os cálculos já foram feitos em formato *long*. O código abaixo calcula a repartição modal em porcentagem, descarta os valores absolutos e espalha o resultado, gerando uma tabela pronta para leitura. O `ungroup()` desfaz o agrupamento deixado ativo pelo `group_by()`, conforme discutimos na seção de sumarização, para que o resultado seja um *tibble* comum.
+
+```{r}
+viagens_long |>
+  group_by(municipio) |>
+  mutate(prop = round(100 * viagens / sum(viagens), 1)) |>
+  ungroup() |>
+  select(-viagens) |>
+  pivot_wider(
+    names_from  = modo_viagem,
+    values_from = prop
+  )
+```
+
+:::{.callout-tip}
+Nem toda tabela em formato *long* contém todas as combinações possíveis. Quando uma combinação está ausente, o `pivot_wider()` preenche a célula correspondente com `NA`. Se o valor ausente significar zero, como costuma ocorrer em contagens, o argumento `values_fill = 0` resolve a questão em uma linha.
+:::
+
+:::{.callout-note}
+Em códigos mais antigos, é comum encontrar as funções `gather()` e `spread()`, que cumpriam esses mesmos papéis antes da versão 1.0.0 do `tidyr`, lançada em 2019. Elas continuam funcionando, mas foram substituídas por `pivot_longer()` e `pivot_wider()`, de sintaxe mais explícita e desenvolvimento ativo.
+:::
+
+A alternância entre os dois formatos reaparecerá com frequência na segunda parte do livro. As tabelas do Censo Demográfico costumam ser divulgadas em formato *wide*, com uma coluna para cada faixa etária, cada classe de rendimento ou cada tipo de domicílio, e a primeira providência ao analisá-las quase sempre é empilhá-las com `pivot_longer()`.
 
 ## Exercícios
 

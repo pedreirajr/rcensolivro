@@ -283,8 +283,7 @@ Usamos os bairros de Manaus como malha de destino.
 #| message: false
 #| warning: false
 #| results: hide
-bairros_manaus <- read_neighborhood(year = 2022) |>
-  filter(code_muni == manaus)
+bairros_manaus <- read_neighborhood(year = 2022, code_muni = manaus)
 
 renda_bairro <- tracts_to_polygon(
   code_muni = manaus,

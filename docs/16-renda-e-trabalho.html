@@ -713,14 +713,13 @@ Os dois objetos já foram lidos acima, em `domrenda_2010` e
 <p>A distinção importa e merece ser recuperada. Para uma variável de total, o valor do setor é <strong>dividido</strong> entre os pontos de endereço que caem dentro dele, e a unidade-alvo recebe a soma dos pontos que a compõem. Para uma variável de média, o valor do setor é <strong>atribuído</strong> a cada ponto, e a unidade-alvo recebe a média dos valores dos pontos que estão dentro dela. A consequência prática é que a média resultante fica ponderada pela densidade de endereços, e não pela área, o que é o comportamento desejável.</p>
 <p>Usamos os bairros de Manaus como malha de destino.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bairros_manaus <span class="ot">&lt;-</span> <span class="fu">read_neighborhood</span>(<span class="at">year =</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> manaus)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>renda_bairro <span class="ot">&lt;-</span> <span class="fu">tracts_to_polygon</span>(</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> manaus,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">polygon   =</span> bairros_manaus,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">vars      =</span> <span class="st">"avg_inc_resp"</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bairros_manaus <span class="ot">&lt;-</span> <span class="fu">read_neighborhood</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">code_muni =</span> manaus)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>renda_bairro <span class="ot">&lt;-</span> <span class="fu">tracts_to_polygon</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> manaus,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">polygon   =</span> bairros_manaus,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vars      =</span> <span class="st">"avg_inc_resp"</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>O objeto devolvido é um <code>sf</code> com um polígono por bairro e a variável já interpolada. Vale conferir a amplitude do resultado antes de mapear.</p>
 <div class="cell">

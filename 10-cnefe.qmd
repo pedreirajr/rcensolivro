@@ -344,15 +344,15 @@ mapview(
 )
 ```
 
-Lembre-se de que é possível também produzir contagens para malhas espaciais além da H3 com a `cnefe_counts()`. No exemplo abaixo, utilizamos os bairros de Porto Alegre como unidades de contagem. Primeiro baixamos os bairros com `read_neighborhood()` do pacote `geobr`, filtrando pelo município:
+Lembre-se de que é possível também produzir contagens para malhas espaciais além da H3 com a `cnefe_counts()`. No exemplo abaixo, utilizamos os bairros de Porto Alegre como unidades de contagem. Primeiro baixamos os bairros com `read_neighborhood()` do pacote `geobr`, restringindo o download ao município pelo argumento `code_muni`:
 
 ```{r}
 #| label: load-setores
 #| cache: true
 #| message: false
 
-poa_brr <- read_neighborhood(year = 2022, simplified = F) |> 
-  filter(name_muni == "Porto Alegre")
+poa_brr <- read_neighborhood(year = 2022, code_muni = poa_ibge,
+                             simplified = F)
 ```
 
 Posteriormente, usamos `polygon_type = "user"` e fornecemos o `sf` com os bairros como argumento `polygon`:

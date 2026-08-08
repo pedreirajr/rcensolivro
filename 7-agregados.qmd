@@ -368,6 +368,7 @@ Com os dados de Recife já em memória, o próximo passo é integrar os polígon
 
 recife_sc_geo <- geobr::read_census_tract(
   code_tract = recife_ibge,
+  year       = 2022,
   simplified = FALSE
 )
 
@@ -385,6 +386,7 @@ rds_geo <- "data/cap07/recife_sc_geo.rds"
 if (!file.exists(rds_geo)) {
   recife_sc_geo <- geobr::read_census_tract(
     code_tract = recife_ibge,
+    year       = 2022,
     simplified = FALSE
   ) |>
     left_join(sc_recife_2022, by = "code_tract")

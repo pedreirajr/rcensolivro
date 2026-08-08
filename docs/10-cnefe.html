@@ -882,10 +882,10 @@ Figura&nbsp;10.4: Proporção de estabelecimentos de ensino em relação ao tota
 </figure>
 </div>
 </div>
-<p>Lembre-se de que é possível também produzir contagens para malhas espaciais além da H3 com a <code>cnefe_counts()</code>. No exemplo abaixo, utilizamos os bairros de Porto Alegre como unidades de contagem. Primeiro baixamos os bairros com <code>read_neighborhood()</code> do pacote <code>geobr</code>, filtrando pelo município:</p>
+<p>Lembre-se de que é possível também produzir contagens para malhas espaciais além da H3 com a <code>cnefe_counts()</code>. No exemplo abaixo, utilizamos os bairros de Porto Alegre como unidades de contagem. Primeiro baixamos os bairros com <code>read_neighborhood()</code> do pacote <code>geobr</code>, restringindo o download ao município pelo argumento <code>code_muni</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>poa_brr <span class="ot">&lt;-</span> <span class="fu">read_neighborhood</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">simplified =</span> F) <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name_muni <span class="sc">==</span> <span class="st">"Porto Alegre"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>poa_brr <span class="ot">&lt;-</span> <span class="fu">read_neighborhood</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">code_muni =</span> poa_ibge,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">simplified =</span> F)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Posteriormente, usamos <code>polygon_type = "user"</code> e fornecemos o <code>sf</code> com os bairros como argumento <code>polygon</code>:</p>
 <div class="cell">

@@ -527,9 +527,7 @@ geo_for2022 |>
 ```
 
 ::: {.callout-note}
-## `transmute()`, o `mutate()` que descarta o resto
-
-A função **`transmute()`** cria colunas exatamente como o `mutate()`, com uma diferença importante. Ela **mantém apenas as colunas criadas**, descartando todas as demais, e por isso equivale a um `mutate()` seguido de `select()`. Aqui isso é conveniente, pois o objeto `ent_for2022` tem 134 colunas e queremos levar para o `left_join()` somente o `code_tract`, necessário para a união, e o indicador recém-calculado. Usar `mutate()` no lugar funcionaria, mas arrastaria as outras 133 colunas para dentro do objeto espacial sem qualquer utilidade.
+Lembre-se de que o `transmute()`, visto no Capítulo 3, é um `mutate()` que preserva apenas as variáveis calculadas ou mencionadas. Aqui isso é conveniente, pois o objeto `ent_for2022` tem 134 colunas e queremos levar para o `left_join()` somente o `code_tract`, necessário para a união, e o indicador recém-calculado. Usar `mutate()` no lugar funcionaria, mas arrastaria as outras 133 colunas para dentro do objeto espacial sem qualquer utilidade.
 :::
 
 O mapa mostra uma cidade majoritariamente calçada com bolsões bem definidos de carência. A mediana municipal é de 91,7% das faces por setor e 53,4% dos setores têm 90% ou mais de suas faces calçadas, mas 554 setores, ou 12,6% do total, ficam abaixo da metade. Observe como obter esses resultados com o código abaixo:
@@ -699,7 +697,7 @@ resumo_2010 |>
 ## `rowwise()`, `ungroup()` e `n_distinct()`
 
 - **`rowwise()`** faz o `dplyr` processar a tabela **uma linha por vez**, em vez de operar sobre colunas inteiras como de costume. Precisamos disso porque cada linha de `dic_2010` guarda nomes de coluna diferentes, e a expressão `ent_for2010[[masc_existe]]` precisa ser avaliada com o valor daquela linha específica. Sem `rowwise()`, o R tentaria usar os dez nomes de uma vez e devolveria erro.
-- **`ungroup()`** desfaz esse comportamento e devolve a tabela ao processamento normal. É uma boa prática encerrar sempre um `rowwise()` ou um `group_by()` com ele, pois o agrupamento fica pendurado no objeto e afeta em silêncio as operações seguintes.
+- **`ungroup()`**, visto no Capítulo 3, desfaz esse comportamento e devolve a tabela ao processamento normal. Vale encerrar sempre um `rowwise()` ou um `group_by()` com ele, pois o agrupamento fica pendurado no objeto e afeta em silêncio as operações seguintes.
 - **`n_distinct()`** conta quantos valores diferentes existem em um vetor, e é a forma curta de escrever `length(unique(x))`. Aqui ela é o teste em si, já que o resultado 1 significa que os dez itens compartilham o mesmo total.
 
 Vale registrar que o `rowwise()` é conveniente para tabelas pequenas como esta, com dez linhas, e não é a ferramenta indicada para grandes volumes, porque processar linha a linha é bem mais lento que a operação vetorizada padrão do R.
