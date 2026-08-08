@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>16&nbsp; Renda e Trabalho – Censo Demográfico no R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./15-mobilidade.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./12-demografia.html">PARTE 3: APLICAÇÕES TERRITORIAIS</a></li><li class="breadcrumb-item"><a href="./16-renda-e-trabalho.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Renda e Trabalho</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Censo Demográfico no R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prefácio</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 1: ANÁLISE EXPLORATÓRIA DE DADOS COM R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1-introducao-ao-r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introdução ao R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2-estatistica-descritiva.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Estatística Descritiva</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3-manipulacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Manipulação de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4-visualizacao-de-dados-tabulares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Visualização de Dados Tabulares</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5-dados-geograficos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dados Geográficos</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 2: O CENSO DEMOGRÁFICO E SEUS PRODUTOS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6-conceitos-e-metodos-censo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Censo Demográfico: Conceitos e Métodos</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7-agregados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Agregados por Setor Censitário</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8-microdados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Microdados da Amostra</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9-grade-estatistica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Grade Estatística</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-cnefe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNEFE</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-entorno.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Características Urbanísticas do Entorno dos Domicílios</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">PARTE 3: APLICAÇÕES TERRITORIAIS</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-demografia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Demografia</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13-habitacao.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Habitação</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14-saneamento.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Saneamento e Drenagem Urbana</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./15-mobilidade.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Mobilidade</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./16-renda-e-trabalho.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Renda e Trabalho</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Referências</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice do Capítulo</h2>
+   
+  <ul>
+  <li><a href="#sec-ren-intro" id="toc-sec-ren-intro" class="nav-link active" data-scroll-target="#sec-ren-intro"><span class="header-section-number">16.1</span> Introdução</a></li>
+  <li><a href="#sec-ren-urbano" id="toc-sec-ren-urbano" class="nav-link" data-scroll-target="#sec-ren-urbano"><span class="header-section-number">16.2</span> Por que este capítulo olha só a área urbana</a></li>
+  <li><a href="#sec-ren-perda" id="toc-sec-ren-perda" class="nav-link" data-scroll-target="#sec-ren-perda"><span class="header-section-number">16.3</span> A renda que 2010 tinha e 2022 não tem</a></li>
+  <li><a href="#sec-ren-2022" id="toc-sec-ren-2022" class="nav-link" data-scroll-target="#sec-ren-2022"><span class="header-section-number">16.4</span> O que restou</a></li>
+  <li><a href="#sec-ren-proxy" id="toc-sec-ren-proxy" class="nav-link" data-scroll-target="#sec-ren-proxy"><span class="header-section-number">16.5</span> A renda do responsável como aproximação</a></li>
+  <li><a href="#sec-ren-cnefetools" id="toc-sec-ren-cnefetools" class="nav-link" data-scroll-target="#sec-ren-cnefetools"><span class="header-section-number">16.6</span> Levando a renda a outros recortes</a></li>
+  <li><a href="#sec-ren-microdados" id="toc-sec-ren-microdados" class="nav-link" data-scroll-target="#sec-ren-microdados"><span class="header-section-number">16.7</span> A distribuição que só os microdados mostram</a></li>
+  <li><a href="#sec-ren-trabalho" id="toc-sec-ren-trabalho" class="nav-link" data-scroll-target="#sec-ren-trabalho"><span class="header-section-number">16.8</span> Trabalho, posição e jornada</a></li>
+  <li><a href="#sec-ren-fechamento" id="toc-sec-ren-fechamento" class="nav-link" data-scroll-target="#sec-ren-fechamento"><span class="header-section-number">16.9</span> Fechamento da Parte 3</a></li>
+  <li><a href="#sec-ren-exercicios" id="toc-sec-ren-exercicios" class="nav-link" data-scroll-target="#sec-ren-exercicios"><span class="header-section-number">16.10</span> Exercícios</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./12-demografia.html">PARTE 3: APLICAÇÕES TERRITORIAIS</a></li><li class="breadcrumb-item"><a href="./16-renda-e-trabalho.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Renda e Trabalho</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Renda e Trabalho</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-ren-intro" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="sec-ren-intro"><span class="header-section-number">16.1</span> Introdução</h2>
+<p>Renda é a variável que atravessa todos os capítulos anteriores. Ela explica boa parte de onde vivem os grupos descritos no Capítulo 12, das condições de moradia do Capítulo 13 e do tempo gasto no deslocamento do Capítulo 15. É também a variável que o Censo 2022 tornou mais difícil de mapear.</p>
+<p>Quem usou os Agregados por Setor Censitário de 2010 tinha o rendimento domiciliar por setor e podia calcular a renda média de cada pedaço da cidade. Em 2022 essa informação não existe. O arquivo de renda encolheu para cinco variáveis, todas referentes à pessoa responsável pelo domicílio, e o rendimento domiciliar saiu do universo.</p>
+<p>Este capítulo trata do problema de frente. Mostra o que se perdeu, o que restou, como contornar a perda e o que os microdados da amostra ainda permitem que nenhum agregado permite. Ao final, olha para a origem da renda, que é o trabalho, com duas variáveis pouco exploradas, a posição na ocupação e as horas trabalhadas.</p>
+<p>O município escolhido é <strong>Manaus (AM)</strong>, a maior cidade da região Norte e um caso em que a distância entre a renda média e a renda típica é particularmente grande.</p>
+</section>
+<section id="sec-ren-urbano" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="sec-ren-urbano"><span class="header-section-number">16.2</span> Por que este capítulo olha só a área urbana</h2>
+<p>Manaus impõe uma decisão preliminar que vale para muitos municípios brasileiros e que raramente é explicitada. O território municipal é enorme e quase todo rural, enquanto praticamente toda a população vive numa mancha urbana comparativamente minúscula. Mapear o município inteiro produziria uma figura em que a cidade aparece como um borrão no canto, e os setores urbanos, que são o objeto da análise, ficariam pequenos demais para serem lidos.</p>
+<p>Começamos obtendo o código do município e o arquivo Básico de 2022, que traz a coluna <code>situacao</code>, com a classificação de cada setor entre urbano e rural.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manaus <span class="ot">&lt;-</span> <span class="fu">lookup_muni</span>(<span class="at">name_muni =</span> <span class="st">"Manaus"</span>, <span class="at">year =</span> <span class="dv">2022</span>)<span class="sc">$</span>code_muni</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>manaus</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1302603</code></pre>
+</div>
+</div>
+<p>Com o código em mãos, lemos o arquivo Básico e comparamos os dois grupos de setores em população e em área.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>basico_2022 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"Basico"</span>, <span class="at">year =</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> manaus) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract, situacao, area_km2, V0001) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>basico_2022 <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(situacao) <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">setores   =</span> <span class="fu">n</span>(),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">populacao =</span> <span class="fu">sum</span>(V0001,    <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">area_km2  =</span> <span class="fu">sum</span>(area_km2, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">perc_populacao =</span> <span class="dv">100</span> <span class="sc">*</span> populacao <span class="sc">/</span> <span class="fu">sum</span>(populacao),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">perc_area      =</span> <span class="dv">100</span> <span class="sc">*</span> area_km2  <span class="sc">/</span> <span class="fu">sum</span>(area_km2)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">situacao</th>
+<th style="text-align: right;">setores</th>
+<th style="text-align: right;">populacao</th>
+<th style="text-align: right;">area_km2</th>
+<th style="text-align: right;">perc_populacao</th>
+<th style="text-align: right;">perc_area</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Rural</td>
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">20.012</td>
+<td style="text-align: right;">9.764,77</td>
+<td style="text-align: right;">0,97</td>
+<td style="text-align: right;">85,65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Urbana</td>
+<td style="text-align: right;">3.171</td>
+<td style="text-align: right;">2.043.677</td>
+<td style="text-align: right;">556,33</td>
+<td style="text-align: right;">99,03</td>
+<td style="text-align: right;">4,88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.079,90</td>
+<td style="text-align: right;">0,00</td>
+<td style="text-align: right;">9,47</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>O quadro justifica a decisão sozinho. Os setores urbanos concentram cerca de 99% da população em menos de 5% da área do município. Daqui em diante, este capítulo trabalha apenas com eles, e guardamos seus códigos em um vetor que servirá de filtro para todas as fontes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>setores_urbanos <span class="ot">&lt;-</span> basico_2022 <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(situacao <span class="sc">==</span> <span class="st">"Urbana"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(code_tract)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(setores_urbanos)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3171</code></pre>
+</div>
+</div>
+<p>Duas ressalvas acompanham essa escolha. A primeira é que a restrição é <strong>analítica e não estatística</strong>, ou seja, ela muda o recorte territorial descrito e quase não altera os valores, justamente porque a população rural é pequena. A segunda é que em municípios com população rural expressiva a mesma restrição excluiria gente demais, e a decisão precisa ser refeita caso a caso.</p>
+</section>
+<section id="sec-ren-perda" class="level2" data-number="16.3">
+<h2 data-number="16.3" class="anchored" data-anchor-id="sec-ren-perda"><span class="header-section-number">16.3</span> A renda que 2010 tinha e 2022 não tem</h2>
+<p>A melhor forma de dimensionar a perda é colocar as duas estruturas lado a lado. Comecemos lendo os arquivos de renda das duas edições para Manaus.</p>
+<p>Em 2010, a renda estava distribuída por três arquivos, além de variáveis no próprio Básico. Em 2022, restou um único arquivo temático.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>basico_2010 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"Basico"</span>, <span class="at">year =</span> <span class="dv">2010</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> manaus) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract, V001, V002, V007, V011) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>domrenda_2010 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"DomicilioRenda"</span>, <span class="at">year =</span> <span class="dv">2010</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> manaus) <span class="sc">|&gt;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract, V003) <span class="sc">|&gt;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">rend_dom_total =</span> V003) <span class="sc">|&gt;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>resprenda_2022 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"ResponsavelRenda"</span>, <span class="at">year =</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> manaus) <span class="sc">|&gt;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract, name_neighborhood, V06001, V06002, V06003, V06004, V06005) <span class="sc">|&gt;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_tract <span class="sc">%in%</span> setores_urbanos)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Arquivo =</span> <span class="fu">c</span>(<span class="st">"Básico 2010"</span>, <span class="st">"DomicilioRenda 2010"</span>, <span class="st">"ResponsavelRenda 2022"</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Setores =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(basico_2010), <span class="fu">nrow</span>(domrenda_2010), <span class="fu">nrow</span>(resprenda_2022))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Arquivo"</span>, <span class="st">"Setores lidos"</span>),</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>               <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Arquivo</th>
+<th style="text-align: right;">Setores lidos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Básico 2010</td>
+<td style="text-align: right;">2.435</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DomicilioRenda 2010</td>
+<td style="text-align: right;">2.435</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ResponsavelRenda 2022</td>
+<td style="text-align: right;">3.121</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Os dois arquivos de 2010 vêm com o município inteiro, e o de 2022 já vem restrito aos setores urbanos. A diferença de contagem tem essa origem, e não uma mudança no número de setores entre as edições. Vale registrar que os arquivos de 2010 disponibilizados pelo <code>censobr</code> não trazem a coluna <code>situacao</code>, de modo que a restrição urbana aplicada neste capítulo alcança os dados de 2022 e os microdados, e não os agregados de 2010, que entram apenas como material de comparação estrutural.</p>
+<p>O que importa, de toda forma, é o conteúdo, resumido a seguir.</p>
+<div class="cell">
+<div id="tbl-ren-perda" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ren-perda-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;16.1: Variáveis de renda por setor censitário nos Censos 2010 e 2022.
+</figcaption>
+<div aria-describedby="tbl-ren-perda-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 34%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Informação</th>
+<th style="text-align: center;">2010</th>
+<th style="text-align: center;">2022</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Rendimento médio do responsável</td>
+<td style="text-align: center;">Básico <code>V005</code> e <code>V007</code></td>
+<td style="text-align: center;"><code>V06004</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Variância do rendimento do responsável</td>
+<td style="text-align: center;">Básico <code>V006</code> e <code>V008</code></td>
+<td style="text-align: center;"><code>V06005</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rendimento médio das pessoas de 10 anos ou mais</td>
+<td style="text-align: center;">Básico <code>V009</code> e <code>V011</code></td>
+<td style="text-align: center;">Não divulgado</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rendimento total dos domicílios permanentes</td>
+<td style="text-align: center;"><code>DomicilioRenda V003</code></td>
+<td style="text-align: center;">Não divulgado</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Domicílios por faixa de renda per capita</td>
+<td style="text-align: center;"><code>DomicilioRenda V005</code> a <code>V013</code></td>
+<td style="text-align: center;">Não divulgado</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Responsáveis por faixa de rendimento</td>
+<td style="text-align: center;"><code>ResponsavelRenda</code>, 141 colunas</td>
+<td style="text-align: center;">Não divulgado</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>A perda é substancial. Saíram as faixas de renda, que permitiam descrever a distribuição dentro do setor, saiu o rendimento das pessoas de dez anos ou mais, e saiu o rendimento domiciliar, que era a base de praticamente todo indicador de renda por setor produzido no país.</p>
+<p>Registramos o fato sem opinar sobre a decisão do IBGE. O livro descreve o que existe, e o que existe agora é bem menos do que existia.</p>
+</section>
+<section id="sec-ren-2022" class="level2" data-number="16.4">
+<h2 data-number="16.4" class="anchored" data-anchor-id="sec-ren-2022"><span class="header-section-number">16.4</span> O que restou</h2>
+<p>O arquivo <code>ResponsavelRenda</code> de 2022 tem cinco variáveis. Duas descrevem moradores, duas descrevem rendimento e uma conta responsáveis.</p>
+<div class="cell">
+<div id="tbl-ren-2022" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ren-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;16.2: As cinco variáveis do arquivo ResponsavelRenda do Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-ren-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 88%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Código</th>
+<th style="text-align: left;">Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>V06001</code></td>
+<td style="text-align: left;">Pessoas responsáveis em domicílios particulares permanentes ocupados</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>V06002</code></td>
+<td style="text-align: left;">Moradores em domicílios particulares permanentes ocupados</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>V06003</code></td>
+<td style="text-align: left;">Variância do número de moradores</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>V06004</code></td>
+<td style="text-align: left;">Rendimento nominal médio mensal das pessoas responsáveis <strong>com rendimento</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>V06005</code></td>
+<td style="text-align: left;">Variância desse rendimento</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Duas ressalvas precisam acompanhar qualquer uso da <code>V06004</code>, e as duas costumam passar despercebidas.</p>
+<p>A primeira está no nome da variável. O rendimento médio se refere às pessoas responsáveis <strong>com rendimento</strong>, o que exclui do cálculo as responsáveis sem qualquer rendimento. A média não descreve todas as responsáveis do setor, e sim as que declararam ter renda. Em áreas com muitas responsáveis sem rendimento, isso empurra a média para cima.</p>
+<p>A segunda é que a variável <strong>já vem calculada como média</strong>. Não se relativiza, não se soma entre setores e, ao agregar para bairro, é preciso ponderar pelo número de responsáveis, e não tirar a média das médias.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(resprenda_2022<span class="sc">$</span>V06004)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs 
+    624    1498    1853    2890    2690   50803      27 </code></pre>
+</div>
+</div>
+<p>A distribuição é fortemente assimétrica, com a média bem acima da mediana e um valor máximo dezenas de vezes maior que o valor típico. É o comportamento esperado de uma variável de renda, e já sugere o que veremos adiante sobre média e mediana.</p>
+<p>A variância divulgada na <code>V06005</code> permite algo que raramente se faz. Sua raiz quadrada é o desvio-padrão do rendimento dentro do setor, e a razão entre desvio-padrão e média, conhecida como <strong>coeficiente de variação</strong>, indica o quanto o setor é internamente heterogêneo. Dois setores podem ter a mesma renda média e realidades completamente diferentes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>resprenda_2022 <span class="ot">&lt;-</span> resprenda_2022 <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">desvio_padrao =</span> <span class="fu">sqrt</span>(V06005),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">coef_variacao =</span> desvio_padrao <span class="sc">/</span> V06004</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(resprenda_2022<span class="sc">$</span>coef_variacao)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.      NAs 
+ 0.09798  0.69098  0.82192  0.93420  0.99083 12.98463       27 </code></pre>
+</div>
+</div>
+<p>Metade dos setores de Manaus tem desvio-padrão em torno de oitenta por cento da média, o que é bastante heterogeneidade dentro de uma unidade tão pequena. Levemos ao mapa a renda média e o coeficiente de variação lado a lado.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>manaus_geo <span class="ot">&lt;-</span> <span class="fu">read_census_tract</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_tract =</span> manaus,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">year       =</span> <span class="dv">2022</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplified =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(resprenda_2022, <span class="at">by =</span> <span class="st">"code_tract"</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>limite_renda <span class="ot">&lt;-</span> <span class="fu">quantile</span>(manaus_geo<span class="sc">$</span>V06004,        <span class="fl">0.95</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>limite_cv    <span class="ot">&lt;-</span> <span class="fu">quantile</span>(manaus_geo<span class="sc">$</span>coef_variacao, <span class="fl">0.95</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>mapa_renda <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(manaus_geo) <span class="sc">+</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> V06004), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"R$"</span>, <span class="at">na.value =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">limits =</span> <span class="fu">c</span>(<span class="cn">NA</span>, limite_renda), <span class="at">oob =</span> scales<span class="sc">::</span>squish,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Rendimento médio do responsável"</span>) <span class="sc">+</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>mapa_cv <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(manaus_geo) <span class="sc">+</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> coef_variacao), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"OrRd"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"Desvio-padrão</span><span class="sc">\n</span><span class="st">sobre a média"</span>,</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>                       <span class="at">limits =</span> <span class="fu">c</span>(<span class="cn">NA</span>, limite_cv), <span class="at">oob =</span> scales<span class="sc">::</span>squish) <span class="sc">+</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Heterogeneidade interna do setor"</span>) <span class="sc">+</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>mapa_renda <span class="sc">+</span> mapa_cv</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ren-2022" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-ren-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;16.1: Rendimento médio mensal das pessoas responsáveis com rendimento (à esquerda) e coeficiente de variação desse rendimento (à direita), por setor censitário urbano, Manaus (AM), Censo 2022. Escalas de cor limitadas ao percentil 95 de cada variável.
+</figcaption>
+<div aria-describedby="fig-ren-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="16-renda-e-trabalho_files/figure-html/fig-ren-2022-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Limitando a escala de cor com <code>oob = scales::squish</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Renda tem cauda longa. Em Manaus, metade dos setores tem rendimento médio do responsável abaixo de dois mil reais, mas o valor máximo passa de cinquenta mil. Numa escala de cor linear, esse único setor consome quase toda a paleta e o restante da cidade fica indistinguível.</p>
+<p>O Capítulo 7 resolveu problema parecido com a transformação de raiz quadrada, que comprime os valores altos. Aqui usamos outro recurso, que é <strong>limitar</strong> a escala. O argumento <code>limits</code> do <code>scale_fill_*</code> define o intervalo representado, e o argumento <code>oob</code>, de <em>out of bounds</em>, decide o que fazer com os valores fora dele. O padrão é transformá-los em ausentes, o que deixaria buracos no mapa. Com <code>oob = scales::squish</code>, eles são empurrados para o extremo da escala e recebem a cor mais intensa.</p>
+<p>Adotamos como limite o percentil 95 de cada variável, calculado no próprio código. Os cerca de 5% de setores acima dele aparecem todos com a cor máxima, e a informação que se perde é a distinção <strong>entre</strong> esses setores extremos. Em troca, ganha-se a distinção entre os 95% restantes, que é onde está a cidade.</p>
+<p>A escolha precisa ser declarada, e é por isso que a legenda da <a href="#fig-ren-2022" class="quarto-xref">Figura&nbsp;<span>16.1</span></a> informa o corte. Um mapa com escala limitada e sem aviso induz o leitor a subestimar os extremos.</p>
+</div>
+</div>
+<p>Os dois mapas não coincidem. Há setores de renda média alta e baixa dispersão, que são áreas socialmente homogêneas, e há setores de renda média intermediária e dispersão muito alta, onde convivem situações econômicas distintas. Um indicador de renda que ignore a segunda dimensão trata os dois casos como equivalentes.</p>
+</section>
+<section id="sec-ren-proxy" class="level2" data-number="16.5">
+<h2 data-number="16.5" class="anchored" data-anchor-id="sec-ren-proxy"><span class="header-section-number">16.5</span> A renda do responsável como aproximação</h2>
+<p>O rendimento domiciliar deixou de ser divulgado, e a saída praticada por quem trabalha com os dados de 2022 é usar o rendimento da pessoa responsável em seu lugar. A substituição se apoia no fato de que as duas medidas guardam <strong>correlação alta</strong> entre si, o que pode ser verificado em 2010, ano em que ambas coexistem no mesmo setor censitário.</p>
+<!-- ============================================================
+TEXTO E GRÁFICO A CARGO DO AUTOR.
+
+O autor acrescentará aqui a discussão sobre o uso da renda do
+responsável como proxy da renda domiciliar média, acompanhada de
+um gráfico de correlação entre as duas medidas para várias cidades.
+
+Material de apoio já disponível nos Agregados de 2010, caso seja
+útil na montagem do gráfico:
+  - renda domiciliar média por setor
+      = DomicilioRenda V003 (rendimento total dos domicílios
+        particulares permanentes) dividido por Básico V001
+        (total de domicílios particulares permanentes)
+  - renda média do responsável com rendimento por setor
+      = Básico V007
+Os dois objetos já foram lidos acima, em `domrenda_2010` e
+`basico_2010`.
+============================================================ -->
+<p>Estabelecida a equivalência aproximada, o passo seguinte é levar a variável a recortes espaciais diferentes do setor censitário.</p>
+</section>
+<section id="sec-ren-cnefetools" class="level2" data-number="16.6">
+<h2 data-number="16.6" class="anchored" data-anchor-id="sec-ren-cnefetools"><span class="header-section-number">16.6</span> Levando a renda a outros recortes</h2>
+<p>O Capítulo 7 apresentou a interpolação dasimétrica do pacote <code>cnefetools</code>, que redistribui informação dos setores para outras malhas usando os endereços do CNEFE como guia. Naquele capítulo, o exemplo usou variáveis de <strong>total</strong>. Aqui usamos a única variável de <strong>média</strong> disponível no pacote, que é justamente a <code>V06004</code>, sob o nome <code>avg_inc_resp</code>.</p>
+<p>A distinção importa e merece ser recuperada. Para uma variável de total, o valor do setor é <strong>dividido</strong> entre os pontos de endereço que caem dentro dele, e a unidade-alvo recebe a soma dos pontos que a compõem. Para uma variável de média, o valor do setor é <strong>atribuído</strong> a cada ponto, e a unidade-alvo recebe a média dos valores dos pontos que estão dentro dela. A consequência prática é que a média resultante fica ponderada pela densidade de endereços, e não pela área, o que é o comportamento desejável.</p>
+<p>Usamos os bairros de Manaus como malha de destino.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bairros_manaus <span class="ot">&lt;-</span> <span class="fu">read_neighborhood</span>(<span class="at">year =</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> manaus)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>renda_bairro <span class="ot">&lt;-</span> <span class="fu">tracts_to_polygon</span>(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> manaus,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">polygon   =</span> bairros_manaus,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">vars      =</span> <span class="st">"avg_inc_resp"</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O objeto devolvido é um <code>sf</code> com um polígono por bairro e a variável já interpolada. Vale conferir a amplitude do resultado antes de mapear.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>renda_bairro <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">bairros =</span> <span class="fu">n</span>(),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">minimo  =</span> <span class="fu">min</span>(avg_inc_resp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mediana =</span> <span class="fu">median</span>(avg_inc_resp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">maximo  =</span> <span class="fu">max</span>(avg_inc_resp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">0</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">bairros</th>
+<th style="text-align: right;">minimo</th>
+<th style="text-align: right;">mediana</th>
+<th style="text-align: right;">maximo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">1.380</td>
+<td style="text-align: right;">2.328</td>
+<td style="text-align: right;">15.045</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A função reporta, durante a execução, a proporção de pontos do CNEFE efetivamente aproveitados e a de setores em que a variável estava ausente. Vale sempre ler essas mensagens, porque uma cobertura baixa invalida o resultado. O mapa por bairro fica bem mais legível que o de setores para fins de comunicação.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(renda_bairro) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> avg_inc_resp), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"YlGnBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"R$"</span>, <span class="at">na.value =</span> <span class="st">"gray90"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-renda-bairro" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-renda-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;16.2: Rendimento médio mensal das pessoas responsáveis com rendimento, interpolado dos setores censitários para os bairros por interpolação dasimétrica, Manaus (AM), Censo 2022.
+</figcaption>
+<div aria-describedby="fig-renda-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="16-renda-e-trabalho_files/figure-html/fig-renda-bairro-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Valem as mesmas ressalvas listadas no Capítulo 7. A interpolação assume que a variável se distribui de forma homogênea entre os endereços do setor, o que é uma aproximação, e nenhuma interpolação cria informação que não existia.</p>
+</section>
+<section id="sec-ren-microdados" class="level2" data-number="16.7">
+<h2 data-number="16.7" class="anchored" data-anchor-id="sec-ren-microdados"><span class="header-section-number">16.7</span> A distribuição que só os microdados mostram</h2>
+<p>Todos os indicadores até aqui são médias. Média de renda por setor, média por bairro, e nada mais. Os agregados não permitem outra coisa, porque não divulgam nem mediana nem faixas. Os microdados da amostra permitem.</p>
+<p>A diferença não é um detalhe técnico. Em variáveis de renda, a média é fortemente puxada pelos valores altos, e por isso descreve mal a situação típica. É o que veremos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ap_manaus <span class="ot">&lt;-</span> <span class="fu">read_weighting_area</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_weighting =</span> manaus,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">year           =</span> <span class="dv">2010</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplified     =</span> <span class="cn">FALSE</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>ap_cods <span class="ot">&lt;-</span> ap_manaus <span class="sc">|&gt;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(code_weighting)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>cols_pes <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V0300"</span>,          <span class="co"># Identificador do domicílio (conglomerado)</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V0010"</span>,          <span class="co"># Peso amostral calibrado</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"code_weighting"</span>, <span class="co"># Área de ponderação</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V1006"</span>,          <span class="co"># Situação do domicílio, urbana ou rural</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V0641"</span>, <span class="st">"V0642"</span>, <span class="st">"V0643"</span>, <span class="st">"V0644"</span>,  <span class="co"># Condição de ocupação na semana de referência</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V0648"</span>,          <span class="co"># Posição na ocupação no trabalho principal</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V0653"</span>,          <span class="co"># Horas habitualmente trabalhadas por semana</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V6511"</span>,          <span class="co"># Rendimento no trabalho principal</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V6531"</span>           <span class="co"># Rendimento domiciliar per capita</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>md_manaus <span class="ot">&lt;-</span> <span class="fu">read_population</span>(<span class="at">year =</span> <span class="dv">2010</span>, <span class="at">columns =</span> cols_pes) <span class="sc">|&gt;</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_weighting <span class="sc">%in%</span> ap_cods, V1006 <span class="sc">==</span> <span class="st">"1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>pes_ap <span class="ot">&lt;-</span> md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n_ind =</span> <span class="fu">sum</span>(V0010))</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>md_manaus <span class="ot">&lt;-</span> md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pes_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting))</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="ot">&lt;-</span> md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">ids     =</span> V0300,</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">strata  =</span> code_weighting,</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">weights =</span> V0010,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">fpc     =</span> n_ind</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">areas_de_ponderacao =</span> <span class="fu">length</span>(ap_cods), <span class="at">registros =</span> <span class="fu">nrow</span>(md_manaus))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>areas_de_ponderacao           registros 
+                 33               86989 </code></pre>
+</div>
+</div>
+<p>O filtro por <code>V1006</code> mantém a coerência com a restrição urbana da <a href="#sec-ren-urbano" class="quarto-xref"><span>Seção 16.2</span></a>. Ele remove poucas centenas de registros e todas as áreas de ponderação seguem com amostra suficiente, o que confirma que a restrição é de recorte territorial, e não de conteúdo.</p>
+<p>As áreas de ponderação, porém, são polígonos que cobrem o município inteiro, inclusive a parte rural, e duas delas sozinhas respondem por quase toda a área de Manaus. Para que os mapas por área de ponderação fiquem legíveis, guardamos a extensão da mancha urbana e a usaremos para recortar a visualização, sem descartar nenhuma estimativa.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>limites_urbanos <span class="ot">&lt;-</span> <span class="fu">st_bbox</span>(manaus_geo)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>limites_urbanos</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      xmin       ymin       xmax       ymax 
+-60.116294  -3.163241 -59.822600  -2.902195 </code></pre>
+</div>
+</div>
+<p>Calculamos a média e a mediana do rendimento domiciliar per capita, junto com os quartis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">media   =</span> <span class="fu">survey_mean</span>(V6531,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mediana =</span> <span class="fu">survey_median</span>(V6531, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">media</th>
+<th style="text-align: right;">media_low</th>
+<th style="text-align: right;">media_upp</th>
+<th style="text-align: right;">mediana</th>
+<th style="text-align: right;">mediana_low</th>
+<th style="text-align: right;">mediana_upp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">745,13</td>
+<td style="text-align: right;">687,52</td>
+<td style="text-align: right;">802,74</td>
+<td style="text-align: right;">349,55</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">353,33</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A média é mais que o dobro da mediana. Metade dos moradores de Manaus vivia em domicílios com rendimento per capita abaixo de trezentos e cinquenta reais, enquanto a média passava de setecentos. Nenhum indicador construído a partir dos agregados de 2022 revelaria isso, porque lá só existe média.</p>
+<p>Os quartis completam o retrato.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">quartis =</span> <span class="fu">survey_quantile</span>(V6531, <span class="at">quantiles =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"quartis_q"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">!</span><span class="fu">ends_with</span>(<span class="st">"_low"</span>) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">ends_with</span>(<span class="st">"_upp"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">quartis_q25</th>
+<th style="text-align: right;">quartis_q50</th>
+<th style="text-align: right;">quartis_q75</th>
+<th style="text-align: right;">quartis_q90</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">349,55</td>
+<td style="text-align: right;">673,33</td>
+<td style="text-align: right;">1.380</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>O quarto mais pobre da população vivia com até cento e oitenta reais per capita, e o décimo mais rico começava acima de mil e trezentos. A distância entre os extremos é de mais de sete vezes.</p>
+<p>A comparação entre média e mediana pode ser levada ao território, e o resultado é revelador.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>renda_ap <span class="ot">&lt;-</span> pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">media   =</span> <span class="fu">survey_mean</span>(V6531,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mediana =</span> <span class="fu">survey_median</span>(V6531, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>renda_ap_geo <span class="ot">&lt;-</span> ap_manaus <span class="sc">|&gt;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(renda_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting))</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>mapa_media <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(renda_ap_geo) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> media), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"BuPu"</span>, <span class="at">direction =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">"R$"</span>,</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(renda_ap<span class="sc">$</span>media)),</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> limites_urbanos[<span class="fu">c</span>(<span class="st">"xmin"</span>, <span class="st">"xmax"</span>)],</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>           <span class="at">ylim =</span> limites_urbanos[<span class="fu">c</span>(<span class="st">"ymin"</span>, <span class="st">"ymax"</span>)],</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Média"</span>) <span class="sc">+</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>mapa_mediana <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(renda_ap_geo) <span class="sc">+</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> mediana), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"BuPu"</span>, <span class="at">direction =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">"R$"</span>,</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(renda_ap<span class="sc">$</span>media)),</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_number</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)) <span class="sc">+</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> limites_urbanos[<span class="fu">c</span>(<span class="st">"xmin"</span>, <span class="st">"xmax"</span>)],</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>           <span class="at">ylim =</span> limites_urbanos[<span class="fu">c</span>(<span class="st">"ymin"</span>, <span class="st">"ymax"</span>)],</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>           <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Mediana"</span>) <span class="sc">+</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>mapa_media <span class="sc">+</span> mapa_mediana</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-media-mediana" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-media-mediana-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;16.3: Rendimento domiciliar per capita por área de ponderação, Manaus (AM), microdados da amostra do Censo 2010. À esquerda a média, à direita a mediana. Visualização recortada na mancha urbana.
+</figcaption>
+<div aria-describedby="fig-media-mediana-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="16-renda-e-trabalho_files/figure-html/fig-media-mediana-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>As duas escalas de cor são deliberadamente iguais, para que a comparação seja visual e direta. O mapa da média destaca com força uma ou duas áreas, enquanto o da mediana é bem mais uniforme. A razão entre as duas medidas mede exatamente esse efeito.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>renda_ap <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">razao =</span> media <span class="sc">/</span> mediana) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">razao_minima =</span> <span class="fu">min</span>(razao),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">razao_mediana =</span> <span class="fu">median</span>(razao),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">razao_maxima =</span> <span class="fu">max</span>(razao)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">razao_minima</th>
+<th style="text-align: right;">razao_mediana</th>
+<th style="text-align: right;">razao_maxima</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1,3</td>
+<td style="text-align: right;">1,6</td>
+<td style="text-align: right;">4,86</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Há áreas de ponderação em que a média é quase cinco vezes a mediana. São justamente as áreas de maior desigualdade interna, e são as que um indicador baseado apenas em média descreve pior.</p>
+</section>
+<section id="sec-ren-trabalho" class="level2" data-number="16.8">
+<h2 data-number="16.8" class="anchored" data-anchor-id="sec-ren-trabalho"><span class="header-section-number">16.8</span> Trabalho, posição e jornada</h2>
+<p>A renda vem do trabalho, e o Questionário da Amostra descreve o trabalho com detalhe considerável. Duas variáveis pouco usadas interessam particularmente. A <code>V0648</code> informa a <strong>posição na ocupação</strong>, ou seja, o vínculo que a pessoa tinha no trabalho principal. A <code>V0653</code> informa as <strong>horas habitualmente trabalhadas</strong> por semana nesse mesmo trabalho.</p>
+<p>Antes de usá-las, é preciso definir quem responde. O bloco de trabalho começa com quatro perguntas de triagem, e basta responder sim a qualquer uma delas para ser considerado ocupado na semana de referência.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>md_manaus <span class="ot">&lt;-</span> md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ocupado =</span> <span class="fu">coalesce</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>      V0641 <span class="sc">==</span> <span class="st">"1"</span> <span class="sc">|</span> V0642 <span class="sc">==</span> <span class="st">"1"</span> <span class="sc">|</span> V0643 <span class="sc">==</span> <span class="st">"1"</span> <span class="sc">|</span> V0644 <span class="sc">==</span> <span class="st">"1"</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">FALSE</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">autoconsumo =</span> <span class="fu">coalesce</span>(V0644 <span class="sc">==</span> <span class="st">"1"</span>, <span class="cn">FALSE</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">registros           =</span> <span class="fu">n</span>(),</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">ocupados            =</span> <span class="fu">sum</span>(ocupado),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">apenas_autoconsumo  =</span> <span class="fu">sum</span>(autoconsumo),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">ocupados_sem_V0653  =</span> <span class="fu">sum</span>(ocupado <span class="sc">&amp;</span> <span class="fu">is.na</span>(V0653)),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ocupados_sem_V0648  =</span> <span class="fu">sum</span>(ocupado <span class="sc">&amp;</span> <span class="fu">is.na</span>(V0648))</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  registros ocupados apenas_autoconsumo ocupados_sem_V0653 ocupados_sem_V0648
+      &lt;int&gt;    &lt;int&gt;              &lt;int&gt;              &lt;int&gt;              &lt;int&gt;
+1     86989    35898                150                  0                150</code></pre>
+</div>
+</div>
+<p>O resultado dessa checagem é o ponto metodológico da seção. A variável de horas não tem nenhum ausente entre os ocupados, mas a de posição na ocupação tem alguns, e não é acaso.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ocupado, <span class="fu">is.na</span>(V0648)) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ausentes_em_V0648        =</span> <span class="fu">n</span>(),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">destes_apenas_autoconsumo =</span> <span class="fu">sum</span>(autoconsumo)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  ausentes_em_V0648 destes_apenas_autoconsumo
+              &lt;int&gt;                     &lt;int&gt;
+1               150                       150</code></pre>
+</div>
+</div>
+<p>Todos os ausentes são pessoas cujo único trabalho foi a produção para consumo próprio.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Aviso</span><code>V0653</code> pode ser usada direto, <code>V0648</code> não
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>O fluxo do Questionário da Amostra de 2010 explica o resultado acima. Depois do quesito 6.47, a instrução determina que, se a pessoa respondeu sim ao quesito 6.44, que é o de trabalho na plantação, criação ou pesca <strong>somente para alimentação dos moradores do domicílio</strong>, o entrevistador passe direto ao quesito 6.53. Ou seja, a pergunta sobre posição na ocupação, que é o quesito 6.48, <strong>não é feita</strong> a quem trabalhou apenas para o próprio consumo.</p>
+<p>As consequências práticas são duas.</p>
+<p>A <strong><code>V0653</code></strong>, das horas, corresponde ao quesito 6.53, alcançado por todos os caminhos do bloco. Seu universo é o conjunto de ocupados, e ela pode ser usada diretamente, bastando definir a ocupação a partir de <code>V0641</code> a <code>V0644</code>.</p>
+<p>A <strong><code>V0648</code></strong>, da posição na ocupação, corresponde ao quesito 6.48 e exclui os ocupados apenas em autoconsumo. Seu denominador correto é, portanto, o de ocupados <strong>menos</strong> aqueles com <code>V0644</code> igual a 1. Tratar os ausentes como não resposta, ou aplicar <code>na.rm = TRUE</code> sem pensar, produziria percentuais sobre um universo que não é o da pergunta.</p>
+<p>Em Manaus o ajuste desloca pouco o resultado, porque o autoconsumo é raro numa capital. Em municípios rurais ou amazônicos de menor porte, o mesmo cuidado muda bastante os percentuais, e é lá que a distinção pesa.</p>
+</div>
+</div>
+<p>Com o universo correto, calculamos a distribuição por posição na ocupação.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="ot">&lt;-</span> md_manaus <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_survey_design</span>(<span class="at">ids =</span> V0300, <span class="at">strata =</span> code_weighting,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">weights =</span> V0010, <span class="at">fpc =</span> n_ind)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>posicoes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Empregado com carteira assinada"</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"2"</span> <span class="ot">=</span> <span class="st">"Militar"</span>,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>              <span class="st">"3"</span> <span class="ot">=</span> <span class="st">"Empregado pelo regime jurídico dos servidores públicos"</span>,</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>              <span class="st">"4"</span> <span class="ot">=</span> <span class="st">"Empregado sem carteira assinada"</span>,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>              <span class="st">"5"</span> <span class="ot">=</span> <span class="st">"Conta própria"</span>,</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>              <span class="st">"6"</span> <span class="ot">=</span> <span class="st">"Empregador"</span>,</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>              <span class="st">"7"</span> <span class="ot">=</span> <span class="st">"Não remunerado"</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ocupado, <span class="sc">!</span>autoconsumo) <span class="sc">|&gt;</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">posicao =</span> <span class="fu">factor</span>(V0648, <span class="at">levels =</span> <span class="fu">names</span>(posicoes), <span class="at">labels =</span> posicoes)) <span class="sc">|&gt;</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(posicao) <span class="sc">|&gt;</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 59%">
+<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">posicao</th>
+<th style="text-align: right;">proporcao</th>
+<th style="text-align: right;">proporcao_low</th>
+<th style="text-align: right;">proporcao_upp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Empregado com carteira assinada</td>
+<td style="text-align: right;">0,5005</td>
+<td style="text-align: right;">0,4944</td>
+<td style="text-align: right;">0,5067</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Militar</td>
+<td style="text-align: right;">0,0136</td>
+<td style="text-align: right;">0,0124</td>
+<td style="text-align: right;">0,0150</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Empregado pelo regime jurídico dos servidores públicos</td>
+<td style="text-align: right;">0,0554</td>
+<td style="text-align: right;">0,0527</td>
+<td style="text-align: right;">0,0583</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Empregado sem carteira assinada</td>
+<td style="text-align: right;">0,1975</td>
+<td style="text-align: right;">0,1926</td>
+<td style="text-align: right;">0,2025</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Conta própria</td>
+<td style="text-align: right;">0,2042</td>
+<td style="text-align: right;">0,1992</td>
+<td style="text-align: right;">0,2092</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Empregador</td>
+<td style="text-align: right;">0,0129</td>
+<td style="text-align: right;">0,0115</td>
+<td style="text-align: right;">0,0145</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Não remunerado</td>
+<td style="text-align: right;">0,0158</td>
+<td style="text-align: right;">0,0142</td>
+<td style="text-align: right;">0,0176</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Metade dos ocupados de Manaus tinha carteira assinada em 2010. Somando quem trabalhava sem carteira e quem trabalhava por conta própria, chega-se a cerca de dois quintos dos ocupados em posições sem vínculo formal de emprego.</p>
+<p>As horas trabalhadas completam o quadro.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ocupado) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">media          =</span> <span class="fu">survey_mean</span>(V0653,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mediana        =</span> <span class="fu">survey_median</span>(V0653, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">acima_de_44h   =</span> <span class="fu">survey_mean</span>(V0653 <span class="sc">&gt;</span> <span class="dv">44</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">media</th>
+<th style="text-align: right;">media_low</th>
+<th style="text-align: right;">media_upp</th>
+<th style="text-align: right;">mediana</th>
+<th style="text-align: right;">mediana_low</th>
+<th style="text-align: right;">mediana_upp</th>
+<th style="text-align: right;">acima_de_44h</th>
+<th style="text-align: right;">acima_de_44h_low</th>
+<th style="text-align: right;">acima_de_44h_upp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">39,297</td>
+<td style="text-align: right;">39,062</td>
+<td style="text-align: right;">39,531</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0,294</td>
+<td style="text-align: right;">0,287</td>
+<td style="text-align: right;">0,3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A jornada mediana é de quarenta horas semanais, e quase três em cada dez ocupados trabalhavam acima de quarenta e quatro horas, que é o limite da jornada semanal fixado pela Constituição Federal em seu artigo 7º. O cruzamento das duas variáveis mostra que jornada e vínculo caminham juntos.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ocupado, <span class="sc">!</span>autoconsumo) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">posicao =</span> <span class="fu">factor</span>(V0648, <span class="at">levels =</span> <span class="fu">names</span>(posicoes), <span class="at">labels =</span> posicoes)) <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(posicao) <span class="sc">|&gt;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">horas_medias        =</span> <span class="fu">survey_mean</span>(V0653,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">rendimento_mediano  =</span> <span class="fu">survey_median</span>(V6511, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(posicao, horas_medias, rendimento_mediano) <span class="sc">|&gt;</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Posição na ocupação"</span>, <span class="st">"Horas semanais médias"</span>,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Rendimento mediano no trabalho principal"</span>),</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 46%">
+<col style="width: 18%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Posição na ocupação</th>
+<th style="text-align: right;">Horas semanais médias</th>
+<th style="text-align: right;">Rendimento mediano no trabalho principal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Empregado com carteira assinada</td>
+<td style="text-align: right;">40,8</td>
+<td style="text-align: right;">800</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Militar</td>
+<td style="text-align: right;">43,9</td>
+<td style="text-align: right;">2.000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Empregado pelo regime jurídico dos servidores públicos</td>
+<td style="text-align: right;">35,5</td>
+<td style="text-align: right;">1.700</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Empregado sem carteira assinada</td>
+<td style="text-align: right;">37,7</td>
+<td style="text-align: right;">510</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Conta própria</td>
+<td style="text-align: right;">39,5</td>
+<td style="text-align: right;">700</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Empregador</td>
+<td style="text-align: right;">44,5</td>
+<td style="text-align: right;">3.500</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Não remunerado</td>
+<td style="text-align: right;">18,4</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A tabela desfaz uma intuição comum. Não é verdade que quem ganha menos trabalhe menos. Quem trabalha sem carteira assinada tem jornada média próxima da de quem tem carteira e rendimento mediano bem inferior. No outro extremo, empregadores e militares têm as jornadas mais longas, com rendimentos muito mais altos. A relação entre horas e renda não é proporcional, e o que a organiza é o vínculo.</p>
+<p>Por fim, levamos a informalidade ao território.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>informal_ap <span class="ot">&lt;-</span> pa_manaus <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ocupado, <span class="sc">!</span>autoconsumo) <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">sem_carteira =</span> <span class="fu">survey_mean</span>(V0648 <span class="sc">==</span> <span class="st">"4"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>ap_manaus <span class="sc">|&gt;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(informal_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting)) <span class="sc">|&gt;</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="dv">100</span> <span class="sc">*</span> sem_carteira), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"RdYlBu"</span>, <span class="at">direction =</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% sem</span><span class="sc">\n</span><span class="st">carteira"</span>, <span class="at">na.value =</span> <span class="st">"gray90"</span>) <span class="sc">+</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> limites_urbanos[<span class="fu">c</span>(<span class="st">"xmin"</span>, <span class="st">"xmax"</span>)],</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">ylim =</span> limites_urbanos[<span class="fu">c</span>(<span class="st">"ymin"</span>, <span class="st">"ymax"</span>)],</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-informalidade" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-informalidade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;16.4: Proporção de ocupados empregados sem carteira de trabalho assinada, por área de ponderação, Manaus (AM), microdados da amostra do Censo 2010. Visualização recortada na mancha urbana.
+</figcaption>
+<div aria-describedby="fig-informalidade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="16-renda-e-trabalho_files/figure-html/fig-informalidade-1.png" class="img-fluid figure-img" width="672">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>O mapa da informalidade é quase o negativo do mapa da renda mediana produzido na seção anterior, o que confirma no território a relação que a tabela mostrou entre vínculo e rendimento.</p>
+</section>
+<section id="sec-ren-fechamento" class="level2" data-number="16.9">
+<h2 data-number="16.9" class="anchored" data-anchor-id="sec-ren-fechamento"><span class="header-section-number">16.9</span> Fechamento da Parte 3</h2>
+<p>Este é o último capítulo do livro, e vale olhar para trás.</p>
+<p>A Parte 3 percorreu cinco temas com uma mesma lógica de trabalho. Em cada um deles, uma pergunta territorial concreta determinou quais produtos do Censo seriam combinados, e não o contrário. O Capítulo 12 mostrou onde vivem os grupos que a política precisa alcançar e por que contagem e proporção apontam para lugares diferentes. O Capítulo 13 mediu a precariedade e o vazio do estoque habitacional e localizou as frentes de expansão. O Capítulo 14 tratou do que chega até o domicílio. O Capítulo 15 tratou de como se sai dele. E este capítulo tratou do que sustenta tudo isso.</p>
+<p>Três lições atravessam os cinco capítulos e valem mais que qualquer indicador específico. A primeira é que o denominador precisa ser declarado junto com o numerador, porque é ele que define a pergunta que o indicador responde. A segunda é que a fonte determina a escala, de modo que trocar de produto do Censo significa trocar de unidade espacial, e a leitura precisa acompanhar essa troca. A terceira é que os valores ausentes quase sempre significam alguma coisa, seja sigilo, seja não aplicação do quesito, e investigá-los costuma ensinar mais sobre os dados do que o próprio indicador.</p>
+<p>O Censo continuará mudando. Variáveis entrarão, como o modo de transporte em 2022, e sairão, como o rendimento domiciliar por setor. O leitor que tiver incorporado o hábito de consultar o dicionário, verificar o universo de cada quesito e conferir se os totais fecham estará preparado para trabalhar com o que vier.</p>
+</section>
+<section id="sec-ren-exercicios" class="level2" data-number="16.10">
+<h2 data-number="16.10" class="anchored" data-anchor-id="sec-ren-exercicios"><span class="header-section-number">16.10</span> Exercícios</h2>
+<ol type="1">
+<li><p>Calcule, para um município à sua escolha, o coeficiente de variação do rendimento do responsável por setor a partir de <code>V06004</code> e <code>V06005</code>, e mapeie o resultado. Identifique os setores que combinam renda média alta com coeficiente de variação alto e descreva o que caracteriza essas áreas.</p></li>
+<li><p>Reproduza, para dois municípios de portes diferentes, a comparação entre média e mediana do rendimento domiciliar per capita por área de ponderação. Calcule a razão entre as duas medidas e discuta o que a diferença entre os dois municípios informa sobre a desigualdade interna de cada um.</p></li>
+<li><p>Na <a href="#sec-ren-trabalho" class="quarto-xref"><span>Seção 16.8</span></a>, o universo de <code>V0648</code> exclui quem trabalhou apenas para consumo próprio. Escolha um município amazônico de pequeno porte, calcule a proporção de ocupados nessa situação e compare com o valor obtido para Manaus. Em seguida, calcule a distribuição por posição na ocupação com e sem o ajuste de universo e meça o quanto os percentuais mudam.</p></li>
+<li><p>Usando <code>V0653</code> e <code>V6511</code>, construa um indicador de rendimento por hora trabalhada no trabalho principal e compare sua distribuição entre as posições na ocupação. Discuta que informação esse indicador acrescenta em relação às duas variáveis analisadas separadamente, e que cuidados são necessários com os casos de rendimento igual a zero.</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./15-mobilidade.html" class="pagination-link" aria-label="Mobilidade">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Mobilidade</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="Referências">
+        <span class="nav-page-text">Referências</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

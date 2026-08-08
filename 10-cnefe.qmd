@@ -184,7 +184,7 @@ Para carregar os dados de Porto Alegre-RS, como um arquivo geográfico, por exem
 #| message: false
 
 # Obtendo código IBGE de Porto Alegre com o geobr
-poa_ibge <- lookup_muni("Porto Alegre")$code_muni
+poa_ibge <- lookup_muni(name_muni = "Porto Alegre", year = 2022)$code_muni
 
 # Lendo o CNEFE de Porto Alegre:
 poa_cnefe <- read_cnefe(

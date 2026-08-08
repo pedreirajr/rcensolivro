@@ -33,7 +33,13 @@ book:
         - 10-cnefe.qmd
         - 11-entorno.qmd
 
-    # PARTE 3: APLICAÇÕES TERRITORIAIS — capítulos a definir
+    - part: "PARTE 3: APLICAÇÕES TERRITORIAIS"
+      chapters:
+        - 12-demografia.qmd
+        - 13-habitacao.qmd
+        - 14-saneamento.qmd
+        - 15-mobilidade.qmd
+        - 16-renda-e-trabalho.qmd
 
     - references.qmd
 

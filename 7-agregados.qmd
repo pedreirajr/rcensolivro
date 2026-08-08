@@ -218,7 +218,7 @@ library(mapview)
 Vamos, preliminarmente, obter o código IBGE do município de Recife para que possamos selecionar somente os setores censitários deste município na nossa base:
 
 ```{r, eval = F}
-recife_ibge <- geobr::lookup_muni(name_muni = "Recife")$code_muni
+recife_ibge <- geobr::lookup_muni(name_muni = "Recife", year = 2022)$code_muni
 ```
 
 ```{r, echo = F, message = F, warning = F}
@@ -315,7 +315,7 @@ sc_recife_2022 <- sc2022 |>
 rds_sc <- "data/cap07/sc_tot_2022.rds"
 
 if (!file.exists(rds_sc)) {
-  recife_ibge    <- geobr::lookup_muni(name_muni = "Recife")$code_muni
+  recife_ibge    <- geobr::lookup_muni(name_muni = "Recife", year = 2022)$code_muni
   sc2022         <- censobr::read_tracts(dataset = "Basico",    year = 2022)
   sc2022_dom     <- censobr::read_tracts(dataset = "Domicilio", year = 2022)
 
