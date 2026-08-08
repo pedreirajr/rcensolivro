@@ -536,8 +536,14 @@ Tabela&nbsp;13.1: Variáveis dos Agregados por Setor Censitário utilizadas nest
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">3</span>,</span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-improvisados" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-improvisados-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.2: Domicílios improvisados em João Pessoa (PB), comparando os setores de Favela e Comunidade Urbana aos demais setores, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-improvisados-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 30%">
 <col style="width: 8%">
@@ -575,6 +581,9 @@ Tabela&nbsp;13.1: Variáveis dos Agregados por Setor Censitário utilizadas nest
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Os setores de favela e comunidade urbana são menos de um quinto dos setores do município e concentram quase metade dos domicílios improvisados. A concentração é real e vale registrar. O volume absoluto, porém, continua pequeno demais para sustentar um diagnóstico habitacional, o que reforça o ponto anterior.</p>
@@ -667,8 +676,14 @@ Figura&nbsp;13.1: Proporção de domicílios particulares não ocupados, somando
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-nao-ocup-bairro" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-nao-ocup-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.3: Bairros de João Pessoa (PB) com as maiores e as menores proporções de domicílios particulares não ocupados, entre os que possuem ao menos mil domicílios particulares, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-nao-ocup-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Bairro</th>
@@ -746,6 +761,9 @@ Figura&nbsp;13.1: Proporção de domicílios particulares não ocupados, somando
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>A tabela revela dois fenômenos distintos misturados no mesmo indicador, e é justamente por isso que ele não pode ser chamado de vacância. No topo aparecem bairros da orla, onde a proporção de domicílios sem morador chega a quase metade do estoque, padrão compatível com segunda residência e uso de veraneio. Também no topo aparecem o Centro e o Varadouro, que ficam do lado oposto da cidade e cuja história é outra, a de esvaziamento de área central consolidada. Somar os dois casos em um único número é aceitável desde que a leitura os separe.</p>
 <p>Podemos verificar a hipótese da orla usando as coordenadas dos bairros. Em João Pessoa, o litoral é o limite leste do município, de modo que quanto maior a longitude do centroide, mais próximo do mar está o bairro.</p>
 <div class="cell">
@@ -765,8 +783,14 @@ Figura&nbsp;13.1: Proporção de domicílios particulares não ocupados, somando
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">1</span>),</span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-orla" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-orla-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.4: Seis bairros mais orientais de João Pessoa (PB), portanto os mais próximos do litoral, e suas proporções de domicílios não ocupados, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-orla-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Bairro</th>
@@ -809,6 +833,9 @@ Figura&nbsp;13.1: Proporção de domicílios particulares não ocupados, somando
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Todos os seis bairros mais a leste do município têm proporção de domicílios não ocupados acima da média municipal de 21,4%, e dois deles, Cabo Branco e Tambaú, ocupam as primeiras posições da tabela anterior. A associação entre proximidade do mar e domicílio sem morador se sustenta, embora nem todo bairro a leste seja de frente para a praia, o que explica por que alguns aparecem apenas ligeiramente acima da média.</p>
 <p>Resta a comparação com os setores de favela e comunidade urbana, que produz o resultado mais contraintuitivo do capítulo.</p>
 <div class="cell">
@@ -827,8 +854,14 @@ Figura&nbsp;13.1: Proporção de domicílios particulares não ocupados, somando
 <span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-nao-ocup-favela" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-nao-ocup-favela-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.5: Domicílios particulares não ocupados em João Pessoa (PB), comparando os setores de Favela e Comunidade Urbana aos demais setores, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-nao-ocup-favela-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">tipo</th>
@@ -852,6 +885,9 @@ Figura&nbsp;13.1: Proporção de domicílios particulares não ocupados, somando
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>A proporção de domicílios sem morador é <strong>menor</strong> dentro das favelas e comunidades urbanas do que no restante da cidade. O resultado surpreende quem espera que o indicador meça abandono, e deixa de surpreender assim que se lembra do que ele mede. Domicílio de uso ocasional pressupõe que alguém tenha uma segunda casa, e domicílio vago pressupõe um mercado com estoque à espera de comprador ou inquilino. Nenhuma das duas coisas é característica de assentamento precário, onde o domicílio existente tende a estar ocupado.</p>
@@ -972,8 +1008,14 @@ Figura&nbsp;13.2: Média de moradores em domicílios particulares ocupados, por 
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">acima_de_dois  =</span> <span class="fu">survey_mean</span>(V6204 <span class="sc">&gt;</span> <span class="dv">2</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-densidade" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-densidade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.6: Moradores por dormitório em João Pessoa (PB), com média, mediana e proporção de domicílios acima de dois moradores por dormitório, e respectivos intervalos de confiança, microdados da amostra do Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-hab-densidade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 5%">
 <col style="width: 9%">
@@ -1012,6 +1054,9 @@ Figura&nbsp;13.2: Média de moradores em domicílios particulares ocupados, por 
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>A média municipal fica em torno de um vírgula sete moradores por dormitório, e cerca de um em cada sete domicílios tinha mais de dois moradores por dormitório em 2010. O mapa por área de ponderação mostra onde esses domicílios se concentravam.</p>
@@ -1053,7 +1098,7 @@ Figura&nbsp;13.3: Proporção de domicílios com mais de dois moradores por dorm
 <div id="tbl-hab-escalas" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-escalas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabela&nbsp;13.2: Os dois indicadores de adensamento deste capítulo e suas incompatibilidades.
+Tabela&nbsp;13.7: Os dois indicadores de adensamento deste capítulo e suas incompatibilidades.
 </figcaption>
 <div aria-describedby="tbl-hab-escalas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1201,8 +1246,14 @@ Figura&nbsp;13.4: Adensamento em duas escalas. À esquerda, média de moradores 
 <span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-construcoes" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-construcoes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.8: Edificações em construção com destinação residencial ou mista em João Pessoa (PB), segundo o número de unidades previstas no endereço, CNEFE 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-construcoes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Unidades em construção no endereço</th>
@@ -1233,6 +1284,9 @@ Figura&nbsp;13.4: Adensamento em duas escalas. À esquerda, média de moradores 
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Esse campo é o que nos permite distinguir, ainda que por aproximação, dois modos de crescer. Um endereço com <strong>uma única</strong> unidade em construção corresponde tipicamente a expansão horizontal, casa a casa. Um endereço com <strong>mais de dez</strong> unidades corresponde tipicamente a verticalização, ou seja, a um edifício. A aproximação é grosseira e precisa ser declarada como tal, porque um condomínio horizontal fechado também registra muitas unidades em um único endereço.</p>
@@ -1277,8 +1331,14 @@ Figura&nbsp;13.4: Adensamento em duas escalas. À esquerda, média de moradores 
 <pre><code>Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 'big.mark' e 'decimal.mark' são ambos '.', o que pode ser confuso</code></pre>
 </div>
+<div id="tbl-hab-setor-cnefe" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-setor-cnefe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.9: Incompatibilidade entre os códigos de setor censitário do CNEFE e dos Agregados por Setor Censitário em João Pessoa (PB), Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-setor-cnefe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Medida</th>
@@ -1308,6 +1368,9 @@ Figura&nbsp;13.4: Adensamento em duas escalas. À esquerda, média de moradores 
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Os códigos do CNEFE têm um caractere a mais que os dos agregados. Mesmo descartando esse sufixo, os dois conjuntos não coincidem, já que dos 1.635 setores presentes no CNEFE apenas 1.449 encontram correspondência entre os 1.778 dos agregados. Juntar por código descartaria silenciosamente centenas de setores, e o pior é que a operação não produziria erro algum.</p>
@@ -1353,8 +1416,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 'big.mark' e 'decimal.mark' são ambos '.', o que pode ser confuso</code></pre>
 </div>
+<div id="tbl-hab-constr-bairro" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-constr-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.10: Dez bairros de João Pessoa (PB) com maior número de edificações em construção, discriminadas entre unidade única e mais de dez unidades, CNEFE 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-constr-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Bairro</th>
@@ -1428,6 +1497,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Os bairros com mais canteiros abertos não são os mesmos que lideram em verticalização, e a tabela seguinte deixa isso claro.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>expansao <span class="sc">|&gt;</span></span>
@@ -1438,8 +1510,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 <span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-hab-constr-vertical" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hab-constr-vertical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;13.11: Oito bairros de João Pessoa (PB) com maior número de construções de mais de dez unidades e a participação delas no total de canteiros do bairro, CNEFE 2022.
+</figcaption>
+<div aria-describedby="tbl-hab-constr-vertical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 35%">
 <col style="width: 7%">
@@ -1522,6 +1600,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>O contraste é o achado da seção. Há bairros em que a construção é abundante e quase toda horizontal, com centenas de endereços de unidade única, e há bairros em que o número de canteiros é menor mas a proporção de edifícios é muito maior. São dois modos de produzir cidade, com consequências distintas sobre densidade, infraestrutura e preço da terra.</p>

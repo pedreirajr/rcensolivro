@@ -145,7 +145,8 @@ Esse resultado precisa ser lido com cuidado, e não como boa notícia. **Domicí
 O que a variável permite, ainda assim, é uma comparação. Os agregados classificam cada setor pelo campo `code_type`, e o valor 1 identifica os setores de Favela e Comunidade Urbana, categoria que em 2022 passou a ser pesquisada com o mesmo instrumento aplicado ao resto da cidade, como visto no Capítulo 11.
 
 ```{r}
-#| label: improvisados-favela
+#| label: tbl-hab-improvisados
+#| tbl-cap: "Domicílios improvisados em João Pessoa (PB), comparando os setores de Favela e Comunidade Urbana aos demais setores, Censo 2022."
 #| message: false
 jp_sc |>
   mutate(
@@ -228,7 +229,8 @@ jp_sc |>
 Com 65 bairros preenchidos, a agregação é viável. Restringimos a tabela aos bairros com pelo menos mil domicílios particulares, para que proporções calculadas sobre bases muito pequenas não dominem os extremos.
 
 ```{r}
-#| label: nao-ocupados-bairro
+#| label: tbl-hab-nao-ocup-bairro
+#| tbl-cap: "Bairros de João Pessoa (PB) com as maiores e as menores proporções de domicílios particulares não ocupados, entre os que possuem ao menos mil domicílios particulares, Censo 2022."
 #| message: false
 bairros <- jp_geo |>
   st_drop_geometry() |>
@@ -259,7 +261,8 @@ A tabela revela dois fenômenos distintos misturados no mesmo indicador, e é ju
 Podemos verificar a hipótese da orla usando as coordenadas dos bairros. Em João Pessoa, o litoral é o limite leste do município, de modo que quanto maior a longitude do centroide, mais próximo do mar está o bairro.
 
 ```{r}
-#| label: orla
+#| label: tbl-hab-orla
+#| tbl-cap: "Seis bairros mais orientais de João Pessoa (PB), portanto os mais próximos do litoral, e suas proporções de domicílios não ocupados, Censo 2022."
 #| message: false
 #| warning: false
 bairros_geo <- read_neighborhood(year = 2022, code_muni = joao_pessoa)
@@ -285,7 +288,8 @@ Todos os seis bairros mais a leste do município têm proporção de domicílios
 Resta a comparação com os setores de favela e comunidade urbana, que produz o resultado mais contraintuitivo do capítulo.
 
 ```{r}
-#| label: nao-ocupados-favela
+#| label: tbl-hab-nao-ocup-favela
+#| tbl-cap: "Domicílios particulares não ocupados em João Pessoa (PB), comparando os setores de Favela e Comunidade Urbana aos demais setores, Censo 2022."
 #| message: false
 jp_geo |>
   st_drop_geometry() |>
@@ -425,7 +429,8 @@ Os registros sem informação de dormitório são domicílios que não têm nenh
 Feita a ressalva, calculamos as estatísticas municipais. Além da média e da mediana, incluímos a proporção de domicílios com mais de dois moradores por dormitório, corte frequentemente usado como referência de adensamento excessivo na literatura de habitação e que adotamos aqui como escolha explícita, e não como norma oficial.
 
 ```{r}
-#| label: densidade-municipio
+#| label: tbl-hab-densidade
+#| tbl-cap: "Moradores por dormitório em João Pessoa (PB), com média, mediana e proporção de domicílios acima de dois moradores por dormitório, e respectivos intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
 pa_jp |>
   summarise(
@@ -560,7 +565,8 @@ Os dois totais coincidem exatamente, o que confirma que estamos diante do mesmo 
 Filtramos agora as edificações em construção com destinação residencial. As categorias 1 e 3 do campo de finalidade correspondem, respectivamente, a residencial e misto, e são as que interessam para expansão habitacional.
 
 ```{r}
-#| label: construcoes
+#| label: tbl-hab-construcoes
+#| tbl-cap: "Edificações em construção com destinação residencial ou mista em João Pessoa (PB), segundo o número de unidades previstas no endereço, CNEFE 2022."
 #| message: false
 construcoes <- jp_cnefe |>
   filter(COD_ESPECIE == 7,
@@ -599,7 +605,8 @@ A segunda é que o CNEFE é um retrato do momento da coleta. Uma obra que começ
 Resta agregar os pontos por bairro. E aqui é preciso resistir a um atalho que parece óbvio e que produz resultado errado. O CNEFE traz a coluna `COD_SETOR`, e a tentação é usá-la para juntar os pontos aos setores dos agregados. Os dois códigos não são compatíveis.
 
 ```{r}
-#| label: incompatibilidade-setor
+#| label: tbl-hab-setor-cnefe
+#| tbl-cap: "Incompatibilidade entre os códigos de setor censitário do CNEFE e dos Agregados por Setor Censitário em João Pessoa (PB), Censo 2022."
 setores_cnefe <- jp_cnefe |>
   st_drop_geometry() |>
   distinct(COD_SETOR) |>
@@ -646,7 +653,8 @@ construcoes_bairro |>
 Poucas dezenas de pontos ficam sem bairro, o que corresponde a construções situadas fora dos polígonos de bairro divulgados. Com a atribuição feita, produzimos a contagem por bairro, separando as construções de unidade única das de mais de dez unidades.
 
 ```{r}
-#| label: construcoes-bairro
+#| label: tbl-hab-constr-bairro
+#| tbl-cap: "Dez bairros de João Pessoa (PB) com maior número de edificações em construção, discriminadas entre unidade única e mais de dez unidades, CNEFE 2022."
 #| message: false
 expansao <- construcoes_bairro |>
   filter(!is.na(name_neighborhood)) |>
@@ -668,7 +676,8 @@ expansao |>
 Os bairros com mais canteiros abertos não são os mesmos que lideram em verticalização, e a tabela seguinte deixa isso claro.
 
 ```{r}
-#| label: construcoes-vertical
+#| label: tbl-hab-constr-vertical
+#| tbl-cap: "Oito bairros de João Pessoa (PB) com maior número de construções de mais de dez unidades e a participação delas no total de canteiros do bairro, CNEFE 2022."
 #| message: false
 expansao |>
   slice_max(vertical, n = 8) |>

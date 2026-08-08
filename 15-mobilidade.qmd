@@ -191,7 +191,8 @@ Com os dois desenhos amostrais declarados, podemos calcular.
 A posse de veículo não mede mobilidade, mede possibilidade. Um domicílio com automóvel tem uma alternativa que um domicílio sem automóvel não tem, e essa diferença estrutura tudo o mais, do tempo de viagem à sensibilidade à qualidade do transporte público.
 
 ```{r}
-#| label: veiculos-municipio
+#| label: tbl-mob-veiculos
+#| tbl-cap: "Proporção de domicílios de Florianópolis (SC) com automóvel e com motocicleta, com intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
 pa_dom |>
   summarise(
@@ -247,7 +248,8 @@ mapa_auto + mapa_moto
 Os dois padrões são praticamente opostos. As áreas com maior proporção de domicílios com automóvel são justamente as de menor proporção de motocicleta, e vice-versa. A leitura mais direta é a de que a motocicleta funciona como alternativa de menor custo onde o automóvel é menos acessível, e não como um bem adicional de quem já tem carro.
 
 ```{r}
-#| label: veiculos-amplitude
+#| label: tbl-mob-veiculos-amplitude
+#| tbl-cap: "Valores mínimo e máximo, entre as áreas de ponderação de Florianópolis (SC), das proporções de domicílios com automóvel e com motocicleta, microdados da amostra do Censo 2010."
 veic_ap |>
   summarise(
     auto_minimo = 100 * min(automovel),
@@ -267,7 +269,8 @@ O tempo de deslocamento é o indicador de mobilidade mais próximo da experiênc
 Antes de calcular, é essencial fixar o universo. O quesito `V0662` só é aplicado a quem trabalha **fora** do domicílio, de modo que o denominador não é a população nem sequer o total de ocupados. É o conjunto de pessoas que efetivamente se deslocam. Declaramos isso filtrando o desenho amostral, o que faz o `srvyr` tratar o subconjunto como domínio e calcular os erros-padrão corretamente.
 
 ```{r}
-#| label: tempo-municipio
+#| label: tbl-mob-tempo
+#| tbl-cap: "Distribuição das pessoas que trabalham fora do domicílio em Florianópolis (SC) segundo o tempo habitual de deslocamento até o trabalho, microdados da amostra do Censo 2010."
 #| message: false
 pa_pes |>
   filter(!is.na(V0662)) |>
@@ -313,7 +316,8 @@ ap_floripa |>
 O mapa mostra manchas bem distintas, e vale medir o tamanho dessa variação e confrontá-lo com a incerteza das estimativas.
 
 ```{r}
-#| label: tempo-amplitude
+#| label: tbl-mob-tempo-amplitude
+#| tbl-cap: "Valores mínimo e máximo, entre as áreas de ponderação de Florianópolis (SC), da proporção de pessoas com deslocamento superior a uma hora, e largura média do intervalo de confiança das estimativas, microdados da amostra do Censo 2010."
 tempo_ap |>
   summarise(
     minimo             = 100 * min(mais_de_uma_hora),
@@ -330,7 +334,8 @@ A amplitude é enorme, com áreas em que quase ninguém gasta mais de uma hora e
 O tempo gasto depende de para onde se vai, e a variável `V0660` responde essa pergunta em termos municipais.
 
 ```{r}
-#| label: local-trabalho
+#| label: tbl-mob-local-trabalho
+#| tbl-cap: "Distribuição das pessoas ocupadas de Florianópolis (SC) segundo o local de trabalho, microdados da amostra do Censo 2010."
 #| message: false
 pa_pes |>
   filter(!is.na(V0660)) |>
@@ -384,7 +389,8 @@ nrow(ent_floripa)
 O denominador de todos os indicadores é `domicilios_V05000`, o total de domicílios particulares permanentes com entorno pesquisado. Não é o total de domicílios do setor, pela razão discutida na @sec-entorno-denominador. Vale medir o quanto o entorno cobre do município.
 
 ```{r}
-#| label: cobertura-entorno
+#| label: tbl-mob-entorno-cobertura
+#| tbl-cap: "Cobertura da Pesquisa Urbanística do Entorno dos Domicílios em Florianópolis (SC), comparada ao total de setores e de domicílios ocupados do arquivo Básico, Censo 2022."
 #| message: false
 #| warning: false
 bas_floripa <- read_tracts(dataset = "Basico", year = 2022) |>
@@ -407,7 +413,8 @@ Quase todos os domicílios ocupados do município têm entorno pesquisado, o que
 Calculamos agora os seis indicadores municipais.
 
 ```{r}
-#| label: entorno-municipio
+#| label: tbl-mob-entorno-mun
+#| tbl-cap: "Presença dos itens de infraestrutura do entorno nos domicílios investigados de Florianópolis (SC), Censo 2022."
 #| message: false
 totais <- ent_floripa |>
   summarise(across(starts_with("domicilios_"), \(x) sum(x, na.rm = TRUE)))
@@ -431,7 +438,8 @@ A tabela conta uma história clara. A pavimentação está praticamente universa
 A coluna de não declarados, porém, tem algo estranho. Ela vale trezentos e poucos domicílios em quatro itens e salta para mais de cinquenta mil nos dois que dizem respeito à calçada. Isso não é falha de coleta.
 
 ```{r}
-#| label: nao-declarado-identidade
+#| label: tbl-mob-nao-declarado
+#| tbl-cap: "Domicílios sem informação declarada nos quesitos de calçada, obstáculo e rampa em Florianópolis (SC), evidenciando que o não declarado dos dois últimos corresponde aos domicílios sem calçada, Censo 2022."
 tibble(
   nd_obstaculo          = totais$domicilios_V05026,
   nd_rampa              = totais$domicilios_V05029,
@@ -447,7 +455,8 @@ Os números fecham exatamente. O total de não declarados em obstáculo e em ram
 A consequência prática é decisiva para qualquer relatório de acessibilidade. Os 21,7% de rampa calculados acima usam como denominador todos os domicílios investigados, incluindo os que sequer têm calçada. O indicador que responde à pergunta "onde há calçada, ela é acessível?" precisa de outro denominador.
 
 ```{r}
-#| label: rampa-condicionada
+#| label: tbl-mob-rampa
+#| tbl-cap: "Presença de rampa e de obstáculo no entorno dos domicílios de Florianópolis (SC), calculada sobre dois denominadores distintos, o total de domicílios investigados e o total de domicílios com calçada, Censo 2022."
 tibble(
   `Rampa sobre todos os domicílios` = 100 * totais$domicilios_V05027 / totais$domicilios_V05000,
   `Rampa sobre domicílios com calçada` = 100 * totais$domicilios_V05027 / totais$domicilios_V05021,
@@ -516,7 +525,8 @@ A pavimentação é quase homogênea, com poucas manchas de carência. A calçad
 Agregar por bairro permite nomear as áreas. Florianópolis tem os bairros preenchidos nos agregados, ao contrário do que vimos em Goiânia no Capítulo 12.
 
 ```{r}
-#| label: entorno-bairro
+#| label: tbl-mob-entorno-bairro
+#| tbl-cap: "Bairros de Florianópolis (SC) segundo a proporção de domicílios com calçada e a proporção de calçadas com rampa, entre os que possuem ao menos quinhentos domicílios investigados, Censo 2022."
 #| message: false
 bairros_ent <- ent_floripa |>
   filter(!is.na(name_neighborhood)) |>

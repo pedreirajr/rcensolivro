@@ -28,7 +28,8 @@ Estudar a capital do estado com a pior cobertura do país tem uma vantagem didá
 Antes de descer ao município, vale confirmar o diagnóstico com a fonte deste livro. A PNAD Contínua é uma pesquisa amostral e mede domicílios urbanos conectados à rede. O Censo é do universo e permite calcular o mesmo tipo de indicador para todas as unidades da federação, a partir dos agregados por setor censitário.
 
 ```{r}
-#| label: ranking-uf
+#| label: tbl-san-ranking-uf
+#| tbl-cap: "Unidades da federação com as cinco menores e as três maiores proporções de domicílios particulares permanentes com esgotamento por rede geral, Censo 2022."
 #| message: false
 #| warning: false
 cobertura_uf <- read_tracts(dataset = "Domicilio", year = 2022) |>
@@ -58,7 +59,8 @@ Repare que a leitura acima é feita **sem filtrar município**, o que traz os 46
 O Censo confirma o diagnóstico e o agrava. O Amapá aparece em último lugar, com contraste de mais de dez vezes em relação às unidades da federação mais bem servidas. O percentual calculado aqui é mais baixo que o da PNAD Contínua porque as duas contas não são a mesma. A pesquisa amostral considera apenas domicílios urbanos, enquanto o cálculo acima inclui todos os domicílios particulares permanentes do estado, urbanos e rurais. Comparar os dois números diretamente seria um erro, e ambos apontam na mesma direção.
 
 ```{r}
-#| label: brasil-media
+#| label: tbl-san-brasil
+#| tbl-cap: "Proporção de domicílios particulares permanentes do Brasil com esgotamento por rede geral, Censo 2022."
 cobertura_uf |>
   summarise(
     brasil_perc_rede = 100 * sum(rede) / sum(dpp)
@@ -81,7 +83,8 @@ macapa
 O arquivo Básico traz a coluna `situacao`, que classifica cada setor entre urbano e rural.
 
 ```{r}
-#| label: situacao
+#| label: tbl-san-situacao
+#| tbl-cap: "Setores censitários, população e área de Macapá (AP) segundo a situação urbana ou rural do setor, Censo 2022."
 #| message: false
 #| warning: false
 basico <- read_tracts(dataset = "Basico", year = 2022) |>
@@ -107,7 +110,8 @@ A classificação de urbano no Censo é **funcional e não espacial**. Ela diz q
 A verificação é simples, olhando a distribuição dos setores urbanos entre os distritos.
 
 ```{r}
-#| label: distritos
+#| label: tbl-san-distritos
+#| tbl-cap: "Distribuição dos setores censitários urbanos de Macapá (AP) entre os distritos do município, Censo 2022."
 #| message: false
 basico |>
   filter(situacao == "Urbana") |>
@@ -200,7 +204,8 @@ Segundo o critério do IVS, o abastecimento de água é **inadequado** quando n�
 Repare que criamos apelidos curtos com `mutate()` em vez de renomear as colunas com `rename()`. A diferença importa neste capítulo, porque várias tabelas adiante localizam as colunas pelo nome original, montado com `sprintf()`. Renomear apagaria os nomes originais e essas buscas passariam a devolver nada, silenciosamente.
 
 ```{r}
-#| label: indicadores-ivs
+#| label: tbl-san-ivs
+#| tbl-cap: "Indicadores de abastecimento de água e esgotamento sanitário inadequados em Macapá (AP), nos moldes da dimensão de Infraestrutura Urbana do IVS, Censo 2022."
 macapa_sc <- macapa_sc |>
   mutate(
     dom      = domicilio01_V00001,
@@ -227,7 +232,8 @@ Mais da metade dos domicílios urbanos de Macapá tem abastecimento inadequado p
 O indicador binário diz que pouco menos da metade dos domicílios usa a rede geral. Ele não diz o que faz a maioria restante, e essa informação existe.
 
 ```{r}
-#| label: forma-abastecimento
+#| label: tbl-san-agua-forma
+#| tbl-cap: "Domicílios particulares permanentes de Macapá (AP) segundo a forma de abastecimento de água, Censo 2022."
 #| message: false
 formas_agua <- tibble(
   Forma = c("Rede geral de distribuição", "Poço profundo ou artesiano",
@@ -251,7 +257,8 @@ O quadro muda a interpretação. A alternativa dominante à rede geral em Macap�
 Há ainda uma segunda pergunta que o indicador binário não alcança. Estar ligado a alguma fonte não é o mesmo que ter água chegando dentro de casa.
 
 ```{r}
-#| label: chegada-agua
+#| label: tbl-san-agua-chegada
+#| tbl-cap: "Domicílios particulares permanentes de Macapá (AP) segundo a maneira como a água chega ao domicílio, Censo 2022."
 #| message: false
 tibble(
   Situação = c("Encanada até dentro do domicílio",
@@ -317,7 +324,8 @@ As duas escalas vão de zero a cem, de propósito, para que a comparação seja 
 Se no abastecimento a alternativa à rede é razoável, no esgotamento a história é outra. O questionário registra oito destinações, e olhá-las em sequência revela um gradiente que vai do adequado ao francamente insalubre.
 
 ```{r}
-#| label: destinacao-esgoto
+#| label: tbl-san-esgoto-destino
+#| tbl-cap: "Domicílios particulares permanentes de Macapá (AP) segundo a destinação do esgotamento sanitário, Censo 2022."
 #| message: false
 esgoto <- tibble(
   Destinação = c("Rede geral ou pluvial", "Fossa séptica ou filtro ligada à rede",
@@ -366,7 +374,8 @@ ggplot(macapa_geo) +
 A concentração é evidente em algumas áreas. Agregando por bairro, é possível nomeá-las.
 
 ```{r}
-#| label: esgoto-bairro
+#| label: tbl-san-esgoto-bairro
+#| tbl-cap: "Bairros de Macapá (AP) com maior proporção de domicílios que lançam esgoto em vala ou curso d'água, entre os que possuem ao menos trezentos domicílios, Censo 2022."
 #| message: false
 bairros <- macapa_sc |>
   filter(!is.na(name_neighborhood)) |>
@@ -396,7 +405,8 @@ bairros |>
 Em alguns bairros, mais de um terço dos domicílios lança esgoto em vala ou curso d'água, e a coluna da direita mostra que são exatamente os bairros a que a rede não chegou. Vale ainda contar quantos bairros estão inteiramente fora da rede.
 
 ```{r}
-#| label: bairros-sem-rede
+#| label: tbl-san-sem-rede
+#| tbl-cap: "Bairros de Macapá (AP) inteiramente sem ligação à rede geral de esgoto e o total de domicílios neles situados, Censo 2022."
 bairros |>
   summarise(
     bairros_analisados = n(),
@@ -413,7 +423,8 @@ Não se trata de cobertura baixa. Trata-se de ausência completa de rede em boa 
 O terceiro componente do saneamento básico é o resíduo sólido, e é também o segundo indicador da dimensão de Infraestrutura Urbana do IVS.
 
 ```{r}
-#| label: destinacao-lixo
+#| label: tbl-san-lixo
+#| tbl-cap: "Domicílios particulares permanentes de Macapá (AP) segundo a destinação do lixo, Censo 2022."
 #| message: false
 tibble(
   Destinação = c("Coletado no domicílio por serviço de limpeza",
@@ -457,7 +468,8 @@ macapa_sc <- macapa_sc |>
 Com os denominadores em mãos, montamos a tabela comparativa.
 
 ```{r}
-#| label: desigualdade-raca
+#| label: tbl-san-raca
+#| tbl-cap: "Acesso à rede de água e à rede de esgoto em Macapá (AP) segundo a cor ou raça da pessoa responsável pelo domicílio, Censo 2022."
 #| message: false
 desigualdade <- tibble(
   `Cor ou raça do responsável` = c("Branca", "Preta", "Amarela", "Parda", "Indígena"),
@@ -493,7 +505,8 @@ Cabe uma última observação sobre o que esses números são e não são. Eles 
 Usamos o bloco de **domicílios** do arquivo de Entorno, pelo motivo já discutido no Capítulo 15, que é medir quantas moradias estão diante de cada situação, e não quantos metros de via existem.
 
 ```{r}
-#| label: leitura-entorno
+#| label: tbl-san-entorno-cobertura
+#| tbl-cap: "Cobertura da Pesquisa Urbanística do Entorno dos Domicílios nos setores urbanos de Macapá (AP), Censo 2022."
 #| message: false
 #| warning: false
 entorno <- read_tracts(dataset = "Entorno", year = 2022) |>
@@ -523,7 +536,8 @@ tibble(
 O denominador do Entorno é o total de domicílios com entorno pesquisado, e não o total de domicílios do setor, conforme a @sec-entorno-denominador. Feita a verificação de cobertura, calculamos os dois indicadores.
 
 ```{r}
-#| label: entorno-2022
+#| label: tbl-san-entorno-2022
+#| tbl-cap: "Domicílios de Macapá (AP) com e sem via pavimentada e com e sem bueiro ou boca de lobo no entorno, entre os investigados pela Pesquisa Urbanística, Censo 2022."
 #| message: false
 tibble(
   Item = c("Via pavimentada", "Bueiro ou boca de lobo"),
@@ -656,7 +670,8 @@ O número do esgoto a céu aberto é o mais grave do capítulo. Em 2010, mais da
 Dois itens que permaneceram permitem comparação, e nos dois houve avanço.
 
 ```{r}
-#| label: comparacao-2010-2022
+#| label: tbl-san-entorno-comparacao
+#| tbl-cap: "Pavimentação e presença de bueiro ou boca de lobo no entorno dos domicílios de Macapá (AP), Censos de 2010 e 2022."
 #| message: false
 tibble(
   Item = c("Pavimentação", "Bueiro ou boca de lobo"),

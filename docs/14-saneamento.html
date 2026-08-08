@@ -381,8 +381,14 @@ div.csl-indent {
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-ranking-uf" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-ranking-uf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.1: Unidades da federação com as cinco menores e as três maiores proporções de domicílios particulares permanentes com esgotamento por rede geral, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-ranking-uf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 23%">
 <col style="width: 40%">
@@ -440,6 +446,9 @@ div.csl-indent {
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Repare que a leitura acima é feita <strong>sem filtrar município</strong>, o que traz os 468 mil setores do país. Isso é viável porque o Arrow lê apenas as quatro colunas pedidas, conforme discutido na <a href="7-agregados.html#sec-obtendo" class="quarto-xref"><span>Seção 7.4.1</span></a>, e a agregação por unidade da federação leva menos de um segundo.</p>
 <p>O Censo confirma o diagnóstico e o agrava. O Amapá aparece em último lugar, com contraste de mais de dez vezes em relação às unidades da federação mais bem servidas. O percentual calculado aqui é mais baixo que o da PNAD Contínua porque as duas contas não são a mesma. A pesquisa amostral considera apenas domicílios urbanos, enquanto o cálculo acima inclui todos os domicílios particulares permanentes do estado, urbanos e rurais. Comparar os dois números diretamente seria um erro, e ambos apontam na mesma direção.</p>
 <div class="cell">
@@ -448,8 +457,14 @@ div.csl-indent {
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">brasil_perc_rede =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">sum</span>(rede) <span class="sc">/</span> <span class="fu">sum</span>(dpp)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-brasil" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-brasil-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.2: Proporção de domicílios particulares permanentes do Brasil com esgotamento por rede geral, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-brasil-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">brasil_perc_rede</th>
@@ -461,6 +476,9 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </section>
@@ -490,8 +508,14 @@ div.csl-indent {
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">area_km2  =</span> <span class="fu">sum</span>(area_km2, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">0</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-situacao" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-situacao-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.3: Setores censitários, população e área de Macapá (AP) segundo a situação urbana ou rural do setor, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-situacao-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">situacao</th>
@@ -523,6 +547,9 @@ div.csl-indent {
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>A mancha urbana concentra a quase totalidade da população em cerca de um quarentavo da área do município. Filtrar por <code>situacao</code>, porém, ainda não resolve o problema do mapa, e a razão merece atenção porque vale para muitos municípios.</p>
 <p>A classificação de urbano no Censo é <strong>funcional e não espacial</strong>. Ela diz que o setor tem características urbanas, e não que ele pertence à cidade. Sedes de vila e povoados afastados também são classificados como urbanos, ainda que fiquem a dezenas de quilômetros da mancha contínua. Basta um deles para obrigar o mapa a enquadrar o município inteiro.</p>
 <p>A verificação é simples, olhando a distribuição dos setores urbanos entre os distritos.</p>
@@ -539,8 +566,14 @@ div.csl-indent {
 Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 'big.mark' e 'decimal.mark' são ambos '.', o que pode ser confuso</code></pre>
 </div>
+<div id="tbl-san-distritos" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-distritos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.4: Distribuição dos setores censitários urbanos de Macapá (AP) entre os distritos do município, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-distritos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">name_district</th>
@@ -578,6 +611,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Os distritos de Macapá e Fazendinha formam a mancha urbana contínua da cidade e concentram mais de 99% da população urbana. Os outros três aparecem com pouquíssimos setores, que são sedes de vila isoladas, entre elas o arquipélago do Bailique, a cerca de cem quilômetros da capital. Restringimos a análise aos dois primeiros.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>setores_urbanos <span class="ot">&lt;-</span> basico <span class="sc">|&gt;</span></span>
@@ -591,12 +627,12 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </div>
 </div>
 <p>Essa exclusão custa pouco mais de dois mil moradores e devolve um mapa legível. Vale registrar que ela é uma decisão de recorte, e que uma análise voltada às comunidades ribeirinhas do município faria exatamente o contrário, mantendo esses setores e descartando a cidade.</p>
-<p>Do arquivo Domicílio vêm todas as variáveis de saneamento. São vinte e cinco colunas, distribuídas em quatro blocos, e a <a href="#tbl-san-variaveis" class="quarto-xref">Tabela&nbsp;<span>14.1</span></a> descreve cada um deles. Para selecioná-las sem escrever nome por nome, usamos a <code>num_range()</code>, apresentada no Capítulo 12, com o cuidado do argumento <code>width</code>.</p>
+<p>Do arquivo Domicílio vêm todas as variáveis de saneamento. São vinte e cinco colunas, distribuídas em quatro blocos, e a <a href="#tbl-san-variaveis" class="quarto-xref">Tabela&nbsp;<span>14.5</span></a> descreve cada um deles. Para selecioná-las sem escrever nome por nome, usamos a <code>num_range()</code>, apresentada no Capítulo 12, com o cuidado do argumento <code>width</code>.</p>
 <div class="cell">
 <div id="tbl-san-variaveis" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-variaveis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos Agregados por Setor Censitário (Censo 2022).
+Tabela&nbsp;14.5: Blocos de variáveis de saneamento do arquivo Domicílio dos Agregados por Setor Censitário (Censo 2022).
 </figcaption>
 <div aria-describedby="tbl-san-variaveis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -711,8 +747,14 @@ Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos A
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                                    <span class="fu">sum</span>(fossa_s,  <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">/</span> dpp)</span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-ivs" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-ivs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.6: Indicadores de abastecimento de água e esgotamento sanitário inadequados em Macapá (AP), nos moldes da dimensão de Infraestrutura Urbana do IVS, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-ivs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">agua_inadequada</th>
@@ -726,6 +768,9 @@ Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos A
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Mais da metade dos domicílios urbanos de Macapá tem abastecimento inadequado pelo critério do IVS, e mais de oito em cada dez têm esgotamento inadequado. Os dois números são muito altos, e o restante do capítulo se dedica a mostrar o que eles escondem.</p>
@@ -749,8 +794,14 @@ Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos A
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>formas_agua <span class="sc">|&gt;</span></span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-agua-forma" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-agua-forma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.7: Domicílios particulares permanentes de Macapá (AP) segundo a forma de abastecimento de água, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-agua-forma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Forma</th>
@@ -803,6 +854,9 @@ Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos A
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>O quadro muda a interpretação. A alternativa dominante à rede geral em Macapá não é a precariedade extrema, e sim o <strong>poço</strong>, profundo ou raso, que atende mais da metade dos domicílios. Poço não é sinônimo de água insegura, embora seja fonte sem tratamento e sem monitoramento regular. Chamá-lo simplesmente de inadequado, como faz o indicador binário, apaga essa distinção.</p>
 <p>Há ainda uma segunda pergunta que o indicador binário não alcança. Estar ligado a alguma fonte não é o mesmo que ter água chegando dentro de casa.</p>
 <div class="cell">
@@ -818,8 +872,14 @@ Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos A
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>variavel) <span class="sc">|&gt;</span></span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-agua-chegada" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-agua-chegada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.8: Domicílios particulares permanentes de Macapá (AP) segundo a maneira como a água chega ao domicílio, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-agua-chegada-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Situação</th>
@@ -845,6 +905,9 @@ Tabela&nbsp;14.1: Blocos de variáveis de saneamento do arquivo Domicílio dos A
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Nove em cada dez domicílios têm água encanada até dentro de casa, contra menos da metade ligados à rede geral. A diferença entre os dois números é o retrato de uma cidade que resolveu o encanamento interno por conta própria, com poço, enquanto a rede pública não chegou. São dois indicadores que apontam para políticas diferentes, e apresentar apenas um deles dá uma imagem incompleta.</p>
@@ -917,8 +980,14 @@ Figura&nbsp;14.1: Domicílios abastecidos pela rede geral (à esquerda) e domic�
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>esgoto <span class="sc">|&gt;</span></span>
 <span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-esgoto-destino" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-esgoto-destino-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.9: Domicílios particulares permanentes de Macapá (AP) segundo a destinação do esgotamento sanitário, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-esgoto-destino-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Destinação</th>
@@ -969,6 +1038,9 @@ Figura&nbsp;14.1: Domicílios abastecidos pela rede geral (à esquerda) e domic�
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>O corte binário do Capítulo 7 juntaria as duas primeiras linhas de um lado e as seis restantes do outro. O gradiente mostra por que isso é insuficiente. A destinação mais frequente em Macapá é a fossa séptica <strong>não</strong> ligada à rede, seguida da fossa rudimentar, e as duas juntas respondem por cerca de sete em cada dez domicílios. São situações intermediárias, que não equivalem ao lançamento direto em curso d’água e tampouco ao tratamento.</p>
@@ -1026,8 +1098,14 @@ Figura&nbsp;14.2: Proporção de domicílios cujo esgoto é lançado em vala, ri
 <span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-esgoto-bairro" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-esgoto-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.10: Bairros de Macapá (AP) com maior proporção de domicílios que lançam esgoto em vala ou curso d’água, entre os que possuem ao menos trezentos domicílios, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-esgoto-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 15%">
@@ -1083,6 +1161,9 @@ Figura&nbsp;14.2: Proporção de domicílios cujo esgoto é lançado em vala, ri
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Em alguns bairros, mais de um terço dos domicílios lança esgoto em vala ou curso d’água, e a coluna da direita mostra que são exatamente os bairros a que a rede não chegou. Vale ainda contar quantos bairros estão inteiramente fora da rede.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>bairros <span class="sc">|&gt;</span></span>
@@ -1100,8 +1181,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 'big.mark' e 'decimal.mark' são ambos '.', o que pode ser confuso</code></pre>
 </div>
+<div id="tbl-san-sem-rede" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-sem-rede-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.11: Bairros de Macapá (AP) inteiramente sem ligação à rede geral de esgoto e o total de domicílios neles situados, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-sem-rede-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">bairros_analisados</th>
@@ -1117,6 +1204,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Não se trata de cobertura baixa. Trata-se de ausência completa de rede em boa parte dos bairros da cidade.</p>
@@ -1139,8 +1229,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 <span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>variavel) <span class="sc">|&gt;</span></span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-lixo" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-lixo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.12: Domicílios particulares permanentes de Macapá (AP) segundo a destinação do lixo, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-lixo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Destinação</th>
@@ -1183,6 +1279,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>O contraste com o esgotamento é grande. A coleta de lixo alcança nove em cada dez domicílios urbanos, e somando a caçamba de serviço de limpeza chega-se a mais de noventa e sete por cento. Os três componentes do saneamento básico não caminham juntos, e um índice que os combine numa única nota esconde exatamente isso. É por essa razão que apresentamos os três separadamente antes de qualquer síntese.</p>
 </section>
 <section id="sec-san-desigualdade" class="level2" data-number="14.7">
@@ -1216,8 +1315,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>desigualdade <span class="sc">|&gt;</span></span>
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-raca" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-raca-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.13: Acesso à rede de água e à rede de esgoto em Macapá (AP) segundo a cor ou raça da pessoa responsável pelo domicílio, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-raca-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 33%">
 <col style="width: 16%">
@@ -1267,6 +1372,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>A leitura precisa ser cuidadosa, e por duas razões opostas.</p>
 <p>No abastecimento de água, as diferenças entre brancos, pretos e pardos são pequenas, de poucos pontos percentuais. Isso não significa ausência de desigualdade racial em Macapá, significa que a carência de rede é tão generalizada que atinge todos os grupos de forma parecida. Quando quase ninguém tem, a diferença entre quem tem se comprime.</p>
 <p>No esgotamento, a diferença é proporcionalmente maior, com os domicílios de responsável branco apresentando cobertura cerca de um terço acima da dos de responsável preto. Ainda assim, os patamares são baixos para todos os grupos, e nenhum deles chega a um sexto dos domicílios ligados à rede.</p>
@@ -1300,8 +1408,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 <span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">cobertura =</span> <span class="dv">100</span> <span class="sc">*</span> investigados <span class="sc">/</span> dom_urbanos</span>
 <span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-entorno-cobertura" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-entorno-cobertura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.14: Cobertura da Pesquisa Urbanística do Entorno dos Domicílios nos setores urbanos de Macapá (AP), Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-entorno-cobertura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">setores_com_entorno</th>
@@ -1319,6 +1433,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>O denominador do Entorno é o total de domicílios com entorno pesquisado, e não o total de domicílios do setor, conforme a <a href="11-entorno.html#sec-entorno-denominador" class="quarto-xref"><span>Seção 11.4</span></a>. Feita a verificação de cobertura, calculamos os dois indicadores.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
@@ -1334,8 +1451,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 <span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-entorno-2022" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-entorno-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.15: Domicílios de Macapá (AP) com e sem via pavimentada e com e sem bueiro ou boca de lobo no entorno, entre os investigados pela Pesquisa Urbanística, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-san-entorno-2022-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Item</th>
@@ -1359,6 +1482,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Pouco mais de quatro em cada dez domicílios de Macapá estão em face de quadra com bueiro. É um número baixo para uma cidade da Amazônia, sujeita a chuvas intensas e situada em terreno de cotas baixas, com áreas alagáveis extensas.</p>
@@ -1470,7 +1596,7 @@ Figura&nbsp;14.3: Domicílios em face de quadra com bueiro ou boca de lobo (à e
 <div id="tbl-san-2010" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabela&nbsp;14.2: Características do entorno dos domicílios em Macapá no Censo 2010, com destaque para os dois itens ligados a saneamento que não foram investigados em 2022.
+Tabela&nbsp;14.16: Características do entorno dos domicílios em Macapá no Censo 2010, com destaque para os dois itens ligados a saneamento que não foram investigados em 2022.
 </figcaption>
 <div aria-describedby="tbl-san-2010-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1574,8 +1700,14 @@ Tabela&nbsp;14.2: Características do entorno dos domicílios em Macapá no Cens
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-san-entorno-comparacao" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-san-entorno-comparacao-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;14.17: Pavimentação e presença de bueiro ou boca de lobo no entorno dos domicílios de Macapá (AP), Censos de 2010 e 2022.
+</figcaption>
+<div aria-describedby="tbl-san-entorno-comparacao-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Item</th>
@@ -1596,6 +1728,9 @@ Tabela&nbsp;14.2: Características do entorno dos domicílios em Macapá no Cens
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>A pavimentação e a drenagem avançaram de forma expressiva em doze anos. Vale a ressalva de que o universo da pesquisa mudou entre as duas edições, como discutido no Capítulo 11, o que recomenda ler os dois valores como ordem de grandeza, e não como variação exata.</p>

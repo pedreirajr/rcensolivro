@@ -545,8 +545,14 @@ Tabela&nbsp;15.1: Quesitos de mobilidade nos Questionários da Amostra dos Censo
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">motocicleta =</span> <span class="fu">survey_mean</span>(V0221 <span class="sc">==</span> <span class="st">"1"</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-veiculos" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-veiculos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.2: Proporção de domicílios de Florianópolis (SC) com automóvel e com motocicleta, com intervalos de confiança, microdados da amostra do Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-mob-veiculos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 12%">
 <col style="width: 17%">
@@ -576,6 +582,9 @@ Tabela&nbsp;15.1: Quesitos de mobilidade nos Questionários da Amostra dos Censo
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Dois em cada três domicílios particulares permanentes de Florianópolis tinham automóvel em 2010, proporção alta para o padrão brasileiro da época. A motocicleta aparecia em cerca de um em cada sete.</p>
@@ -635,8 +644,14 @@ Figura&nbsp;15.1: Domicílios particulares permanentes com automóvel (à esquer
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">moto_maximo =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">max</span>(motocicleta)</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-veiculos-amplitude" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-veiculos-amplitude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.3: Valores mínimo e máximo, entre as áreas de ponderação de Florianópolis (SC), das proporções de domicílios com automóvel e com motocicleta, microdados da amostra do Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-mob-veiculos-amplitude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">auto_minimo</th>
@@ -654,6 +669,9 @@ Figura&nbsp;15.1: Domicílios particulares permanentes com automóvel (à esquer
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>A amplitude do automóvel entre áreas de ponderação passa de quarenta pontos percentuais, o que é uma desigualdade grande para um município de porte médio.</p>
@@ -677,8 +695,14 @@ Figura&nbsp;15.1: Domicílios particulares permanentes com automóvel (à esquer
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(faixa) <span class="sc">|&gt;</span></span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-tempo" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-tempo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.4: Distribuição das pessoas que trabalham fora do domicílio em Florianópolis (SC) segundo o tempo habitual de deslocamento até o trabalho, microdados da amostra do Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-mob-tempo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 45%">
 <col style="width: 14%">
@@ -728,6 +752,9 @@ Figura&nbsp;15.1: Domicílios particulares permanentes com automóvel (à esquer
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>A maior parte das viagens de Florianópolis cabia em meia hora, e cerca de oito por cento passavam de uma hora. Esse último grupo é o que interessa à política pública, porque tempo de deslocamento excessivo é uma forma de privação que se acumula todos os dias.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>tempo_ap <span class="ot">&lt;-</span> pa_pes <span class="sc">|&gt;</span></span>
@@ -767,8 +794,14 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">largura_media_do_ic =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">mean</span>(<span class="dv">2</span> <span class="sc">*</span> <span class="fl">1.96</span> <span class="sc">*</span> mais_de_uma_hora_se)</span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-tempo-amplitude" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-tempo-amplitude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.5: Valores mínimo e máximo, entre as áreas de ponderação de Florianópolis (SC), da proporção de pessoas com deslocamento superior a uma hora, e largura média do intervalo de confiança das estimativas, microdados da amostra do Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-mob-tempo-amplitude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">minimo</th>
@@ -784,6 +817,9 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>A amplitude é enorme, com áreas em que quase ninguém gasta mais de uma hora e áreas em que quase um terço dos trabalhadores gasta. A largura média do intervalo de confiança fica bem abaixo dessa diferença, o que significa que o contraste entre os extremos é real, e não ruído amostral. Diferenças pequenas entre áreas vizinhas, porém, continuam exigindo cautela.</p>
@@ -806,8 +842,14 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(local) <span class="sc">|&gt;</span></span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_prop</span>(<span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-local-trabalho" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-local-trabalho-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.6: Distribuição das pessoas ocupadas de Florianópolis (SC) segundo o local de trabalho, microdados da amostra do Censo 2010.
+</figcaption>
+<div aria-describedby="tbl-mob-local-trabalho-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 47%">
 <col style="width: 13%">
@@ -857,6 +899,9 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Três quartos dos trabalhadores de Florianópolis trabalhavam no próprio município, fora de casa, e menos de sete por cento saíam do município para trabalhar. Esse número é baixo, e a razão é que Florianópolis é o <strong>polo</strong> da sua região metropolitana, e não uma cidade-dormitório. O movimento pendular relevante ali é o de entrada, vindo dos municípios vizinhos, e não o de saída.</p>
 <p>Cabe um alerta metodológico. Um censo municipal descreve quem <strong>mora</strong> no município, e não quem trabalha nele. Para dimensionar quem chega de fora todos os dias seria preciso ler os microdados dos municípios de origem e usar <code>V6604</code>, que informa o município de trabalho. O capítulo não faz isso, e o leitor que precisar dessa conta deve ter em mente que o recorte de leitura muda por completo.</p>
 <p>Descrito o comportamento, passamos à infraestrutura.</p>
@@ -899,8 +944,14 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 <span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cobertura =</span> <span class="dv">100</span> <span class="sc">*</span> dom_investigados <span class="sc">/</span> dom_ocupados) <span class="sc">|&gt;</span></span>
 <span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-entorno-cobertura" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-entorno-cobertura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.7: Cobertura da Pesquisa Urbanística do Entorno dos Domicílios em Florianópolis (SC), comparada ao total de setores e de domicílios ocupados do arquivo Básico, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-mob-entorno-cobertura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 23%">
 <col style="width: 25%">
@@ -929,6 +980,9 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Quase todos os domicílios ocupados do município têm entorno pesquisado, o que dá segurança à leitura. Municípios com forte presença rural apresentam cobertura bem menor, e a verificação deve ser refeita a cada caso.</p>
 <p>Calculamos agora os seis indicadores municipais.</p>
 <div class="cell">
@@ -947,8 +1001,14 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">% com o item</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> Sim <span class="sc">/</span> totais<span class="sc">$</span>domicilios_V05000) <span class="sc">|&gt;</span></span>
 <span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-entorno-mun" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-entorno-mun-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.8: Presença dos itens de infraestrutura do entorno nos domicílios investigados de Florianópolis (SC), Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-mob-entorno-mun-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 41%">
 <col style="width: 10%">
@@ -1012,6 +1072,9 @@ Figura&nbsp;15.2: Proporção de trabalhadores com mais de uma hora de deslocame
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>A tabela conta uma história clara. A pavimentação está praticamente universalizada, com mais de nove em cada dez domicílios em face de via pavimentada. A calçada já cai para pouco mais de três quartos. E os itens que qualificam o caminhar, como a rampa, e os que servem a quem não usa automóvel, como o ponto de ônibus e a via para bicicleta, ficam todos abaixo de um quarto.</p>
 <p>A coluna de não declarados, porém, tem algo estranho. Ela vale trezentos e poucos domicílios em quatro itens e salta para mais de cinquenta mil nos dois que dizem respeito à calçada. Isso não é falha de coleta.</p>
 <div class="cell">
@@ -1035,8 +1098,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 'big.mark' e 'decimal.mark' são ambos '.', o que pode ser confuso</code></pre>
 </div>
+<div id="tbl-mob-nao-declarado" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-nao-declarado-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.9: Domicílios sem informação declarada nos quesitos de calçada, obstáculo e rampa em Florianópolis (SC), evidenciando que o não declarado dos dois últimos corresponde aos domicílios sem calçada, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-mob-nao-declarado-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">nd_obstaculo</th>
@@ -1058,6 +1127,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Os números fecham exatamente. O total de não declarados em obstáculo e em rampa é igual à soma dos domicílios sem calçada com os de calçada não declarada. A explicação é que <strong>não existe obstáculo nem rampa onde não existe calçada</strong>, e o questionário registra essa impossibilidade como não declarado, conforme a <a href="11-entorno.html#sec-entorno-nd" class="quarto-xref"><span>Seção 11.4.1</span></a> já havia apontado.</p>
 <p>A consequência prática é decisiva para qualquer relatório de acessibilidade. Os 21,7% de rampa calculados acima usam como denominador todos os domicílios investigados, incluindo os que sequer têm calçada. O indicador que responde à pergunta “onde há calçada, ela é acessível?” precisa de outro denominador.</p>
 <div class="cell">
@@ -1067,8 +1139,14 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Obstáculo sobre domicílios com calçada</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> totais<span class="sc">$</span>domicilios_V05024 <span class="sc">/</span> totais<span class="sc">$</span>domicilios_V05021</span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-rampa" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-rampa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.10: Presença de rampa e de obstáculo no entorno dos domicílios de Florianópolis (SC), calculada sobre dois denominadores distintos, o total de domicílios investigados e o total de domicílios com calçada, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-mob-rampa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 30%">
 <col style="width: 33%">
@@ -1089,6 +1167,9 @@ Warning in prettyNum(.Internal(format(x, trim, digits, nsmall, width, 3L, :
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Restrito a quem tem calçada, o percentual de rampa sobe pouco, e o de obstáculo revela que quase dois terços das calçadas de Florianópolis têm alguma obstrução. As duas versões do indicador de rampa são legítimas e respondem a perguntas diferentes, e um relatório deve declarar qual delas está apresentando.</p>
@@ -1178,8 +1259,14 @@ Figura&nbsp;15.3: Indicadores de mobilidade do entorno por setor censitário, Fl
 <span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-mob-entorno-bairro" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mob-entorno-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;15.11: Bairros de Florianópolis (SC) segundo a proporção de domicílios com calçada e a proporção de calçadas com rampa, entre os que possuem ao menos quinhentos domicílios investigados, Censo 2022.
+</figcaption>
+<div aria-describedby="tbl-mob-entorno-bairro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 23%">
 <col style="width: 25%">
@@ -1257,6 +1344,9 @@ Figura&nbsp;15.3: Indicadores de mobilidade do entorno por setor censitário, Fl
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>O contraste entre os extremos é de quase três vezes na cobertura de calçada. E a última coluna mostra que os dois indicadores não andam necessariamente juntos, porque há bairros com calçada quase universal e rampa escassa.</p>

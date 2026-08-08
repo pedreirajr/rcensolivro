@@ -20,7 +20,7 @@ library(patchwork)
 
 Toda decisão de política pública que tem endereço depende de uma pergunta anterior, que é saber onde vive o público que ela pretende alcançar. Um centro de convivência para pessoas idosas precisa estar perto de quem já parou de trabalhar. Uma creche precisa estar perto de quem tem filho pequeno. Já políticas baseadas em aspectos raciais precisa entender onde se concentra a população indígena e negra, por exemplo. Nenhuma dessas perguntas se responde com o total do município, porque o município é grande demais para caber numa decisão de localização.
 
-O Censo Demográfico é a única fonte brasileira que responde a essas perguntas com elevada granularidade intraurbana, e faz isso para os cinco mil e poucos municípios do país ao mesmo tempo. Este capítulo mostra como transformar esse material em indicadores utilizáveis, percorrendo seis recortes temáticos: **idade**; **cor ou raça**; **quem responde pelo domicílio**; **arranjo domiciliar**; **deficiência**; e **naturalidade**.
+O Censo Demográfico é a única fonte brasileira que responde a essas perguntas com elevada granularidade intraurbana, e faz isso para os cinco mil e poucos municípios do país ao mesmo tempo. Este capítulo mostra como transformar esse material em indicadores utilizáveis, percorrendo seis recortes temáticos: (i) **idade**; (ii) **cor ou raça**; (iii) **quem responde pelo domicílio**; (iv) **arranjo domiciliar**; (v) **deficiência**; e (vi) **naturalidade**.
 
 Para os quatro primeiros, trabalharemos com os dados **agregados por setor censitário**, que nascem do Questionário Básico. Os dois últimos não existem nos agregados, porque o Questionário Básico não os investiga. Para alcançá-los é preciso recorrer aos **microdados da amostra**, que são divulgados por área de ponderação. Trocar de fonte significa, portanto, trocar de escala, e o capítulo percorre as duas na ordem em que elas se impõem, primeiro o que se pode fazer com o maior detalhe territorial disponível^[Lembre-se que a grade estatística, de maior desagregação, não permite inferir estas quatro primeiras informações], depois o que só a amostra permite perguntar.
 
@@ -31,9 +31,9 @@ O município escolhido para o capítulo é **Goiânia (GO)**. Os indicadores dos
 
 Antes de qualquer cálculo, vale reter uma advertência: nenhum dos indicadores deste capítulo é uma contagem bruta. Todos são proporções, e a escolha de qual total vai no denominador é a decisão que mais afeta o resultado. Essa escolha reaparecerá em cada seção, e em uma delas ela muda de uma linha para a outra.
 
-## Estruturação dos dados dos agregados {#sec-dem-dados}
+## Estruturação dos dados dos agregados do Censo de 2022 {#sec-dem-dados}
 
-Começamos pelos agregados, que sustentam a maior parte do capítulo. Os indicadores construídos até a @sec-dem-2010 vêm de três dos arquivos temáticos apresentados na @tbl-arquivos-tematicos do Capítulo 7. Do arquivo **Básico** vem a população total e a identificação geográfica. Do arquivo **Pessoas** vêm os blocos de Demografia, Cor ou Raça e Parentesco. Do arquivo **Domicílio** vem o total de domicílios particulares permanentes ocupados e a contagem de crianças. Os microdados da amostra entram mais adiante, na @sec-dem-amostra, com uma preparação própria.
+Começamos pelos agregados, que sustentam a maior parte do capítulo. Os indicadores construídos até a @sec-dem-monoparental vêm de três dos arquivos temáticos apresentados na @tbl-arquivos-tematicos do Capítulo 7. Do arquivo **Básico** vem a população total e a identificação geográfica. Do arquivo **Pessoas** vêm os blocos de Demografia, Cor ou Raça e Parentesco. Do arquivo **Domicílio** vem o total de domicílios particulares permanentes ocupados e a contagem de crianças. Os microdados da amostra entram mais adiante, na @sec-dem-amostra, com uma preparação própria.
 
 O primeiro passo é obter o código do município. Como visto no Capítulo 6, a função `lookup_muni()` do `geobr` faz essa busca pelo nome, e a partir da versão 2.0.0 do pacote ela exige que o ano de referência seja informado.
 
@@ -53,7 +53,7 @@ Com o código em mãos, lemos os três arquivos. Em todos eles o filtro por muni
 #| warning: false
 sc_basico <- read_tracts(dataset = "Basico", year = 2022) |>
   filter(code_muni == goiania) |>
-  select(code_tract, name_subdistrict, area_km2, V0001) |>
+  select(code_tract, name_subdistrict, situacao, V0001) |>
   collect()
 
 nrow(sc_basico)
@@ -88,8 +88,7 @@ tibble::tribble(
   "Pessoas",   "Parentesco",    "`parentesco_V01195`", "`arr_outros`", "Outros tipos de composição",
   "Pessoas",   "Parentesco",    "`parentesco_V01203`", "`mono_m`",     "Monoparental, responsável masculino",
   "Pessoas",   "Parentesco",    "`parentesco_V01204`", "`mono_f`",     "Monoparental, responsável feminino",
-  "Domicílio", "Parte 1",       "`domicilio01_V00001`", "`dppo`",      "Domicílios particulares permanentes ocupados",
-  "Domicílio", "Parte 1",       "`domicilio01_V00008`", "`cri_0_9`",   "Crianças de 0 a 9 anos em domicílios permanentes"
+  "Domicílio", "Parte 1",       "`domicilio01_V00001`", "`dppo`",      "Domicílios particulares permanentes ocupados"
 ) |>
   knitr::kable(
     col.names = c("Arquivo", "Bloco", "Código original", "Nome atribuído", "Descrição"),
@@ -116,7 +115,7 @@ sc_pessoas <- read_tracts(dataset = "Pessoas", year = 2022) |>
   collect()
 ```
 
-Do arquivo Domicílio vêm apenas duas colunas, o total de domicílios particulares permanentes ocupados, que servirá de denominador para os indicadores de arranjo domiciliar, e a contagem de crianças de zero a nove anos.
+Do arquivo Domicílio vem uma única coluna, o total de domicílios particulares permanentes ocupados, que servirá de denominador para os indicadores de arranjo domiciliar.
 
 ```{r}
 #| label: leitura-domicilio
@@ -124,7 +123,7 @@ Do arquivo Domicílio vêm apenas duas colunas, o total de domicílios particula
 #| warning: false
 sc_domicilio <- read_tracts(dataset = "Domicilio", year = 2022) |>
   filter(code_muni == goiania) |>
-  select(code_tract, domicilio01_V00001, domicilio01_V00008) |>
+  select(code_tract, domicilio01_V00001) |>
   collect()
 ```
 
@@ -158,8 +157,7 @@ goiania_sc <- sc_basico |>
     arr_outros   = parentesco_V01195,
     mono_m       = parentesco_V01203,
     mono_f       = parentesco_V01204,
-    dppo         = domicilio01_V00001,
-    cri_0_9      = domicilio01_V00008
+    dppo         = domicilio01_V00001
   )
 
 dim(goiania_sc)
@@ -181,176 +179,185 @@ goiania_geo <- read_census_tract(
   left_join(goiania_sc, by = "code_tract")
 ```
 
+Antes de processar e mapear os dados do Censo para Goiânia, cabe uma advertência cartográfica que vale para todas as figuras deste capítulol. Diz respeito à situação do setor censitário (coluna `situacao`), que indica se ele é urbano ou rural. Observe na @tbl-dem-situacao produzida abaixo o total de população para ambos casos:
+
+```{r}
+#| label: tbl-dem-situacao
+#| tbl-cap: "Setores censitários e população de Goiânia (GO) segundo a situação urbana ou rural do setor, Censo 2022."
+#| message: false
+goiania_sc |>
+  group_by(situacao) |>
+  summarise(setores = n(), populacao = sum(pop, na.rm = TRUE)) |>
+  mutate(perc_populacao = 100 * populacao / sum(populacao)) |>
+  knitr::kable(
+    col.names = c("Situação", "Setores", "População", "% da população"),
+    digits = 2,
+    format.args = list(big.mark = ".", decimal.mark = ",")
+  )
+```
+
+Na @fig-dem-situacao, são espacializados onde cada tipo se encontra:
+
+```{r}
+#| label: fig-dem-situacao
+#| fig-cap: "Setores censitários de Goiânia (GO) segundo a situação urbana ou rural, Censo 2022."
+#| fig-height: 5
+#| message: false
+#| warning: false
+ggplot(goiania_geo) +
+  geom_sf(aes(fill = situacao), color = NA) +
+  scale_fill_manual(
+    values   = c("Urbana" = "gray80", "Rural" = "#1B7837"),
+    name     = NULL
+  ) +
+  coord_sf(expand = FALSE) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid = element_blank(), legend.position = "bottom")
+```
+
+Os setores rurais formam uma faixa quase contínua ao longo das divisas do município, mais espessa ao norte, nordeste e a oeste, contornando a mancha urbana. Os 19 setores rurais de Goiânia abrigam pouco mais de dois mil moradores, ou 0,15% da população, e ainda assim respondem por cerca de 40% da área mapeada. O polígono rural médio tem 15 km², contra 0,19 km² do urbano, uma diferença de quase oitenta vezes. A consequência é que as manchas mais extensas de qualquer mapa deste capítulo correspondem a setores praticamente vazios, e o olho tende a lhes atribuir um peso que a população não justifica. Os indicadores calculados para esses setores, quando existem, ficam próximos dos urbanos, de modo que eles não deslocam os resultados. O cuidado, portanto, é de leitura visual e não de cálculo, e ele será retomado sempre que este capítulo fizer afirmações sobre centro e periferia.
+
 Com a base montada, podemos começar pelo recorte que mais mudou no Brasil das últimas duas décadas.
 
 ## Estrutura etária e envelhecimento {#sec-dem-idade}
 
-A distribuição da população por idade é o retrato mais imediato que um censo oferece, e a forma clássica de apresentá-la é a **pirâmide etária**, um gráfico de barras horizontais em que cada faixa aparece duas vezes, uma para cada sexo. O bloco de Demografia do arquivo Pessoas traz exatamente o material necessário, com onze faixas etárias repetidas para o sexo masculino e para o feminino.
+A distribuição da população por idade é um dos retratos mais imediato que um censo oferece, sendo os dois extremos dessa distribuição aspectos relevantes para o planejamento urbano. De um lado estão as crianças pequenas, que demandam creche, atenção básica à saúde e espaços de convivência próximos de casa. Do outro estão as pessoas idosas, que demandam acessibilidade nas calçadas, atenção domiciliar e equipamentos que não exijam deslocamentos longos. O bloco de Demografia do arquivo Pessoas entrega as duas pontas prontas, com a faixa de 0 a 4 anos em uma variável e as faixas de 60 a 69 e de 70 anos ou mais em outras duas, que somamos para chegar ao contingente de 60 anos ou mais. Esse corte dos 60 anos não é arbitrário, já que é o limiar adotado pela Lei nº 10.741, de 2003, que institui o Estatuto da Pessoa Idosa e assegura direitos às pessoas com idade igual ou superior a essa [@brasil_estatuto_idoso].
 
-As vinte e duas variáveis são consecutivas no arquivo, o que permite selecioná-las por intervalo com o operador `:`, sem precisar escrever cada nome.
-
-```{r}
-#| label: leitura-idade
-#| message: false
-#| warning: false
-sc_idade <- read_tracts(dataset = "Pessoas", year = 2022) |>
-  filter(code_muni == goiania) |>
-  select(code_tract, demografia_V01009:demografia_V01030) |>
-  collect()
-```
-
-Os códigos, sozinhos, não dizem qual faixa nem qual sexo representam. Precisamos de uma tabela de correspondência entre o código e o seu significado. Como as onze faixas se repetem na mesma ordem para os dois sexos, a função `rep()` evita digitar tudo duas vezes.
+Abaixo, produz-se uma primeira sumarização das proporções de cada grupo em Goiânia como um todo:
 
 ```{r}
-#| label: dicionario-idade
-faixas_etarias <- c("0 a 4", "5 a 9", "10 a 14", "15 a 19", "20 a 24",
-                    "25 a 29", "30 a 39", "40 a 49", "50 a 59",
-                    "60 a 69", "70 ou mais")
-
-dic_idade <- tibble(
-  variavel = paste0("demografia_V0", 1009:1030),
-  sexo     = rep(c("Masculino", "Feminino"), each = 11),
-  faixa    = rep(faixas_etarias, times = 2)
-)
-
-head(dic_idade)
-```
-
-Agora somamos cada coluna ao longo de todos os setores, obtendo o total municipal de cada combinação de sexo e faixa. O resultado dessa soma é uma tabela de uma linha e vinte e duas colunas, formato que o `ggplot2` não consegue mapear diretamente. É preciso convertê-la para o formato longo, com uma linha por variável, e é isso que a função `pivot_longer()` faz.
-
-```{r}
-#| label: piramide-dados
-#| message: false
-piramide <- sc_idade |>
-  summarise(across(all_of(dic_idade$variavel), \(x) sum(x, na.rm = TRUE))) |>
-  pivot_longer(
-    cols      = all_of(dic_idade$variavel),
-    names_to  = "variavel",
-    values_to = "pessoas"
-  ) |>
-  left_join(dic_idade, by = "variavel") |>
-  mutate(
-    faixa   = factor(faixa, levels = faixas_etarias),
-    pessoas = ifelse(sexo == "Masculino", -pessoas, pessoas)
-  )
-
-head(piramide)
-```
-
-::: callout-note
-Lembre-se de que o `pivot_longer()`, visto no Capítulo 3, empilha em duas colunas aquelas indicadas em `cols`, guardando os nomes originais na coluna nomeada por `names_to` e os valores na coluna nomeada por `values_to`. A conversão é necessária aqui porque o `ggplot2` mapeia colunas para elementos visuais. Para colorir as barras por sexo, o sexo precisa estar em uma coluna, e não espalhado por vinte e duas colunas diferentes.
-:::
-
-Duas escolhas no código acima merecem explicação. A conversão de `faixa` para fator com `levels = faixas_etarias` garante que as barras apareçam em ordem etária, e não em ordem alfabética, que colocaria "10 a 14" antes de "5 a 9". E os valores masculinos são multiplicados por menos um, o que empurra essas barras para a esquerda do eixo e produz o formato característico da pirâmide.
-
-```{r}
-#| label: fig-piramide
-#| fig-cap: "Pirâmide etária de Goiânia (GO) por sexo e faixa de idade, Censo 2022."
-#| fig-height: 5
-#| message: false
-#| warning: false
-ggplot(piramide, aes(x = faixa, y = pessoas, fill = sexo)) +
-  geom_col(width = 0.8) +
-  coord_flip() +
-  scale_y_continuous(
-    labels = \(x) scales::label_number(big.mark = ".", decimal.mark = ",")(abs(x))
-  ) +
-  scale_fill_manual(values = c("Masculino" = "#4E79A7", "Feminino" = "#E15759")) +
-  labs(x = "Faixa etária", y = "Pessoas", fill = NULL) +
-  theme_minimal() +
-  theme(legend.position = "bottom", panel.grid.major.y = element_blank())
-```
-
-A pirâmide de Goiânia já não é uma pirâmide. A base está mais estreita que o corpo, com as faixas de 0 a 4 e de 5 a 9 anos menores que as de 30 a 39 e 40 a 49. É o desenho típico de uma população que passou pela transição demográfica, com queda da fecundidade e aumento da expectativa de vida.
-
-Para levar essa observação ao território, precisamos de um indicador por setor. O corte usual é o de 60 anos, limiar adotado pela Lei nº 10.741, de 2003, que institui o Estatuto da Pessoa Idosa e assegura direitos às pessoas com idade igual ou superior a essa [@brasil_estatuto_idoso]. Ele corresponde exatamente à soma das duas últimas faixas do bloco de Demografia.
-
-```{r}
-#| label: indicador-idosos
+#| label: indicador-idade
 goiania_geo <- goiania_geo |>
   mutate(
     idosos      = id_60_69 + id_70m,
+    perc_0_4    = 100 * pess_0_4 / pop,
     perc_idosos = 100 * idosos / pop
   )
 
+summary(goiania_geo$perc_0_4)
 summary(goiania_geo$perc_idosos)
 ```
 
-O indicador vai de pouco mais de 1% a quase 47% dos residentes, com mediana em torno de 16%. Essa amplitude é o primeiro sinal de que a distribuição da população idosa dentro da cidade está longe de ser homogênea. Os dois mapas a seguir mostram o mesmo fenômeno de duas formas, primeiro pela contagem de pessoas com 60 anos ou mais em cada setor, depois pela proporção que elas representam na população do setor.
+As duas distribuições têm amplitudes bem diferentes. A proporção de crianças de 0 a 4 anos vai de zero a 21% dos residentes, com mediana de 5,5%, próxima dos 5,8% do município como um todo. Já a proporção de pessoas de 60 anos ou mais vai de 1,4% a 46,9%, com mediana de 16,0% contra 15,0% no município. Há setores em que quase metade dos moradores já passou dos 60 anos, e essa amplitude é o primeiro sinal de que o envelhecimento de Goiânia está longe de se distribuir de maneira homogênea pelo território.
+
+Levar os dois indicadores ao mapa mostra que eles descrevem um padrão bem marcado. Como partilham a mesma unidade, a porcentagem da população do setor, podemos exibi-los lado a lado com o `patchwork`.
 
 ```{r}
-#| label: fig-idosos
-#| fig-cap: "Pessoas de 60 anos ou mais por setor censitário em Goiânia (GO), em contagem (à esquerda) e em proporção da população do setor (à direita), Censo 2022."
+#| label: fig-idade-pares
+#| fig-cap: "Proporção de pessoas de 0 a 4 anos e de 60 anos ou mais na população de cada setor censitário, Goiânia (GO), Censo 2022."
 #| fig-height: 4.5
 #| message: false
 #| warning: false
-mapa_idosos_cont <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = idosos), color = NA) +
-  scale_fill_distiller(palette = "Blues", direction = 1,
-                       name = "Pessoas\n60 anos ou +",
+mapa_criancas <- ggplot(goiania_geo) +
+  geom_sf(aes(fill = perc_0_4), color = NA) +
+  scale_fill_distiller(palette = "Greens", direction = 1,
+                       name = "% da pop.\ndo setor",
                        na.value = "gray90") +
   coord_sf(expand = FALSE) +
-  labs(subtitle = "Contagem") +
+  labs(subtitle = "0 a 4 anos") +
   theme_minimal() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-mapa_idosos_perc <- ggplot(goiania_geo) +
+mapa_idosos <- ggplot(goiania_geo) +
   geom_sf(aes(fill = perc_idosos), color = NA) +
   scale_fill_distiller(palette = "Blues", direction = 1,
                        name = "% da pop.\ndo setor",
                        na.value = "gray90") +
   coord_sf(expand = FALSE) +
-  labs(subtitle = "Proporção") +
+  labs(subtitle = "60 anos ou mais") +
   theme_minimal() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-mapa_idosos_cont + mapa_idosos_perc
+mapa_criancas + mapa_idosos
 ```
 
-Os dois mapas não descrevem a mesma cidade. O da esquerda destaca os setores mais populosos, porque um setor com muita gente tende a ter muitos idosos mesmo que a proporção seja baixa. O da direita destaca os bairros consolidados, onde a população envelheceu no lugar e os filhos já saíram de casa.
-
-A divergência pode ser medida. Se tomarmos os cem setores com mais pessoas idosas em número absoluto e os cem setores com maior proporção de idosos, apenas 28 aparecem nas duas listas.
+Note que os dois mapas são quase o inverso um do outro. A área central consolidada reúne as maiores proporções de pessoas idosas e as menores de crianças pequenas, ao passo que as bordas do município apresentam o padrão oposto. O coeficiente de correlação de Pearson^[varia de $-1$ a $+1$, sendo $-1$ correlação altamente negativa, $+1$ altamente positiva e valores próximos de $0$ correlação baixa ou inexistente] entre os dois indicadores obtido com a função `cor()` abaixo confirma o que o padrão dos mapas acima sugere:
 
 ```{r}
-#| label: contagem-vs-proporcao
-top_contagem  <- goiania_geo |>
-  st_drop_geometry() |>
-  filter(!is.na(perc_idosos)) |>
-  slice_max(idosos, n = 100) |>
-  pull(code_tract)
-
-top_proporcao <- goiania_geo |>
-  st_drop_geometry() |>
-  filter(!is.na(perc_idosos)) |>
-  slice_max(perc_idosos, n = 100) |>
-  pull(code_tract)
-
-length(intersect(top_contagem, top_proporcao))
+#| label: correlacao-idade
+cor(goiania_geo$perc_0_4, goiania_geo$perc_idosos,
+    use = "complete.obs")
 ```
 
-Setenta e dois por cento de discordância entre as duas listas é muito, e a consequência prática é direta. Uma política que precise dimensionar a demanda por atendimento domiciliar deve olhar a contagem, porque o que interessa é quantas pessoas serão atendidas. Uma política que precise decidir onde instalar um centro de convivência deve olhar a proporção, porque o que interessa é a densidade do público no entorno do equipamento. Escolher o mapa errado leva o equipamento para o lugar errado.
+O argumento `use = "complete.obs"` descarta os setores em que algum dos dois indicadores está ausente, sem o que o resultado seria `NA`. O valor obtido, de −0,65, é uma correlação negativa forte para dados intraurbanos. Quando dois indicadores se opõem dessa maneira, vale condensá-los em um só. A razão entre crianças de 0 a 4 anos e pessoas de 60 anos ou mais produzida abaixo faz exatamente isso, informando quantas crianças pequenas existem para cada pessoa idosa no setor. Valores abaixo de 1 indicam predomínio de pessoas idosas e valores acima de 1 indicam predomínio de crianças pequenas.
 
-Agregar os setores em recortes maiores ajuda a nomear as áreas. Goiânia não possui a divisão por bairros nos Agregados, e a coluna `name_neighborhood` vem inteiramente vazia para o município, situação que o leitor deve sempre verificar antes de contar com esse recorte. O nível imediatamente disponível acima do setor é o subdistrito.
+```{r}
+#| label: indicador-razao
+goiania_geo <- goiania_geo |>
+  mutate(razao_cri_idoso = pess_0_4 / idosos)
+
+summary(goiania_geo$razao_cri_idoso)
+```
+
+No município como um todo há 0,39 criança de 0 a 4 anos para cada pessoa de 60 anos ou mais, e a mediana entre os setores é de 0,36. Somente 232 dos 2.248 setores com dado disponível, ou 10,3% deles, têm mais crianças pequenas do que pessoas idosas.
+
+O indicador pede um tipo de escala de cor diferente das que usamos até aqui. Todos os mapas anteriores do capítulo mostram grandezas que crescem em uma única direção, e para elas basta um gradiente que vai do claro ao escuro. A razão entre crianças e pessoas idosas tem um centro com significado próprio, o valor 1, que separa os setores em que predominam crianças daqueles em que predominam pessoas idosas. O que se quer, portanto, é uma **escala divergente**, com uma cor de cada lado e o branco exatamente sobre o 1.
+
+Há ainda uma segunda dificuldade. A distribuição é assimétrica, com metade dos setores abaixo de 0,36 e um máximo de 5,4. Pior que isso, a escala natural de uma razão é multiplicativa e não aditiva, pois o valor 0,5 significa duas vezes mais pessoas idosas do que crianças, enquanto o 2 significa o dobro de crianças. Os dois estão à mesma distância do 1, mas uma escala linear colocaria o 0,5 muito mais perto do centro do que o 2. A solução para ambos os problemas é a mesma, que é transformar a escala em logarítmica, conforme o exemplo abaixo:
+
+```{r}
+#| label: fig-razao-idade
+#| fig-cap: "Razão entre pessoas de 0 a 4 anos e pessoas de 60 anos ou mais por setor censitário, Goiânia (GO), Censo 2022. Valores abaixo de 1 indicam predomínio de pessoas idosas."
+#| fig-height: 5
+#| message: false
+#| warning: false
+
+# Mapa:
+ggplot(goiania_geo) +
+  geom_sf(aes(fill = razao_cri_idoso), color = NA) +
+  scale_fill_gradient2(
+    low       = "#B2182B",
+    mid       = "#F7F7F7",
+    high      = "#2166AC",
+    midpoint  = 1,
+    transform = "log2",
+    breaks    = c(0.05, 0.125, 0.25, 0.5, 1, 2, 4),
+    name      = "Crianças de 0 a 4\npor pessoa idosa",
+    na.value  = "gray70"
+  ) +
+  coord_sf(expand = FALSE) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid = element_blank())
+```
+
+::: {.callout-note}
+A função `scale_fill_gradient2()` constrói uma escala divergente a partir de três cores, uma para o extremo inferior (`low`), uma para o centro (`mid`) e uma para o extremo superior (`high`). Ela difere do `scale_fill_distiller()` usado nos mapas anteriores, que trabalha com um gradiente de sentido único, indo do claro ao escuro. O argumento `midpoint` informa sobre qual valor dos dados a cor central deve cair, e é ele que assenta o branco exatamente sobre o 1, deixando o vermelho para os setores com predomínio de pessoas idosas e o azul para aqueles com predomínio de crianças pequenas.
+
+O argumento `transform = "log2"` aplica o logaritmo de base 2 à escala de cor, sem alterar os dados nem o indicador calculado. A transformação atende à natureza multiplicativa da razão, fazendo com que 1/2 e 2 fiquem à mesma distância do centro, assim como 1/4 e 4. Já os valores passados em `breaks` são os que aparecem na legenda, e é importante notar que eles são declarados em unidades do próprio indicador orginal, e não em unidades do logaritmo. 
+
+Por fim, o `na.value` define a cor dos setores sem valor (`NA`) a representar. São 67 dos 2.310 setores de Goiânia.
+:::
+
+O mapa condensa em uma imagem o que os dois anteriores mostravam separadamente. O vermelho domina a área central e o azul aparece nas franjas, com as manchas azuis mais intensas nas áreas de ocupação recente. Um equipamento voltado à primeira infância e outro voltado à população idosa provavelmente não disputarão o mesmo terreno em Goiânia. 
+
+Cabe uma ressalva importante de planejamento territorial, neste caso. Maior proporção de crianças em um determinado local não indica necessariamente uma maior demanda por serviços relacionados a esse público, já que o valor total deve ser levado em consideração. Seria mais informativo um mapa da densidade populacional deste grupo na região de interesse (medido em pessoas/km², por exemplo^[baseado em tudo que já vimos até aqui, em especial no [Capítulo 5](5-dados-geograficos.qmd)]).
+
+Agregar os setores em recortes maiores ajuda a identificar regiões da cidade que conhecemos pelo nome. Goiânia não possui a divisão por bairros nos Agregados, e a coluna `name_neighborhood` vem inteiramente vazia para o município, situação que o leitor deve sempre verificar antes de contar com esse recorte. O nível imediatamente disponível acima do setor é o subdistrito.
 
 Ao agregar, somamos cada variável original separadamente, em vez de somar o indicador já calculado por setor. A diferença importa. Quando uma das parcelas está ausente em um setor, a soma `id_60_69 + id_70m` daquele setor também fica ausente, e somar essa coluna descartaria a contribuição inteira do setor enquanto a população dele continuaria no denominador. Somando cada parcela por conta própria, aproveitamos tudo que foi divulgado.
 
 ```{r}
-#| label: idosos-subdistrito
+#| label: tbl-dem-idosos-sub
+#| tbl-cap: "Subdistritos de Goiânia (GO) com as cinco maiores e as cinco menores proporções de pessoas de 60 anos ou mais, entre os que possuem ao menos mil domicílios particulares permanentes ocupados, Censo 2022."
 #| message: false
+## Produzindo tabela agregada por subdistrito em Goiânia:
 idosos_sub <- goiania_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_subdistrict)) |>
   group_by(name_subdistrict) |>
-  summarise(
+  summarize(
     pop    = sum(pop, na.rm = TRUE),
     idosos = sum(id_60_69, na.rm = TRUE) + sum(id_70m, na.rm = TRUE),
     dppo   = sum(dppo, na.rm = TRUE)
   ) |>
-  filter(dppo >= 1000) |>
+  filter(dppo >= 1000) |> # Filtrando somente bairros com mais domicílios
   mutate(perc_idosos = 100 * idosos / pop)
 
+## Produzindo tabela somente com os maiores e menores casos:
 bind_rows(
   idosos_sub |> slice_max(perc_idosos, n = 5),
   idosos_sub |> slice_min(perc_idosos, n = 5)
@@ -370,10 +377,11 @@ O contraste é de mais de quatro vezes entre o subdistrito mais envelhecido e o 
 O Censo classifica a cor ou raça em cinco categorias, branca, preta, amarela, parda e indígena, todas por autodeclaração. Em análises de desigualdade, é frequente somar as categorias preta e parda em um único grupo, procedimento que o próprio IBGE adota na publicação *Desigualdades Sociais por Cor ou Raça no Brasil*, onde o grupo aparece sob a denominação "pretos ou pardos" [@ibge_desigualdades2022]. Comecemos pelo quadro geral do município.
 
 ```{r}
-#| label: composicao-raca
+#| label: tbl-dem-raca-mun
+#| tbl-cap: "Composição da população de Goiânia (GO) por cor ou raça autodeclarada, Censo 2022."
 #| message: false
 composicao_raca <- goiania_sc |>
-  summarise(
+  summarize(
     Branca   = sum(branca,   na.rm = TRUE),
     Preta    = sum(preta,    na.rm = TRUE),
     Amarela  = sum(amarela,  na.rm = TRUE),
@@ -390,6 +398,10 @@ composicao_raca |>
     format.args = list(big.mark = ".", decimal.mark = ",")
   )
 ```
+
+::: {.callout-note}
+Lembre-se de que o `pivot_longer()`, visto no Capítulo 3, empilha em duas colunas aquelas indicadas em `cols`, guardando os nomes originais na coluna nomeada por `names_to` e os valores na coluna nomeada por `values_to`. Aqui o `summarize()` produziu uma tabela de uma única linha e cinco colunas, e o `pivot_longer()` a converte em cinco linhas, formato adequado tanto para a tabela impressa quanto para os gráficos. O seletor `everything()` indica que todas as colunas devem ser empilhadas, e é a forma mais curta de escrever isso quando não há coluna identificadora a preservar.
+:::
 
 Pretos e pardos somados respondem por pouco mais da metade dos residentes de Goiânia. O indicador por setor é construído da mesma forma que o anterior, somando as duas categorias e dividindo pela população total do setor.
 
@@ -414,7 +426,7 @@ O mapa a seguir mostra a distribuição desse indicador. Diferentemente do caso 
 #| warning: false
 ggplot(goiania_geo) +
   geom_sf(aes(fill = perc_pretos_pardos), color = NA) +
-  scale_fill_distiller(palette = "PuBuGn", direction = 1,
+  scale_fill_distiller(palette = "Oranges", direction = 1,
                        name = "% pretos\ne pardos",
                        na.value = "gray90") +
   coord_sf(expand = FALSE) +
@@ -423,10 +435,11 @@ ggplot(goiania_geo) +
         panel.grid = element_blank())
 ```
 
-O padrão espacial é nítido, com uma mancha clara concentrada e contínua, cercada por valores altos em todas as direções. Repetindo a agregação por subdistrito, o contraste fica explícito.
+O padrão espacial é nítido, com uma mancha clara e contínua concentrada na região central, cercada por valores altos em todas as direções, similar aos locais que concentram população mais idosa no município (@fig-razao-idade). Repetindo a agregação por subdistrito, o contraste fica explícito.
 
 ```{r}
-#| label: raca-subdistrito
+#| label: tbl-dem-raca-sub
+#| tbl-cap: "Subdistritos de Goiânia (GO) com as cinco maiores e as cinco menores proporções de população preta e parda, entre os que possuem ao menos mil domicílios particulares permanentes ocupados, Censo 2022."
 #| message: false
 raca_sub <- goiania_geo |>
   st_drop_geometry() |>
@@ -452,9 +465,9 @@ bind_rows(
   )
 ```
 
-A comparação entre esta tabela e a da seção anterior é reveladora. Os subdistritos que aparecem entre os mais envelhecidos são, em boa parte, os mesmos que aparecem entre os de menor proporção de população preta e parda. Envelhecimento e composição por cor ou raça não são fenômenos independentes no território brasileiro, porque ambos guardam relação com a renda e com a trajetória histórica de ocupação da cidade. Descrever essa coincidência é o que os dados permitem. Explicá-la exige um trabalho de interpretação que os agregados, sozinhos, não sustentam.
+Observe como alguns subdistritos que aparecem entre os mais envelhecidos (@tbl-dem-idosos-sub) são também os mesmos que aparecem entre os de menor proporção de população preta e parda (e vice-versa). Envelhecimento e composição por cor ou raça não são fenômenos independentes no território brasileiro, porque ambos guardam relação com a renda e com a trajetória histórica de ocupação da cidade.
 
-## Quem responde pelo domicílio {#sec-dem-responsavel}
+## Responsável pelo domicílio {#sec-dem-responsavel}
 
 Até aqui, todos os indicadores tiveram a população total do setor no denominador. Esta seção muda de unidade e passa a falar de domicílios, ou mais precisamente das pessoas responsáveis por eles. Cada domicílio tem exatamente uma pessoa responsável, de modo que contar responsáveis é uma outra forma de contar domicílios.
 
@@ -502,7 +515,7 @@ goiania_geo |>
   )
 ```
 
-As duas contas dão respostas legítimas para perguntas diferentes. A primeira diz que, entre as mulheres que respondem pelo domicílio em Goiânia, cerca de 56% são pretas ou pardas. A segunda diz que cerca de 28% de todos os domicílios do município são chefiados por mulheres pretas ou pardas. A primeira descreve a composição de um grupo, a segunda descreve a incidência de um arranjo. Um relatório que apresente uma delas com a legenda da outra estará simplesmente errado, e é por isso que numerador e denominador precisam ser sempre declarados juntos.
+As duas contas dão respostas legítimas para perguntas diferentes. A primeira diz que, entre as mulheres que respondem pelo domicílio em Goiânia, cerca de 56% são pretas ou pardas. A segunda diz que cerca de 28% de todos os domicílios do município são chefiados por mulheres pretas ou pardas. A primeira descreve a composição de um grupo, a segunda descreve a incidência de um arranjo. 
 
 Os dois mapas a seguir tornam a diferença visível. Repare que as legendas trazem o denominador escrito, e não apenas o numerador.
 
@@ -537,7 +550,7 @@ mapa_resp_negra <- ggplot(goiania_geo) +
 mapa_resp_f + mapa_resp_negra
 ```
 
-O mapa da esquerda é relativamente uniforme, com a chefia feminina distribuída por toda a cidade. O da direita reproduz de perto o mapa de cor ou raça da seção anterior, o que era esperado, já que a composição das responsáveis acompanha a composição da população do setor.
+O mapa da esquerda é relativamente uniforme, com a chefia feminina distribuída por toda a cidade. O da direita reproduz de perto os mapas de idade e de cor ou raça das seções anteriores, reforçando mais um aspecto do padrão socioeconômico encontrado.
 
 ## O que mudou desde 2010 {#sec-dem-2010}
 
@@ -571,17 +584,18 @@ nrow(pessoa_2010)
 
 A função `num_range()`, do pacote `tidyselect`, seleciona colunas cujo nome combina um prefixo fixo com uma sequência numérica. A chamada `num_range("pessoa13_V", 94:134)` parece resolver o problema, mas gera os nomes `pessoa13_V94`, `pessoa13_V95` e assim por diante, sem os zeros à esquerda. Como as colunas do arquivo se chamam `pessoa13_V094`, nenhuma das seis primeiras seria encontrada.
 
-O detalhe é traiçoeiro porque a seleção **não** produz erro. Colunas que não existem são simplesmente ignoradas, e o resultado é uma soma silenciosamente incompleta, que neste caso deixaria de fora justamente as pessoas de 60 a 65 anos.
+O detalhe é importante porque a seleção **não** produz erro. Colunas que não existem são simplesmente ignoradas, e o resultado é uma soma incompleta, que neste caso deixaria de fora justamente as pessoas de 60 a 65 anos.
 
 O argumento `width` resolve, preenchendo os números com zeros à esquerda até o comprimento indicado. Com `width = 3`, a sequência gerada passa a ser `pessoa13_V094` até `pessoa13_V134`.
 
-A lição é mais geral que a função. Sempre que uma seleção por padrão devolver menos colunas do que o esperado, vale conferir o resultado com `ncol()` antes de seguir adiante.
+Sempre que uma seleção por padrão devolver menos colunas do que o esperado, vale conferir o resultado com `ncol()` antes de seguir adiante.
 :::
 
 Com os dois arquivos em memória, calculamos os três indicadores de 2010 e os colocamos ao lado dos de 2022. Todas as somas são feitas variável a variável, pelo motivo discutido na @sec-dem-idade.
 
 ```{r}
-#| label: comparativo-2010-2022
+#| label: tbl-dem-comparativo
+#| tbl-cap: "Envelhecimento, composição por cor ou raça e responsabilidade feminina pelo domicílio em Goiânia (GO), Censos de 2010 e 2022."
 #| message: false
 pop_2010   <- sum(pessoa_2010$pessoa03_V001, na.rm = TRUE)
 idade_2010 <- pessoa_2010 |>
@@ -618,19 +632,108 @@ comparativo |>
   knitr::kable(digits = 1, format.args = list(decimal.mark = ","))
 ```
 
-A população do município passou de `r format(pop_2010, big.mark = ".", decimal.mark = ",")` para `r format(pop_2022, big.mark = ".", decimal.mark = ",")` residentes no período, um crescimento de cerca de 10%. Os três indicadores, porém, mudaram bem mais que isso, e todos na mesma direção do que se observou no país. A proporção de pessoas com 60 anos ou mais cresceu mais da metade em doze anos, o que é uma transformação rápida para um indicador demográfico. A população que se declara preta ou parda passou de metade para pouco mais da metade dos residentes, tendência que se repetiu em quase todos os municípios brasileiros e que combina mudança na composição real da população com mudança na forma como as pessoas se autodeclaram. E a chefia feminina de domicílios saltou de pouco mais de dois quintos para exatamente a metade.
+A população do município passou de `r format(pop_2010, big.mark = ".", decimal.mark = ",")` para `r format(pop_2022, big.mark = ".", decimal.mark = ",")` residentes no período, um crescimento de cerca de 10%. Os três indicadores, porém, mudaram bem mais que isso, e todos na mesma direção do que se observou no país. A proporção de pessoas com 60 anos ou mais cresceu mais da metade em doze anos, o que é uma transformação rápida para um indicador demográfico. A população que se declara preta ou parda passou de metade para pouco mais da metade dos residentes, tendência que se repetiu em quase todos os municípios brasileiros e que combina mudança na composição real da população com mudança na forma como as pessoas se autodeclaram. Observe também que a chefia feminina de domicílios saltou de pouco mais de dois quintos para exatamente a metade. Na próxima seção, abordaremos um aspecto análogo para enriquecer ainda mais nossa discussão.
 
-Esse último número guarda relação com o arranjo dos domicílios, assunto que retomaremos adiante. Antes disso, porém, precisamos reconhecer um limite de tudo que fizemos até aqui.
+## Arranjos domiciliares e monoparentalidade {#sec-dem-monoparental}
 
-## O que só a amostra responde {#sec-dem-amostra}
+O bloco de Parentesco dos agregados classifica cada domicílio segundo a composição da unidade doméstica, em cinco categorias mutuamente exclusivas, mais uma sexta para as unidades em domicílios coletivos. A tabela a seguir mostra a distribuição dessas categorias em Goiânia.
+
+```{r}
+#| label: tbl-dem-arranjos
+#| tbl-cap: "Distribuição dos domicílios de Goiânia (GO) segundo a composição da unidade doméstica, Censo 2022."
+#| message: false
+arranjos <- goiania_sc |>
+  summarise(
+    `Responsável e cônjuge, sem filhos`              = sum(arr_casal,  na.rm = TRUE),
+    `Responsável e cônjuge, com filhos de ambos`     = sum(arr_ambos,  na.rm = TRUE),
+    `Responsável e cônjuge, com filhos de um deles`  = sum(arr_um,     na.rm = TRUE),
+    `Responsável sem cônjuge, com filhos`            = sum(arr_mono,   na.rm = TRUE),
+    `Outros tipos de composição`                     = sum(arr_outros, na.rm = TRUE)
+  ) |>
+  pivot_longer(everything(), names_to = "arranjo", values_to = "domicilios") |>
+  mutate(perc = 100 * domicilios / sum(domicilios))
+
+arranjos |>
+  knitr::kable(
+    col.names = c("Composição da unidade doméstica", "Domicílios", "% do total"),
+    digits = 1,
+    format.args = list(big.mark = ".", decimal.mark = ",")
+  )
+```
+
+A quarta linha é a que nos interessa. Domicílios com responsável sem cônjuge e com filhos ou enteados são o que a literatura de política social costuma chamar de **arranjos monoparentais**. Cabe uma advertência de vocabulário, porque o IBGE não divulga nenhuma variável com esse nome. O que existe é a classificação por composição da unidade doméstica, e o indicador de monoparentalidade é uma leitura que fazemos dessa classificação, não um dado oficial rotulado assim.
+
+O bloco traz ainda a mesma categoria desagregada por sexo da pessoa responsável, o que permite separar arranjos monoparentais masculinos e femininos. Ao somar as duas partes, porém, algo não fecha.
+
+```{r}
+#| label: mono-sexo
+goiania_sc |>
+  summarise(
+    total_mono = sum(arr_mono, na.rm = TRUE),
+    masculino  = sum(mono_m,   na.rm = TRUE),
+    feminino   = sum(mono_f,   na.rm = TRUE),
+    soma_sexos = sum(mono_m, na.rm = TRUE) + sum(mono_f, na.rm = TRUE),
+    diferenca  = sum(arr_mono, na.rm = TRUE) -
+                 (sum(mono_m, na.rm = TRUE) + sum(mono_f, na.rm = TRUE))
+  )
+```
+
+Faltam mais de setecentos domicílios na soma por sexo. A explicação está nas regras de sigilo dos Agregados, apresentadas no Capítulo 7. Células com frequência muito baixa são suprimidas para impedir a identificação indireta de informantes, e chegam ao usuário como valores ausentes. Como os arranjos monoparentais masculinos são menos frequentes, essa é possivelmente a variável mais atingida.
+
+```{r}
+#| label: supressao
+goiania_sc |>
+  summarise(
+    setores           = n(),
+    na_total_mono     = sum(is.na(arr_mono)),
+    na_mono_masculino = sum(is.na(mono_m)),
+    na_mono_feminino  = sum(is.na(mono_f))
+  )
+```
+
+Em um quinto dos setores de Goiânia o número de arranjos monoparentais masculinos foi suprimido. Esse é um resultado importante de reter, e não apenas para esta variável. Sempre que um indicador desagregado apresentar totais que não fecham com o agregado correspondente, a supressão por sigilo é a primeira hipótese a investigar, e a verificação é tão simples quanto o `sum(is.na())` acima. Ignorar o problema significa publicar um indicador que subestima sistematicamente o fenômeno nas áreas em que ele é mais raro.
+
+Feita a ressalva, construímos o indicador. O denominador é o total de domicílios particulares permanentes ocupados, que é o universo em que os arranjos foram classificados.
+
+```{r}
+#| label: indicador-mono
+goiania_geo <- goiania_geo |>
+  mutate(
+    perc_mono   = 100 * arr_mono / dppo,
+    perc_mono_f = 100 * mono_f   / dppo
+  )
+
+summary(goiania_geo$perc_mono)
+```
+
+O mapa a seguir apresenta a proporção de arranjos monoparentais femininos, que respondem por cerca de 88% do total de arranjos monoparentais do município.
+
+```{r}
+#| label: fig-mono
+#| fig-cap: "Proporção de domicílios com responsável mulher, sem cônjuge e com filhos ou enteados, sobre o total de domicílios particulares permanentes ocupados do setor, Goiânia (GO), Censo 2022."
+#| fig-height: 5
+#| message: false
+#| warning: false
+ggplot(goiania_geo) +
+  geom_sf(aes(fill = perc_mono_f), color = NA) +
+  scale_fill_distiller(palette = "YlOrBr", direction = 1,
+                       name = "% dos\ndomicílios",
+                       na.value = "gray90") +
+  coord_sf(expand = FALSE) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid = element_blank())
+```
+
+Apesar de aparecerem alguns setores de valores maiores na periferia, visualmente os padrões não são tão claros para se tirar conclusões preliminares. Neste caso, a recomendação é buscar métodos estatísticos apropriados para identificar estas relações de forma mais segura e confiável.
+
+## Estruturação dos microdados da amostra do Censo de 2010 {#sec-dem-amostra}
 
 Chegamos ao ponto anunciado na introdução, em que a fonte muda. Todos os indicadores construídos até aqui vieram dos Agregados por Setor Censitário, produzidos a partir do Questionário Básico, aplicado a todos os domicílios. Essa é a fonte com maior detalhe espacial que o Censo oferece, e por isso ela veio primeiro. Ela também é a mais limitada em conteúdo, porque o Questionário Básico investiga poucos temas.
 
 Os dois recortes que faltam estão fora dela. O primeiro é a **deficiência**, investigada apenas no Questionário da Amostra. O segundo é a **naturalidade**, ou mais precisamente a distinção entre quem nasceu e sempre morou no município e quem chegou depois. Para alcançá-los é preciso recorrer aos microdados da amostra, no fluxo apresentado no Capítulo 8.
 
 A mudança de fonte traz uma mudança de unidade espacial. Os microdados não são divulgados por setor censitário, e a menor unidade disponível é a **área de ponderação**, discutida na @sec-areas-pond. Goiânia tem 43 delas em 2010, contra os mais de dois mil setores usados até aqui. É um caso em que a pergunta determina a fonte e a fonte determina a escala, e não o contrário.
-
-### Preparando os microdados de 2010 {#sec-dem-amostra-prep}
 
 O primeiro passo é obter a geometria das áreas de ponderação com o `geobr` e guardar seus códigos, que servirão para filtrar os microdados.
 
@@ -706,14 +809,15 @@ pa_goiania <- md_goiania |>
   )
 ```
 
-### Pessoas com deficiência {#sec-dem-deficiencia}
+## Pessoas com deficiência {#sec-dem-deficiencia}
 
 O Censo 2010 investigou a deficiência por meio de quatro quesitos. Três deles, sobre enxergar, ouvir e caminhar ou subir degraus, seguem uma escala de quatro graus, que vai de "não consegue de modo algum" até "nenhuma dificuldade". O quarto, sobre deficiência mental ou intelectual permanente, admite apenas sim ou não.
 
 A pergunta que parece trivial, a de quantas pessoas com deficiência há no município, não tem resposta única. Ela depende de onde se traça a linha de corte na escala de graus, e essa escolha já foi revista oficialmente pelo IBGE.
 
 ```{r}
-#| label: criterios-deficiencia
+#| label: tbl-dem-def-criterios
+#| tbl-cap: "Prevalência de deficiência em Goiânia (GO) pelos critérios amplo e estrito, com intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
 pa_goiania <- pa_goiania |>
   mutate(
@@ -740,7 +844,7 @@ Ao divulgar os resultados de 2010, o IBGE classificou como pessoa com deficiênc
 
 Em 2018, o Instituto publicou a Nota Técnica 01/2018 revendo essa leitura [@ibge_nota_deficiencia2018]. Adotando a linha de corte recomendada pelo Grupo de Washington para Estatísticas sobre Pessoas com Deficiência, passou a classificar como pessoa com deficiência somente quem declarasse **grande dificuldade** ou **não conseguir de modo algum**. O total caiu para 12.748.663 pessoas, ou 6,7% da população.
 
-A mudança não corrige um erro de coleta. Os dados são exatamente os mesmos, e o que mudou foi o limiar de gravidade adotado para a classificação, com o objetivo de tornar a estatística brasileira comparável à de outros países. A nota registra ainda que a linha de corte **não se aplica** à deficiência mental ou intelectual, cujo quesito não seguiu o modelo do Grupo de Washington e admite apenas sim ou não.
+A mudança não corrige um erro de coleta, pois os dados são exatamente os mesmos. O que mudou foi o limiar de gravidade adotado para a classificação, com o objetivo de tornar a estatística brasileira comparável à de outros países. A nota registra ainda que a linha de corte **não se aplica** à deficiência mental ou intelectual, cujo quesito não seguiu o modelo do Grupo de Washington e admite apenas sim ou não.
 
 A lição prática vale muito além deste indicador. Antes de publicar qualquer número sobre deficiência a partir do Censo 2010, é obrigatório declarar qual critério foi usado, porque a diferença entre os dois é de um fator próximo de quatro. Um relatório que compare o seu resultado com um número de outra fonte sem verificar esse detalhe estará comparando coisas diferentes.
 :::
@@ -748,7 +852,8 @@ A lição prática vale muito além deste indicador. Antes de publicar qualquer 
 Os valores obtidos para Goiânia acompanham de perto os nacionais, com cerca de 23% pelo critério amplo e menos de 6% pelo estrito. Daqui em diante usamos o critério estrito, que é o vigente. Decomposto por tipo de deficiência, o quadro fica assim.
 
 ```{r}
-#| label: deficiencia-tipo
+#| label: tbl-dem-def-tipo
+#| tbl-cap: "Prevalência de deficiência em Goiânia (GO) por tipo, segundo o critério estrito, microdados da amostra do Censo 2010."
 #| message: false
 pa_goiania |>
   summarize(
@@ -781,9 +886,9 @@ pa_goiania |>
   summarize(perc_deficiencia = survey_mean(def_estrito, vartype = "ci"))
 ```
 
-A prevalência da deficiência mais que dobra a cada salto de faixa a partir dos 40 anos, e entre as pessoas de 60 anos ou mais ela ultrapassa um quinto. Isso significa que o mapa de envelhecimento da @sec-dem-idade é, indiretamente, um mapa de demanda por acessibilidade urbana. É um bom exemplo de como dois produtos diferentes do Censo, com unidades espaciais diferentes, se complementam sem que seja preciso combiná-los numericamente.
+A prevalência da deficiência mais que dobra a cada salto de faixa a partir dos 40 anos, e entre as pessoas de 60 anos ou mais ela ultrapassa um quinto. No nível das pessoas, portanto, a relação entre idade e deficiência é inequívoca. Guardemos esse resultado, porque o mapa a seguir vai colocá-lo à prova.
 
-O mapa a seguir apresenta a prevalência de deficiência por área de ponderação.
+O mapa a seguir apresenta a prevalência de deficiência por área de ponderação:
 
 ```{r}
 #| label: fig-deficiencia
@@ -808,9 +913,29 @@ ap_goiania |>
         panel.grid = element_blank())
 ```
 
-A prevalência varia de menos de 3% a quase 8% entre as áreas de ponderação, e os valores mais altos aparecem justamente nas áreas centrais, que a @sec-dem-idade identificou como as mais envelhecidas.
+<!--
+Correlações calculadas entre as 43 áreas de ponderação de Goiânia, todas a partir
+dos microdados da amostra de 2010, portanto na mesma fonte, mesma unidade e mesmo ano:
 
-### Quem sempre morou em Goiânia {#sec-dem-migracao}
+  % com deficiência (critério estrito) x % de 60 anos ou mais : -0,504
+  % com deficiência (critério estrito) x % pretos e pardos     : +0,691
+  % com deficiência (critério estrito) x distância ao centro   : +0,211
+  % pretos e pardos                    x % de 60 anos ou mais  : -0,802
+
+As cinco áreas de maior prevalência têm de 54% a 64% de pretos e pardos e de 5,6% a
+11% de idosos. Entre as cinco de menor prevalência estão as duas mais envelhecidas do
+município, com 20,5% e 17,4% de pessoas de 60 anos ou mais.
+-->
+
+O mapa não reproduz o mapa do envelhecimento, e é aí que está o interesse. As áreas de maior prevalência não são as centrais, que a @sec-dem-idade identificou como as mais envelhecidas, e sim as periféricas, que são também as de maior peso de população preta e parda. Nas áreas mais velhas do município, a prevalência medida é das mais baixas.
+
+Duas ressalvas antes de seguir. A primeira é que a comparação com os mapas anteriores atravessa fontes, unidades e anos diferentes, pois aqueles vêm dos agregados por setor censitário de 2022 e este vem dos microdados da amostra por área de ponderação de 2010. A leitura conjunta é legítima como indício, e não como medida. A segunda é a advertência cartográfica já feita na @sec-dem-idade, pois parte do que o olho identifica como periferia corresponde aos poucos setores rurais, extensos e quase desabitados, que aqui estão diluídos dentro de áreas de ponderação muito maiores.
+
+O contraste vale como lembrete de que uma relação verdadeira entre pessoas não se transporta automaticamente para o agregado territorial. Se a idade fosse o único determinante, as duas manchas coincidiriam. Como não coincidem, outros fatores estão operando na composição de cada área, e a hipótese mais imediata é a de que condições socioeconômicas produzam deficiência por caminhos independentes do envelhecimento. Deficiências motoras decorrentes de acidentes de trânsito, por exemplo, atingem sobretudo pedestres e motociclistas, e a exposição a esse risco não se distribui igualmente pela cidade. Trabalho pesado, acesso tardio a cuidado de saúde e violência urbana operariam na mesma direção.
+
+Cabe frisar que nada disso se demonstra cabalmente com os dados analisados neste capítulo, e o que fica registrado é uma suspeita, não um achado. Passemos ao segundo recorte que só a amostra permite investigar.
+
+## Migração {#sec-dem-migracao}
 
 A variável `V0618` registra se a pessoa nasceu no município e distingue três situações, a de quem nasceu e sempre morou ali, a de quem nasceu ali mas morou em outro lugar em algum momento, e a de quem nasceu em outro município ou país. É a informação mais direta que o Censo oferece sobre a formação da população de uma cidade.
 
@@ -857,268 +982,33 @@ ap_goiania |>
         panel.grid = element_blank())
 ```
 
-A proporção vai de cerca de 34% a 64% entre as áreas de ponderação, quase o dobro de uma ponta à outra. As áreas com maior peso de nascidos no município tendem a ser as de ocupação mais antiga, enquanto as de expansão recente concentram quem chegou de fora, o que é o desenho esperado de uma cidade que cresceu por migração.
+<!--
+Correlações calculadas entre as 43 áreas de ponderação de Goiânia, todas a partir
+dos microdados da amostra de 2010, portanto na mesma fonte, mesma unidade e mesmo ano:
+
+  % nascidos e sempre residentes x % de 60 anos ou mais : -0,512
+  % nascidos e sempre residentes x % pretos e pardos    : +0,408
+  % nascidos e sempre residentes x distância ao centro  : +0,311
+
+A área de ponderação com a menor proporção de sempre residentes (34,0%) é a mais
+envelhecida do município (18,0% de 60 anos ou mais) e uma das de menor peso de
+população preta e parda (36,9%).
+-->
+
+A proporção vai de cerca de 34% a 64% entre as áreas de ponderação, quase o dobro de uma ponta à outra. O padrão indica que as áreas com **menor** proporção de nascidos e sempre residentes são as mesmas que as seções anteriores identificaram como as mais envelhecidas, as de menor peso de população preta e parda e as de menor proporção de mulheres pretas e pardas responsáveis pelo domicílio. Nas franjas do município, onde esses três indicadores se invertem, a população que nunca saiu de Goiânia é proporcionalmente maior.
+
+Uma explicação plausível é que migrar entre cidades exige recursos, e que a trajetória de chegar de fora e se instalar na área central é acessível a quem já dispõe de renda para isso. Se for esse o caso, a naturalidade deixa de ser um dado apenas demográfico e passa a funcionar como mais um marcador da mesma clivagem socioeconômica que os recortes anteriores desenharam. A hipótese não se decide com os dados deste capítulo e fica registrada como pergunta, que os capítulos sobre renda e habitação ajudam a instruir.
+
+Além disso, cabem aqui as mesmas duas ressalvas da seção anterior. A comparação com os recortes de idade, cor ou raça e responsabilidade pelo domicílio atravessa fontes e anos distintos, pois aqueles vêm dos agregados de 2022 por setor e este vem dos microdados de 2010 por área de ponderação. E o que o mapa mostra como periferia inclui os setores rurais do município, extensos e quase vazios, cuja contribuição para qualquer estimativa é desprezível diante do espaço que ocupam na figura.
 
 Uma advertência sobre a leitura dos dois mapas desta seção. Diferentemente dos mapas por setor censitário, estes trazem estimativas amostrais, sujeitas a incerteza. O intervalo de confiança de cada estimativa por área de ponderação tem largura média em torno de 3 pontos percentuais no caso da deficiência e de 7 pontos no caso da naturalidade. Diferenças pequenas entre áreas vizinhas, portanto, não devem ser interpretadas como reais sem antes verificar os intervalos, cuidado que a @sec-survey já havia introduzido.
 
-Com o retrato das pessoas completo, voltamos aos agregados e aos domicílios em que elas vivem.
 
-## Arranjos domiciliares e monoparentalidade {#sec-dem-monoparental}
+## Síntese {#sec-dem-sintese}
 
-O bloco de Parentesco classifica cada domicílio segundo a composição da unidade doméstica, em cinco categorias mutuamente exclusivas, mais uma sexta para as unidades em domicílios coletivos. A tabela a seguir mostra a distribuição dessas categorias em Goiânia.
+Os seis recortes percorridos neste capítulo descrevem a mesma cidade por ângulos diferentes, e o que mais chama atenção é a insistência com que os mapas se repetem. A área central consolidada concentra as maiores proporções de pessoas idosas e as menores de crianças pequenas, e é também onde a população preta e parda tem menor peso. As bordas do município invertem todos esses sinais. Isso sugere que envelhecimento, cor ou raça, composição do domicílio e naturalidade não são fenômenos independentes no território, mas leituras distintas de uma mesma organização social do espaço, construída ao longo de décadas de expansão urbana.
 
-```{r}
-#| label: arranjos
-#| message: false
-arranjos <- goiania_sc |>
-  summarise(
-    `Responsável e cônjuge, sem filhos`              = sum(arr_casal,  na.rm = TRUE),
-    `Responsável e cônjuge, com filhos de ambos`     = sum(arr_ambos,  na.rm = TRUE),
-    `Responsável e cônjuge, com filhos de um deles`  = sum(arr_um,     na.rm = TRUE),
-    `Responsável sem cônjuge, com filhos`            = sum(arr_mono,   na.rm = TRUE),
-    `Outros tipos de composição`                     = sum(arr_outros, na.rm = TRUE)
-  ) |>
-  pivot_longer(everything(), names_to = "arranjo", values_to = "domicilios") |>
-  mutate(perc = 100 * domicilios / sum(domicilios))
-
-arranjos |>
-  knitr::kable(
-    col.names = c("Composição da unidade doméstica", "Domicílios", "% do total"),
-    digits = 1,
-    format.args = list(big.mark = ".", decimal.mark = ",")
-  )
-```
-
-A quarta linha é a que nos interessa. Domicílios com responsável sem cônjuge e com filhos ou enteados são o que a literatura de política social costuma chamar de **arranjos monoparentais**. Cabe uma advertência de vocabulário, porque o IBGE não divulga nenhuma variável com esse nome. O que existe é a classificação por composição da unidade doméstica, e o indicador de monoparentalidade é uma leitura que fazemos dessa classificação, não um dado oficial rotulado assim.
-
-O bloco traz ainda a mesma categoria desagregada por sexo da pessoa responsável, o que permite separar arranjos monoparentais masculinos e femininos. Ao somar as duas partes, porém, algo não fecha.
-
-```{r}
-#| label: mono-sexo
-goiania_sc |>
-  summarise(
-    total_mono = sum(arr_mono, na.rm = TRUE),
-    masculino  = sum(mono_m,   na.rm = TRUE),
-    feminino   = sum(mono_f,   na.rm = TRUE),
-    soma_sexos = sum(mono_m, na.rm = TRUE) + sum(mono_f, na.rm = TRUE),
-    diferenca  = sum(arr_mono, na.rm = TRUE) -
-                 (sum(mono_m, na.rm = TRUE) + sum(mono_f, na.rm = TRUE))
-  )
-```
-
-Faltam mais de setecentos domicílios na soma por sexo. A explicação está nas regras de sigilo dos Agregados, apresentadas no Capítulo 7. Células com frequência muito baixa são suprimidas para impedir a identificação indireta de informantes, e chegam ao usuário como valores ausentes. Como os arranjos monoparentais masculinos são raros, essa é justamente a variável mais atingida.
-
-```{r}
-#| label: supressao
-goiania_sc |>
-  summarise(
-    setores           = n(),
-    na_total_mono     = sum(is.na(arr_mono)),
-    na_mono_masculino = sum(is.na(mono_m)),
-    na_mono_feminino  = sum(is.na(mono_f))
-  )
-```
-
-Em um quinto dos setores de Goiânia o número de arranjos monoparentais masculinos foi suprimido. Esse é um resultado importante de reter, e não apenas para esta variável. Sempre que um indicador desagregado apresentar totais que não fecham com o agregado correspondente, a supressão por sigilo é a primeira hipótese a investigar, e a verificação é tão simples quanto o `sum(is.na())` acima. Ignorar o problema significa publicar um indicador que subestima sistematicamente o fenômeno nas áreas em que ele é mais raro.
-
-Feita a ressalva, construímos o indicador. O denominador é o total de domicílios particulares permanentes ocupados, que é o universo em que os arranjos foram classificados.
-
-```{r}
-#| label: indicador-mono
-goiania_geo <- goiania_geo |>
-  mutate(
-    perc_mono   = 100 * arr_mono / dppo,
-    perc_mono_f = 100 * mono_f   / dppo
-  )
-
-summary(goiania_geo$perc_mono)
-```
-
-O mapa a seguir apresenta a proporção de arranjos monoparentais femininos, que respondem por cerca de 88% do total de arranjos monoparentais do município.
-
-```{r}
-#| label: fig-mono
-#| fig-cap: "Proporção de domicílios com responsável mulher, sem cônjuge e com filhos ou enteados, sobre o total de domicílios particulares permanentes ocupados do setor, Goiânia (GO), Censo 2022."
-#| fig-height: 5
-#| message: false
-#| warning: false
-ggplot(goiania_geo) +
-  geom_sf(aes(fill = perc_mono_f), color = NA) +
-  scale_fill_distiller(palette = "YlOrBr", direction = 1,
-                       name = "% dos\ndomicílios",
-                       na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-```
-
-O padrão é periférico, com os valores mais altos afastados da área central. É um mapa que se parece com o de população preta e parda e que se opõe ao de envelhecimento, o que reforça a leitura de que os três recortes deste capítulo descrevem facetas de uma mesma organização social do espaço.
-
-## Crianças pequenas e a localização de creches {#sec-dem-creches}
-
-Chegamos ao ponto em que os indicadores se combinam para responder a uma pergunta concreta. Suponha que a prefeitura precise decidir onde instalar novas creches. Duas informações parecem óbvias, a de onde há mais crianças pequenas e a de onde há mais domicílios em que uma única pessoa acumula o sustento e o cuidado. Vamos construir as duas e verificar se elas apontam para o mesmo lugar.
-
-A primeira decisão é qual variável usar para as crianças, e os Agregados oferecem duas alternativas que não são equivalentes. O arquivo Domicílio traz a contagem de crianças de zero a nove anos que vivem em domicílios particulares permanentes ocupados. O bloco de Demografia traz a contagem de pessoas de zero a quatro anos, sem vínculo com o tipo de domicílio.
-
-```{r}
-#| label: criancas-duas-fontes
-goiania_sc |>
-  summarise(
-    `Crianças de 0 a 9 anos (arquivo Domicílio)` = sum(cri_0_9,  na.rm = TRUE),
-    `Pessoas de 0 a 4 anos (bloco Demografia)`   = sum(pess_0_4, na.rm = TRUE)
-  ) |>
-  pivot_longer(everything(), names_to = "Variável", values_to = "Total") |>
-  knitr::kable(format.args = list(big.mark = ".", decimal.mark = ","))
-```
-
-A escolha entre as duas não é indiferente. A faixa de zero a nove anos é larga demais para a creche, que atende de zero a três anos, e mistura o público da creche com o do ensino fundamental. A faixa de zero a quatro anos é bem mais próxima do público-alvo, mas conta pessoas e não domicílios, o que impede combiná-la diretamente com os indicadores de arranjo domiciliar sem uma junção adicional entre blocos.
-
-Neste capítulo usamos as duas, em papéis distintos. A faixa de zero a quatro dimensiona o público. A faixa de zero a nove, por vir do mesmo arquivo e do mesmo universo dos arranjos domiciliares, entra no cruzamento com a monoparentalidade. O leitor que reproduzir esta análise deve declarar explicitamente qual das duas usou, porque os totais diferem por um fator superior a dois.
-
-```{r}
-#| label: indicador-criancas
-goiania_geo <- goiania_geo |>
-  mutate(perc_0_4 = 100 * pess_0_4 / pop)
-```
-
-Os dois mapas a seguir colocam frente a frente a contagem de crianças de zero a nove anos e a proporção de domicílios monoparentais femininos.
-
-```{r}
-#| label: fig-creches
-#| fig-cap: "Contagem de crianças de 0 a 9 anos em domicílios particulares permanentes (à esquerda) e proporção de domicílios monoparentais femininos (à direita), por setor censitário, Goiânia (GO), Censo 2022."
-#| fig-height: 4.5
-#| message: false
-#| warning: false
-mapa_criancas <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = cri_0_9), color = NA) +
-  scale_fill_distiller(palette = "Greens", direction = 1,
-                       name = "Crianças\n0 a 9 anos",
-                       na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Onde há mais crianças") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-mapa_mono <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = perc_mono_f), color = NA) +
-  scale_fill_distiller(palette = "YlOrBr", direction = 1,
-                       name = "% dos\ndomicílios",
-                       na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Onde a demanda é mais crítica por domicílio") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-mapa_criancas + mapa_mono
-```
-
-Os dois mapas apontam para lugares diferentes, e a diferença é bem maior que a observada entre contagem e proporção de idosos. Repetindo a comparação das cem primeiras posições de cada lista, a sobreposição é quase nula.
-
-```{r}
-#| label: creches-sobreposicao
-base_creches <- goiania_geo |>
-  st_drop_geometry() |>
-  filter(!is.na(cri_0_9), !is.na(perc_mono_f))
-
-top_criancas <- base_creches |>
-  slice_max(cri_0_9, n = 100) |>
-  pull(code_tract)
-
-top_mono <- base_creches |>
-  slice_max(perc_mono_f, n = 100) |>
-  pull(code_tract)
-
-length(intersect(top_criancas, top_mono))
-```
-
-Apenas quatro setores em cem aparecem nas duas listas. Os dois critérios são quase ortogonais, e nenhum deles é errado. O critério de volume atende mais crianças por unidade instalada e minimiza o custo por vaga. O critério de vulnerabilidade atende quem tem menos alternativas de cuidado, porque em um domicílio monoparental não há um segundo adulto para dividir a rotina. Uma política real precisa combinar os dois, e o papel da análise territorial é tornar essa escolha explícita em vez de deixá-la implícita em um único mapa.
-
-A tabela por subdistrito ajuda a fechar o argumento, listando os cinco com maior contagem de crianças ao lado da sua proporção de domicílios monoparentais femininos.
-
-```{r}
-#| label: creches-subdistrito
-#| message: false
-goiania_geo |>
-  st_drop_geometry() |>
-  filter(!is.na(name_subdistrict)) |>
-  group_by(name_subdistrict) |>
-  summarise(
-    dppo     = sum(dppo,    na.rm = TRUE),
-    criancas = sum(cri_0_9, na.rm = TRUE),
-    mono_f   = sum(mono_f,  na.rm = TRUE)
-  ) |>
-  filter(dppo >= 1000) |>
-  mutate(perc_mono_f = 100 * mono_f / dppo) |>
-  slice_max(criancas, n = 5) |>
-  select(name_subdistrict, criancas, perc_mono_f) |>
-  knitr::kable(
-    col.names = c("Subdistrito", "Crianças de 0 a 9 anos", "% monoparentais femininos"),
-    digits = 1,
-    format.args = list(big.mark = ".", decimal.mark = ",")
-  )
-```
-
-Nenhum dos subdistritos com maior número de crianças aparece entre os de maior proporção de arranjos monoparentais femininos, que a @sec-dem-monoparental mostrou estarem em outra parte da cidade. A decisão de localização, portanto, é uma escolha de critério, e não uma leitura direta dos dados.
-
-## Painel síntese {#sec-dem-painel}
-
-Reunir os quatro indicadores principais em um único painel permite ler a cidade de uma vez. O código abaixo escreve os quatro mapas por extenso e os combina com o operador `+` do `patchwork`, no mesmo padrão adotado no Capítulo 11.
-
-```{r}
-#| label: fig-painel
-#| fig-cap: "Painel dos quatro indicadores demográficos construídos no capítulo, por setor censitário, Goiânia (GO), Censo 2022."
-#| fig-height: 8
-#| message: false
-#| warning: false
-p1 <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = perc_idosos), color = NA) +
-  scale_fill_distiller(palette = "Blues", direction = 1,
-                       name = "%", na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "60 anos ou mais") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-p2 <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = perc_pretos_pardos), color = NA) +
-  scale_fill_distiller(palette = "PuBuGn", direction = 1,
-                       name = "%", na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Pretos e pardos") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-p3 <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = perc_resp_f), color = NA) +
-  scale_fill_distiller(palette = "BuPu", direction = 1,
-                       name = "%", na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Responsáveis mulheres") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-p4 <- ggplot(goiania_geo) +
-  geom_sf(aes(fill = perc_mono_f), color = NA) +
-  scale_fill_distiller(palette = "YlOrBr", direction = 1,
-                       name = "%", na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Monoparentais femininos") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-(p1 + p2) / (p3 + p4)
-```
-
-Lidos em conjunto, os quatro mapas descrevem uma cidade organizada em anéis. O núcleo consolidado concentra população envelhecida, menor proporção de pretos e pardos e menor incidência de arranjos monoparentais. A coroa periférica inverte os três sinais. A chefia feminina é o único dos quatro indicadores que não segue esse desenho, distribuindo-se de forma relativamente uniforme pelo território.
-
-Sabemos agora quem mora em Goiânia e onde. A pergunta seguinte é em que condições essas pessoas moram, e é dela que trata o próximo capítulo.
+O capítulo mostrou também que a fonte determina o que se pode perguntar e a que distância. Os agregados por setor censitário sustentaram quatro recortes com o maior detalhe territorial que o Censo oferece, e pararam exatamente onde para o Questionário Básico. Deficiência e naturalidade exigiram os microdados da amostra, e o preço foi trocar mais de dois mil setores por 43 áreas de ponderação, além de recuar de 2022 para 2010, já que no momento da escrita desta obra ainda não foram disponibilizados os microdados de 2022. Em todos os casos, porém, o resultado dependeu menos do numerador do que do denominador escolhido, ponto que apareceu de forma mais aguda na @sec-dem-responsavel, em que duas frações com o mesmo numerador respondem a perguntas diferentes. É o cuidado que os capítulos seguintes vão exigir de novo, com os mesmos produtos postos a serviço de outros temas.
 
 ## Exercícios {#sec-dem-exercicios}
 

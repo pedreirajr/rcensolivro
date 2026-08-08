@@ -44,7 +44,8 @@ manaus
 Com o código em mãos, lemos o arquivo Básico e comparamos os dois grupos de setores em população e em área.
 
 ```{r}
-#| label: situacao-setores
+#| label: tbl-ren-situacao
+#| tbl-cap: "Setores censitários, população e área de Manaus (AM) segundo a situação urbana ou rural do setor, Censo 2022."
 #| message: false
 #| warning: false
 basico_2022 <- read_tracts(dataset = "Basico", year = 2022) |>
@@ -86,7 +87,8 @@ A melhor forma de dimensionar a perda é colocar as duas estruturas lado a lado.
 Em 2010, a renda estava distribuída por três arquivos, além de variáveis no próprio Básico. Em 2022, restou um único arquivo temático.
 
 ```{r}
-#| label: estruturas-renda
+#| label: tbl-ren-estruturas
+#| tbl-cap: "Arquivos e variáveis de rendimento disponíveis nos Agregados por Setor Censitário de Manaus (AM), Censos de 2010 e 2022."
 #| message: false
 #| warning: false
 basico_2010 <- read_tracts(dataset = "Basico", year = 2010) |>
@@ -295,7 +297,8 @@ renda_bairro <- tracts_to_polygon(
 O objeto devolvido é um `sf` com um polígono por bairro e a variável já interpolada. Vale conferir a amplitude do resultado antes de mapear.
 
 ```{r}
-#| label: interpolacao-resultado
+#| label: tbl-ren-interpolacao
+#| tbl-cap: "Amplitude do rendimento médio da pessoa responsável nos bairros de Manaus (AM), obtido por interpolação a partir dos setores censitários, Censo 2010."
 #| message: false
 renda_bairro |>
   st_drop_geometry() |>
@@ -396,7 +399,8 @@ limites_urbanos
 Calculamos a média e a mediana do rendimento domiciliar per capita, junto com os quartis.
 
 ```{r}
-#| label: renda-distribuicao
+#| label: tbl-ren-distribuicao
+#| tbl-cap: "Média e mediana do rendimento domiciliar per capita em Manaus (AM), com intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus |>
   summarise(
@@ -411,7 +415,8 @@ A média é mais que o dobro da mediana. Metade dos moradores de Manaus vivia em
 Os quartis completam o retrato.
 
 ```{r}
-#| label: renda-quartis
+#| label: tbl-ren-quartis
+#| tbl-cap: "Quartis e nonagésimo percentil do rendimento domiciliar per capita em Manaus (AM), microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus |>
   summarise(
@@ -475,7 +480,8 @@ mapa_media + mapa_mediana
 As duas escalas de cor são deliberadamente iguais, para que a comparação seja visual e direta. O mapa da média destaca com força uma ou duas áreas, enquanto o da mediana é bem mais uniforme. A razão entre as duas medidas mede exatamente esse efeito.
 
 ```{r}
-#| label: razao-media-mediana
+#| label: tbl-ren-razao
+#| tbl-cap: "Razão entre a média e a mediana do rendimento domiciliar per capita nas áreas de ponderação de Manaus (AM), com valores mínimo, mediano e máximo, microdados da amostra do Censo 2010."
 renda_ap |>
   mutate(razao = media / mediana) |>
   summarise(
@@ -546,7 +552,8 @@ Em Manaus o ajuste desloca pouco o resultado, porque o autoconsumo é raro numa 
 Com o universo correto, calculamos a distribuição por posição na ocupação.
 
 ```{r}
-#| label: posicao-ocupacao
+#| label: tbl-ren-posicao
+#| tbl-cap: "Distribuição das pessoas ocupadas de Manaus (AM) segundo a posição na ocupação, microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus <- md_manaus |>
   as_survey_design(ids = V0300, strata = code_weighting,
@@ -573,7 +580,8 @@ Metade dos ocupados de Manaus tinha carteira assinada em 2010. Somando quem trab
 As horas trabalhadas completam o quadro.
 
 ```{r}
-#| label: horas-trabalhadas
+#| label: tbl-ren-horas
+#| tbl-cap: "Horas semanais habitualmente trabalhadas em Manaus (AM), com média, mediana e proporção de ocupados acima de quarenta e quatro horas, e respectivos intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus |>
   filter(ocupado) |>
@@ -588,7 +596,8 @@ pa_manaus |>
 A jornada mediana é de quarenta horas semanais, e quase três em cada dez ocupados trabalhavam acima de quarenta e quatro horas, que é o limite da jornada semanal fixado pela Constituição Federal em seu artigo 7º. O cruzamento das duas variáveis mostra que jornada e vínculo caminham juntos.
 
 ```{r}
-#| label: horas-por-posicao
+#| label: tbl-ren-horas-posicao
+#| tbl-cap: "Horas semanais médias e rendimento mediano no trabalho principal em Manaus (AM), segundo a posição na ocupação, microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus |>
   filter(ocupado, !autoconsumo) |>
