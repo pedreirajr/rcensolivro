@@ -8,6 +8,29 @@ execute:
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(cache = TRUE)
+```
+
+## Introdução {#sec-hab-intro}
+
+Analisar a questão habitacional de uma cidade começa por descrever seu estoque de moradias e a forma como as pessoas vivem nele. Quantos domicílios existem, de que tipo são, quantos estão ocupados, quantas pessoas há dentro de cada um e onde estão surgindo novas construções são perguntas descritivas que antecedem qualquer diagnóstico. Respondê-las com detalhe espacial é o que permite enxergar situações bastante distintas dentro de um mesmo município, que a média municipal esconde.
+
+O Censo Demográfico é a fonte que viabiliza esse nível de desagregação para qualquer município brasileiro, com definições padronizadas que tornam as cidades comparáveis entre si e, dentro de certos limites, ao longo do tempo. Ele não esgota o tema, porque muitas dimensões da questão habitacional, como preço, posse e condição jurídica do imóvel, ficam fora do questionário. O que ele oferece é a base descritiva sobre a qual essas outras discussões costumam se apoiar.
+
+Este capítulo constrói esse retrato em três frentes. A primeira descreve o estoque existente e sua ocupação, ou seja, quantos domicílios há, de que tipo, e quantos estão sem morador. A segunda olha para dentro do domicílio ocupado e mede quantas pessoas dormem em cada dormitório. A terceira pergunta para onde a cidade está crescendo. As três exigem produtos diferentes do Censo, e nenhum deles responde sozinho. Os **agregados por setor censitário** informam quantos domicílios existem, quantos estão ocupados e quantas pessoas moram em cada um. Os **microdados da amostra** informam quantas pessoas dormem em cada dormitório, que é a medida de adensamento que interessa e que os agregados não trazem. O **CNEFE** informa onde havia obra em andamento no momento da coleta, e é a única fonte censitária que permite ter uma noção do estoque futuro.
+
+<!-- Mudar aqui quando chegar microdados de 2022 -->
+Neste capítulo, conviveremos com três unidades espaciais e dois anos de referência distintos. Os agregados vêm por setor censitário em 2022, os microdados por área de ponderação em 2010 e o CNEFE vem em pontos de endereço em 2022. Lidaremos com estas limitações de maneira honesta sempre que formos discutir resultados integrando as diferentes bases.
+
+<!-- Checar essa informação sobre JP -->
+O município escolhido é **João Pessoa (PB)**, capital litorânea em que a proporção de domicílios sem morador é alta o suficiente para tornar o indicador especialmente ilustrativo.
+
+Comecemos carregando os pacotes usados ao longo do capítulo^[Lembre-se de instalá-los com `install.packages()` caso ainda não o tenha feito].
+
+```{r}
+#| label: pacotes
+#| cache: false
+#| message: false
+#| warning: false
 library(tidyverse)
 library(censobr)
 library(cnefetools)
@@ -17,19 +40,66 @@ library(srvyr)
 library(patchwork)
 ```
 
-## Introdução {#sec-hab-intro}
+## A lógica dos tipos de domicílio (*um breve retorno*) {#sec-hab-tipos}
 
-O problema habitacional brasileiro costuma ser descrito por um número só, o do déficit. Falta moradia, e a política pública existe para produzi-la. Essa leitura é correta e é incompleta, porque em quase toda cidade brasileira convivem duas carências de sinais opostos. De um lado há gente demais em domicílios de menos. De outro há domicílio vazio, fechado, à espera de comprador ou de veraneio.
+Antes de organizar os dados, vale retomar um ponto do Capítulo 7 que aqui deixa de ser detalhe e passa a ser o centro da análise. Quase todo indicador habitacional construído a partir dos agregados é uma razão entre dois totais de domicílios, e acertar o numerador e o denominador exige saber exatamente o que cada total contém. A @fig-hab-domicilios reproduz a árvore de classificação adotada pelo IBGE^[Já apresentamos ela anteriormente no capítulo de Agregados por Setor Censitário, na @fig-domicilios].
 
-Este capítulo mede as duas coisas e depois pergunta uma terceira, que é para onde a cidade está crescendo. As três perguntas exigem três produtos diferentes do Censo, e nenhum deles responde sozinho. Os **agregados por setor censitário** informam quantos domicílios existem, quantos estão ocupados e quantas pessoas moram em cada um. Os **microdados da amostra** informam quantas pessoas dormem em cada dormitório, que é a medida de adensamento que interessa e que os agregados não trazem. O **CNEFE** informa onde havia obra em andamento no momento da coleta, e é a única fonte censitária que enxerga o estoque futuro.
+![Classificação dos domicílios no Censo Demográfico 2022, reproduzida do Capítulo 7.](img/7-agregados/domicilios.png){#fig-hab-domicilios}
 
-Combinar três produtos significa conviver com três unidades espaciais e dois anos de referência distintos. Os agregados vêm por setor censitário em 2022, os microdados por área de ponderação em 2010, e o CNEFE vem em pontos de endereço em 2022. Este é o capítulo em que o problema da escolha da unidade espacial aparece com toda a força, e a maneira honesta de lidar com ele é objeto de uma seção inteira.
+A leitura da árvore começa pela distinção entre **particulares** e **coletivos**. Os particulares são aqueles em que a convivência se dá por laços de parentesco, dependência doméstica ou normas de convivência, e se dividem entre os **permanentes**, construídos para servir de moradia, e os **improvisados**, que ocupam edificações ou espaços sem finalidade habitacional. Os permanentes, por sua vez, admitem três situações na data de referência, com o domicílio ocupado, vago ou de uso ocasional. Os coletivos são estabelecimentos regidos por normas de subordinação administrativa, como quartéis, presídios e asilos, e aparecem com ou sem morador.
 
-O município escolhido é **João Pessoa (PB)**, capital litorânea cujo estoque de domicílios vazios é grande o bastante para tornar visível o segundo lado do problema.
+Esses nomes são longos e reaparecem o tempo todo na documentação, razão pela qual o IBGE trabalha com siglas. Elas estão reunidas na planilha `Siglas_Basico`, que é a primeira aba do dicionário aberto por `data_dictionary(year = 2022, dataset = "tracts")` e cujo conteúdo a @tbl-hab-siglas reproduz.
 
-## Os dados do capítulo {#sec-hab-dados}
+```{r}
+#| label: tbl-hab-siglas
+#| tbl-cap: "Siglas dos tipos de domicílio do Censo 2022, conforme a planilha `Siglas_Basico` do dicionário dos Agregados por Setores Censitários."
+#| echo: false
 
-Começamos pelos agregados. Do arquivo **Básico** vêm a população, os totais de domicílios e a média de moradores. Do arquivo **Domicílio** vem a contagem de domicílios improvisados. A @tbl-hab-variaveis descreve as variáveis, e vale reter desde já que três delas são totais de domicílios com definições próximas e não intercambiáveis.
+tibble::tribble(
+  ~Sigla,   ~Descricao,
+  "DPPO",   "Domicílio Particular Permanente Ocupado",
+  "DPIO",   "Domicílio Particular Improvisado Ocupado",
+  "DPPV",   "Domicílio Particular Permanente Vago",
+  "DPPUO",  "Domicílio Particular Permanente de Uso Ocasional",
+  "DCCM",   "Domicílio Coletivo Com Morador",
+  "DCSM",   "Domicílio Coletivo Sem Morador",
+  "DPO",    "Domicílio Particular Ocupado (DPPO + DPIO)"
+) |>
+  knitr::kable(
+    col.names = c("Sigla", "Descrição"),
+    align = c("c", "l")
+  )
+```
+
+Note que a última linha já é uma soma. O DPO não é uma categoria da árvore, e sim o agrupamento dos dois tipos de domicílio particular que tinham morador na data de referência. Essa é a chave para entender o restante, porque os totais de domicílio do arquivo Básico são definidos no dicionário exatamente nesses termos, e não em linguagem corrente. A @tbl-hab-somas transcreve essas definições.
+
+```{r}
+#| label: tbl-hab-somas
+#| tbl-cap: "Composição dos totais de domicílio do arquivo Básico dos Agregados por Setores Censitários, Censo 2022, conforme o dicionário de dados."
+#| echo: false
+
+tibble::tribble(
+  ~Variavel,  ~Descricao,                                    ~Composicao,
+  "`V0002`",  "Total de domicílios",                         "DPPO + DPPV + DPPUO + DPIO + DCCM + DCSM",
+  "`V0003`",  "Total de domicílios particulares",            "DPPO + DPPV + DPPUO + DPIO",
+  "`V0004`",  "Total de domicílios coletivos",               "DCCM + DCSM",
+  "`V0005`",  "Média de moradores em domicílios particulares ocupados", "Pessoas em DPO / (DPPO + DPIO)",
+  "`V0006`",  "Percentual de domicílios particulares ocupados imputados", "DPO imputados / DPO",
+  "`V0007`",  "Total de domicílios particulares ocupados",   "DPPO + DPIO"
+) |>
+  knitr::kable(
+    col.names = c("Variável", "Descrição", "Composição"),
+    align = c("c", "l", "l")
+  )
+```
+
+Duas consequências práticas saltam dessa tabela e valem ser fixadas desde já. A primeira é que `V0003` não conta todos os domicílios do setor, porque deixa os coletivos de fora, de modo que usá-lo como denominador de um indicador que fale de "domicílios" em geral seria incorreto. A segunda é que a diferença entre `V0003` e `V0007` tem um significado preciso, já que subtrair DPPO + DPIO de DPPO + DPPV + DPPUO + DPIO deixa como resto DPPV + DPPUO, ou seja, os domicílios permanentes vagos somados aos de uso ocasional. Voltaremos a essa subtração na @sec-hab-nao-ocupados, e ela explica por que o indicador correspondente não pode ser chamado simplesmente de vacância.
+
+Vale lembrar que essas definições estão detalhadas na nota metodológica dos Agregados por Setores Censitários [@ibge_nota_sc2022], que é a referência a consultar sempre que restar dúvida sobre o que um total específico inclui. Com o vocabulário reposto, podemos organizar os dados do capítulo.
+
+## Estruturação dos dados de agregados do Censo de 2022 {#sec-hab-dados}
+
+Começamos pelos agregados, e tudo o que precisamos deles está no arquivo **Básico**. De lá vêm a população, dois dos totais de domicílio da @tbl-hab-somas e a média de moradores, além do campo que identifica os setores de Favela e Comunidade Urbana. A @tbl-hab-variaveis descreve o que será lido.
 
 ```{r}
 #| label: tbl-hab-variaveis
@@ -42,8 +112,7 @@ tibble::tribble(
   "Básico",    "`V0003`",              "`dom_part`", "Total de domicílios particulares (ocupados, vagos e de uso ocasional)",
   "Básico",    "`V0005`",              "`mor_dom`", "Média de moradores em domicílios particulares ocupados",
   "Básico",    "`V0007`",              "`dom_ocup`", "Total de domicílios particulares ocupados",
-  "Básico",    "`code_type`",          "—",        "Tipo do setor, em que 1 indica Favela e Comunidade Urbana",
-  "Domicílio", "`domicilio01_V00002`", "`improv`", "Domicílios particulares improvisados ocupados"
+  "Básico",    "`code_type`",          "—",        "Tipo do setor, em que 1 indica Favela e Comunidade Urbana"
 ) |>
   knitr::kable(
     col.names = c("Arquivo", "Código original", "Nome atribuído", "Descrição"),
@@ -67,24 +136,15 @@ Do arquivo Básico pedimos também `name_neighborhood` e `code_type`, que serão
 #| label: leitura-agregados
 #| message: false
 #| warning: false
-sc_basico <- read_tracts(dataset = "Basico", year = 2022) |>
+jp_sc <- read_tracts(dataset = "Basico", year = 2022) |>
   filter(code_muni == joao_pessoa) |>
   select(code_tract, name_neighborhood, code_type, V0001, V0003, V0005, V0007) |>
-  collect()
-
-sc_dom <- read_tracts(dataset = "Domicilio", year = 2022) |>
-  filter(code_muni == joao_pessoa) |>
-  select(code_tract, domicilio01_V00002) |>
-  collect()
-
-jp_sc <- sc_basico |>
-  left_join(sc_dom, by = "code_tract") |>
+  collect() |>
   rename(
     pop      = V0001,
     dom_part = V0003,
     mor_dom  = V0005,
-    dom_ocup = V0007,
-    improv   = domicilio01_V00002
+    dom_ocup = V0007
   )
 
 nrow(jp_sc)
@@ -119,56 +179,7 @@ jp_sc |>
   )
 ```
 
-A diferença entre os dois totais passa de oitenta mil domicílios, o que já antecipa o assunto de uma das seções seguintes. Antes dela, porém, tratemos do indicador que costuma ser o primeiro a ser procurado por quem estuda precariedade habitacional, e que quase sempre decepciona.
-
-## Domicílios particulares improvisados {#sec-hab-improvisados}
-
-O IBGE classifica como **domicílio particular improvisado** o local que não foi construído para servir de moradia e que, no momento da coleta, estava sendo usado como tal. São lojas, galpões, prédios em construção, embarcações e situações análogas, além das pessoas em situação de rua abrigadas em estruturas fixas. A definição é estrita e o efeito prático é que a variável capta muito menos do que o nome sugere.
-
-O denominador correto aqui é `dom_ocup`, e não `dom_part`. O total de domicílios particulares ocupados é a soma dos permanentes ocupados com os improvisados ocupados, ou seja, é exatamente o universo em que o improvisado está contido. Usar o total de particulares colocaria no denominador domicílios vazios, que por definição não podem ser improvisados ocupados.
-
-```{r}
-#| label: improvisados
-jp_sc |>
-  summarise(
-    improvisados = sum(improv,   na.rm = TRUE),
-    dom_ocupados = sum(dom_ocup, na.rm = TRUE),
-    percentual   = 100 * sum(improv, na.rm = TRUE) / sum(dom_ocup, na.rm = TRUE),
-    setores_com_valor_suprimido = sum(is.na(improv))
-  )
-```
-
-São pouco mais de duas centenas de domicílios improvisados em uma cidade de quase trezentos mil domicílios ocupados, menos de um décimo de um por cento. O número é tão baixo que um mapa por setor seria quase todo zero, e por isso não o produzimos.
-
-Esse resultado precisa ser lido com cuidado, e não como boa notícia. **Domicílio improvisado não é sinônimo de moradia precária.** A imensa maioria da precariedade habitacional brasileira acontece em domicílios *permanentes*, construídos para morar, e que são precários por outras razões, como material das paredes, adensamento, falta de saneamento ou insegurança da posse. Nada disso aparece nesta variável. Quem procurar o déficit habitacional aqui não vai encontrá-lo.
-
-O que a variável permite, ainda assim, é uma comparação. Os agregados classificam cada setor pelo campo `code_type`, e o valor 1 identifica os setores de Favela e Comunidade Urbana, categoria que em 2022 passou a ser pesquisada com o mesmo instrumento aplicado ao resto da cidade, como visto no Capítulo 11.
-
-```{r}
-#| label: tbl-hab-improvisados
-#| tbl-cap: "Domicílios improvisados em João Pessoa (PB), comparando os setores de Favela e Comunidade Urbana aos demais setores, Censo 2022."
-#| message: false
-jp_sc |>
-  mutate(
-    tipo = ifelse(code_type == 1, "Favela e Comunidade Urbana", "Demais setores")
-  ) |>
-  group_by(tipo) |>
-  summarise(
-    setores      = n(),
-    populacao    = sum(pop,      na.rm = TRUE),
-    dom_ocupados = sum(dom_ocup, na.rm = TRUE),
-    improvisados = sum(improv,   na.rm = TRUE)
-  ) |>
-  mutate(perc_improvisados = 100 * improvisados / dom_ocupados) |>
-  knitr::kable(
-    digits = 3,
-    format.args = list(big.mark = ".", decimal.mark = ",")
-  )
-```
-
-Os setores de favela e comunidade urbana são menos de um quinto dos setores do município e concentram quase metade dos domicílios improvisados. A concentração é real e vale registrar. O volume absoluto, porém, continua pequeno demais para sustentar um diagnóstico habitacional, o que reforça o ponto anterior.
-
-Guardemos a divisão entre favela e demais setores, porque ela reaparecerá com resultados mais expressivos na próxima seção.
+A diferença entre os dois totais passa de oitenta mil domicílios, e a @tbl-hab-somas já nos diz o que ela contém. É desse resto que trata a próxima seção.
 
 ## Domicílios particulares não ocupados {#sec-hab-nao-ocupados}
 
@@ -178,7 +189,11 @@ $$
 \text{não ocupados} = \underbrace{V0003}_{\text{particulares}} - \underbrace{V0007}_{\text{particulares ocupados}}
 $$
 
-Essa diferença **não** é o total de domicílios vagos. Segundo a própria definição das variáveis no dicionário, o total de particulares soma quatro categorias, os permanentes ocupados, os permanentes vagos, os permanentes de uso ocasional e os improvisados ocupados. Ao subtrair os ocupados, restam duas categorias somadas, os **vagos** e os de **uso ocasional**. As duas descrevem situações bem diferentes, porque um imóvel vago está fora de uso e um imóvel de uso ocasional é a casa de praia que fica fechada durante o ano. Como não há como separá-las nos agregados, o indicador precisa ser nomeado pelo que ele de fato mede.
+Pela composição vista na @sec-hab-tipos, o resto dessa subtração é **DPPV + DPPUO**, e é por isso que ele não pode ser lido estritamente como total de vagos. As duas categorias descrevem situações bem diferentes, porque um imóvel vago está fora de uso e um imóvel de uso ocasional é a casa de praia que fica fechada durante boa parte do ano, por exemplo.
+
+Há, porém, um sentido em que somar as duas é exatamente o que interessa. Quando a pergunta é quanto do estoque construído está servindo de moradia regular, o que importa é a ocupação habitual e, a rigor, nem o domicílio vago nem o de uso ocasional a cumprem. Por esse ângulo, os dois são estoque edificado que existe e não abriga ninguém de forma permanente, o que faz da soma uma medida abrangente do uso do parque residencial, útil para uma análise voltada a políticas de habitação. Deste modo, a impossibilidade de separá-las nos agregados deixa de ser apenas uma limitação da fonte e passa a coincidir com o que se quer medir.
+
+Isso não dispensa o cuidado com o nome. O vazio de mercado e a segunda residência têm causas distintas e pedem respostas distintas, de modo que o indicador precisa ser apresentado pelo que ele de fato mede, sem ser convertido em taxa de vacância. Partindo para o seu cômputo, temos então:
 
 ```{r}
 #| label: nao-ocupados
@@ -196,7 +211,7 @@ jp_geo |>
   )
 ```
 
-Mais de um em cada cinco domicílios particulares de João Pessoa não tinha morador em 2022. É uma proporção alta, e o mapa mostra que ela está longe de se distribuir por igual.
+Note que mais de um em cada cinco domicílios particulares de João Pessoa não tinha morador (ou morador regular) em 2022. É uma proporção alta, e o mapa mostra que ela está longe de se distribuir por igual:
 
 ```{r}
 #| label: fig-nao-ocupados
@@ -258,34 +273,41 @@ bind_rows(
 
 A tabela revela dois fenômenos distintos misturados no mesmo indicador, e é justamente por isso que ele não pode ser chamado de vacância. No topo aparecem bairros da orla, onde a proporção de domicílios sem morador chega a quase metade do estoque, padrão compatível com segunda residência e uso de veraneio. Também no topo aparecem o Centro e o Varadouro, que ficam do lado oposto da cidade e cuja história é outra, a de esvaziamento de área central consolidada. Somar os dois casos em um único número é aceitável desde que a leitura os separe.
 
-Podemos verificar a hipótese da orla usando as coordenadas dos bairros. Em João Pessoa, o litoral é o limite leste do município, de modo que quanto maior a longitude do centroide, mais próximo do mar está o bairro.
+A tabela nomeia os extremos, mas não diz onde eles estão. Para isso precisamos da malha de bairros, que o `geobr` fornece pela função `read_neighborhood()`, e de uma junção com os valores já calculados. O mapa da @fig-hab-bairros repete a escala de cores usada por setor censitário, agora com o bairro como unidade, e rotula os oito de maior proporção com a geometria `geom_sf_label()`.
 
 ```{r}
-#| label: tbl-hab-orla
-#| tbl-cap: "Seis bairros mais orientais de João Pessoa (PB), portanto os mais próximos do litoral, e suas proporções de domicílios não ocupados, Censo 2022."
+#| label: fig-hab-bairros
+#| fig-cap: "Proporção de domicílios particulares não ocupados por bairro, com destaque para os oito de maior proporção, João Pessoa (PB), Censo 2022."
+#| fig-height: 6
 #| message: false
 #| warning: false
 bairros_geo <- read_neighborhood(year = 2022, code_muni = joao_pessoa)
 
-coords <- st_coordinates(st_centroid(st_geometry(bairros_geo)))
-
-bairros_geo |>
-  st_drop_geometry() |>
+bairros_mapa <- bairros_geo |>
   select(name_neighborhood) |>
-  mutate(longitude = coords[, 1]) |>
-  inner_join(bairros, by = "name_neighborhood") |>
-  slice_max(longitude, n = 6) |>
-  select(name_neighborhood, longitude, perc_nao_ocup) |>
-  knitr::kable(
-    col.names = c("Bairro", "Longitude do centroide", "% não ocupados"),
-    digits = c(0, 3, 1),
-    format.args = list(decimal.mark = ",")
-  )
+  left_join(bairros, by = "name_neighborhood")
+
+destaques <- bairros_mapa |>
+  slice_max(perc_nao_ocup, n = 8)
+
+ggplot(bairros_mapa) +
+  geom_sf(aes(fill = perc_nao_ocup), color = "white", linewidth = 0.2) +
+  geom_sf_label(data = destaques, aes(label = name_neighborhood),
+                size = 2.2, alpha = 0.85,
+                label.padding = unit(0.12, "lines")) +
+  scale_fill_distiller(palette = "OrRd", direction = 1,
+                       name = "% não\nocupados",
+                       na.value = "gray90") +
+  coord_sf(expand = FALSE) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid = element_blank())
 ```
 
-Todos os seis bairros mais a leste do município têm proporção de domicílios não ocupados acima da média municipal de 21,4%, e dois deles, Cabo Branco e Tambaú, ocupam as primeiras posições da tabela anterior. A associação entre proximidade do mar e domicílio sem morador se sustenta, embora nem todo bairro a leste seja de frente para a praia, o que explica por que alguns aparecem apenas ligeiramente acima da média.
+O mapa mostra que os oito bairros do topo não formam um grupo homogêneo. Quatro deles, Cabo Branco, Tambaú, Bessa e Jardim Oceania, estão numa faixa contínua junto ao litoral, o que sustenta a hipótese da segunda residência. O Centro e o Varadouro são vizinhos entre si e ficam afastados do mar, correspondendo ao padrão de área central esvaziada. Sobram Muçumagro e Água Fria, no interior do município, que não se encaixam em nenhum dos dois padrões e lembram que o indicador reúne situações mais variadas do que a leitura pela orla e pelo centro faz supor.
 
-Resta a comparação com os setores de favela e comunidade urbana, que produz o resultado mais contraintuitivo do capítulo.
+Resta uma última comparação, levando em consideração a característica do setor ser de favela/comunidade urbana ou não. Conforme descrito anteriormente, em caso afirmativo a coluna `code_type` recebe valor 1. Contrastando esses tipos de setor com os demais, temos então:
 
 ```{r}
 #| label: tbl-hab-nao-ocup-favela
@@ -308,7 +330,7 @@ jp_geo |>
   )
 ```
 
-A proporção de domicílios sem morador é **menor** dentro das favelas e comunidades urbanas do que no restante da cidade. O resultado surpreende quem espera que o indicador meça abandono, e deixa de surpreender assim que se lembra do que ele mede. Domicílio de uso ocasional pressupõe que alguém tenha uma segunda casa, e domicílio vago pressupõe um mercado com estoque à espera de comprador ou inquilino. Nenhuma das duas coisas é característica de assentamento precário, onde o domicílio existente tende a estar ocupado.
+Observe que a proporção de domicílios sem morador é ligeiramente menor dentro das favelas e comunidades urbanas do que no restante da cidade, resultado coerente com o que o indicador mede. Domicílio de uso ocasional pressupõe que alguém disponha de uma segunda casa, e domicílio vago pressupõe estoque à espera de comprador ou inquilino (ou mera especulação). Onde a moradia é escassa e disputada, o espaço construído tende a ser ocupado para morar, qualquer que seja sua qualidade, e sobra pouco imóvel fora de uso. O estoque sem morador se concentra em outras situações, como a orla de segunda residência e a área central que perdeu população para as frentes de expansão, que foi o que a @fig-hab-bairros mostrou.
 
 Contamos até aqui quantos domicílios existem e quantos estão vazios. Falta a pergunta oposta, que é quantas pessoas ocupam os que estão cheios.
 
@@ -333,7 +355,7 @@ Os quartis estão muito próximos uns dos outros, o que sugere pouca variação 
 #| warning: false
 ggplot(jp_geo) +
   geom_sf(aes(fill = mor_dom), color = NA) +
-  scale_fill_distiller(palette = "GnBu", direction = 1,
+  scale_fill_distiller(palette = "Purples", direction = 1,
                        name = "Moradores por\ndomicílio",
                        na.value = "gray90") +
   coord_sf(expand = FALSE) +
@@ -350,13 +372,13 @@ O motivo é simples. Três pessoas em um domicílio de três dormitórios e trê
 
 O quesito sobre cômodos usados como dormitório pertence ao Questionário da Amostra, e por isso a resposta está nos microdados. O Censo 2010 divulga inclusive a razão já calculada, na variável `V6204`, que é a densidade de moradores por dormitório do domicílio.
 
-Como no Capítulo 12, a mudança de fonte traz mudança de unidade espacial e de ano. Os microdados de 2022 ainda não foram divulgados, conforme discutido no Capítulo 8, de modo que trabalhamos com 2010. O quesito continua existindo em 2022, no item 3.04 do Questionário da Amostra, então o indicador voltará a ser calculável quando os microdados forem publicados.
+Como no Capítulo 12, a mudança de fonte traz mudança de unidade espacial e de ano. Os microdados de 2022 ainda não foram divulgados, conforme discutido no Capítulo 8, de modo que trabalhamos com 2010. Comecemos verificando a quantidade de áreas de ponderação para João Pessoa:
 
 ```{r}
 #| label: ap-jp
 #| message: false
 #| warning: false
-#| results: hide
+
 ap_jp <- read_weighting_area(
   code_weighting = joao_pessoa,
   year           = 2010,
@@ -392,7 +414,7 @@ md_jp <- read_households(year = 2010, columns = cols_dom) |>
 nrow(md_jp)
 ```
 
-No caso dos domicílios, o plano amostral é uma amostragem estratificada, sem conglomeração, porque o domicílio é a própria unidade sorteada. Declaramos os estratos, os pesos e o total expandido por área para a correção de população finita.
+Lembre-se que, no caso dos domicílios, o plano amostral é uma amostragem estratificada, sem conglomeração, porque o domicílio é a própria unidade sorteada. Declaramos, então, os estratos, os pesos e o total expandido por área para a correção de população finita:
 
 ```{r}
 #| label: plano-amostral
@@ -412,7 +434,7 @@ pa_jp <- md_jp |>
   )
 ```
 
-Antes de calcular, precisamos olhar os valores ausentes, porque neste caso eles não vêm de sigilo e sim de uma característica real do domicílio.
+Um detalhe preliminar importante é que precisamos olhar os valores ausentes, porque neste caso eles não vêm de sigilo e sim de uma característica real do domicílio:
 
 ```{r}
 #| label: ausentes-dormitorio
@@ -429,19 +451,41 @@ Os registros sem informação de dormitório são domicílios que não têm nenh
 Feita a ressalva, calculamos as estatísticas municipais. Além da média e da mediana, incluímos a proporção de domicílios com mais de dois moradores por dormitório, corte frequentemente usado como referência de adensamento excessivo na literatura de habitação e que adotamos aqui como escolha explícita, e não como norma oficial.
 
 ```{r}
-#| label: tbl-hab-densidade
-#| tbl-cap: "Moradores por dormitório em João Pessoa (PB), com média, mediana e proporção de domicílios acima de dois moradores por dormitório, e respectivos intervalos de confiança, microdados da amostra do Censo 2010."
+#| label: estimativas-densidade
 #| message: false
-pa_jp |>
+estimativas <- pa_jp |>
   summarise(
     media          = survey_mean(V6204, na.rm = TRUE, vartype = "ci"),
     mediana        = survey_median(V6204, na.rm = TRUE, vartype = "ci"),
     acima_de_dois  = survey_mean(V6204 > 2, na.rm = TRUE, vartype = "ci")
-  ) |>
-  knitr::kable(digits = 3, format.args = list(decimal.mark = ","))
+  )
 ```
 
-A média municipal fica em torno de um vírgula sete moradores por dormitório, e cerca de um em cada sete domicílios tinha mais de dois moradores por dormitório em 2010. O mapa por área de ponderação mostra onde esses domicílios se concentravam.
+Cada uma das três estimativas veio acompanhada de um limite inferior e de um superior, o que dá nove colunas em uma única linha, formato pouco amigável para leitura direta. Reorganizamos esses valores em uma tabela longa, com uma linha por estimativa, e convertemos a proporção para percentual no código abaixo:
+
+```{r}
+#| label: prepara-ic
+ic <- tibble(
+  medida = fct_inorder(c(
+    "Média de moradores por dormitório",
+    "Mediana de moradores por dormitório",
+    "% de domicílios com mais de 2 moradores por dormitório"
+  )),
+  estimativa = c(estimativas$media,
+                 estimativas$mediana,
+                 100 * estimativas$acima_de_dois),
+  inferior   = c(estimativas$media_low,
+                 estimativas$mediana_low,
+                 100 * estimativas$acima_de_dois_low),
+  superior   = c(estimativas$media_upp,
+                 estimativas$mediana_upp,
+                 100 * estimativas$acima_de_dois_upp)
+)
+
+ic
+```
+
+A média municipal fica em torno de um 1,67 moradores por dormitório, e cerca de um em cada sete domicílios tinha mais de dois moradores por dormitório em 2010. Neste último caso, o mapa por área de ponderação abaixo mostra onde esses domicílios se concentravam:
 
 ```{r}
 #| label: fig-densidade
@@ -466,70 +510,9 @@ ap_jp |>
         panel.grid = element_blank())
 ```
 
-A amplitude entre as áreas de ponderação é grande, muito maior do que a observada na média de moradores por domicílio da seção anterior. É a confirmação de que o adensamento é a dimensão que discrimina o território, e que a média de moradores não a captura.
+Note como a região litorânea, que identificamos anteriormente com grande número de domicílios não ocupados (provavelmente de uso ocasional), encontra-se exatamente na área de ponderação com menor proporção de domicílios com mais de duas pessoas compartilhando um mesmo dormitório. Apesar da tentação de tecer conclusões definitivas ser grande, lembre-se que estamos não só comparando unidades espaciais diferentes (setores censitários VS. áreas de ponderação), mas também anos diferentes.
 
-## O confronto de escalas {#sec-hab-confronto}
-
-Temos agora dois indicadores de adensamento, obtidos de fontes diferentes, em anos diferentes e em unidades espaciais diferentes. A tentação é combiná-los em um único mapa ou em um único número. Não faremos isso, e a razão merece ser explicitada porque o erro é comum.
-
-```{r}
-#| label: tbl-hab-escalas
-#| tbl-cap: "Os dois indicadores de adensamento deste capítulo e suas incompatibilidades."
-#| echo: false
-
-tibble::tribble(
-  ~Aspecto,             ~`Média de moradores`,        ~`Moradores por dormitório`,
-  "Fonte",              "Agregados, universo",        "Microdados da amostra",
-  "Ano",                "2022",                       "2010",
-  "Unidade espacial",   "Setor censitário",           "Área de ponderação",
-  "Nº de unidades",     "1.778",                      "12",
-  "Natureza do valor",  "Valor do universo",          "Estimativa com erro amostral"
-) |>
-  knitr::kable(align = c("l", "c", "c"))
-```
-
-São cinco incompatibilidades acumuladas. Interpolar um dos indicadores para a unidade do outro, como fizemos no Capítulo 7 com a interpolação dasimétrica, resolveria apenas a terceira linha da tabela e deixaria as outras quatro intactas. Um valor de 2010 continuaria sendo de 2010 depois de interpolado.
-
-Há três saídas possíveis, que são subir todos os indicadores ao recorte mais grosso, interpolar para uma unidade comum ou manter os dois separados. A saída honesta aqui é a terceira. Mantemos os dois mapas separados e lemos **o padrão espacial**, não o valor. A pergunta que se responde é se as áreas que concentravam adensamento em 2010 são as mesmas que hoje têm domicílios mais cheios, e a resposta é qualitativa por construção.
-
-```{r}
-#| label: fig-confronto
-#| fig-cap: "Adensamento em duas escalas. À esquerda, média de moradores por domicílio por setor censitário em 2022. À direita, proporção de domicílios com mais de dois moradores por dormitório por área de ponderação em 2010."
-#| fig-height: 4.5
-#| message: false
-#| warning: false
-mapa_setor <- ggplot(jp_geo) +
-  geom_sf(aes(fill = mor_dom), color = NA) +
-  scale_fill_distiller(palette = "GnBu", direction = 1,
-                       name = "Moradores\npor domicílio",
-                       na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Setor censitário, 2022") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-mapa_ap <- ap_jp |>
-  left_join(dens_ap, by = join_by(code_weighting)) |>
-  ggplot() +
-  geom_sf(aes(fill = 100 * acima_de_dois), color = "white", linewidth = 0.3) +
-  scale_fill_distiller(palette = "YlOrRd", direction = 1,
-                       name = "% acima de 2\npor dormitório",
-                       na.value = "gray90") +
-  coord_sf(expand = FALSE) +
-  labs(subtitle = "Área de ponderação, 2010") +
-  theme_minimal() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid = element_blank())
-
-mapa_setor + mapa_ap
-```
-
-Os dois mapas apontam para regiões coerentes entre si, com as áreas de maior adensamento em 2010 recobrindo setores que em 2022 mantêm médias de moradores acima do restante da cidade. Isso é o máximo que se pode afirmar, e já é bastante para um diagnóstico.
-
-Descrito o estoque existente, resta olhar para o que estava sendo construído.
-
-## Para onde a cidade está crescendo {#sec-hab-expansao}
+## CNEFE para entender o crescimento do estoque habitacional {#sec-hab-expansao}
 
 O CNEFE é o único produto do Censo que registra edificações **em construção**. A espécie de código 7 identifica esses endereços, e dois campos adicionais os qualificam. O `COD_INDICADOR_FINALIDADE_CONST` informa a destinação planejada, e o `COD_INDICADOR_CONST_ENDERECO` informa quantas unidades estão sendo construídas naquele endereço. Ambos foram apresentados no Capítulo 10 e é aqui que os usamos pela primeira vez em análise.
 
@@ -597,42 +580,12 @@ Esse campo é o que nos permite distinguir, ainda que por aproximação, dois mo
 ::: callout-warning
 ## Duas ressalvas antes de chamar isso de expansão
 
-A primeira é que a espécie 7 do CNEFE é definida como edificação em construção **ou reforma**. Não há campo que separe obra nova de obra de reforma, o que significa que parte dos endereços aqui contados não acrescenta nenhuma unidade ao estoque. O indicador, portanto, superestima a expansão em áreas consolidadas, onde a reforma é mais provável.
+A primeira é que a espécie 7 do CNEFE é definida como edificação em construção **ou reforma**. Não há campo que separe obra nova de obra de reforma, o que significa que parte dos endereços aqui contados não acrescenta nenhuma unidade ao estoque. O indicador pode, portanto, superestimar a expansão em áreas consolidadas, onde a reforma é mais provável.
 
-A segunda é que o CNEFE é um retrato do momento da coleta. Uma obra que começou depois não aparece, e uma que terminou antes já foi recenseada como domicílio. O que se mede é o canteiro aberto em 2022, e não o crescimento acumulado de um período.
+A segunda é que o CNEFE é um retrato do momento da coleta. Uma obra que começou depois não aparece, e uma que terminou antes já foi recenseada como domicílio. O que se mede é o canteiro aberto em 2022 no momento de registro do recenseador, e não o crescimento acumulado de um período.
 :::
 
-Resta agregar os pontos por bairro. E aqui é preciso resistir a um atalho que parece óbvio e que produz resultado errado. O CNEFE traz a coluna `COD_SETOR`, e a tentação é usá-la para juntar os pontos aos setores dos agregados. Os dois códigos não são compatíveis.
-
-```{r}
-#| label: tbl-hab-setor-cnefe
-#| tbl-cap: "Incompatibilidade entre os códigos de setor censitário do CNEFE e dos Agregados por Setor Censitário em João Pessoa (PB), Censo 2022."
-setores_cnefe <- jp_cnefe |>
-  st_drop_geometry() |>
-  distinct(COD_SETOR) |>
-  pull(COD_SETOR)
-
-setores_agregados <- as.character(jp_sc$code_tract)
-
-tibble(
-  medida = c("Caracteres no código do CNEFE",
-             "Caracteres no código dos agregados",
-             "Setores distintos no CNEFE",
-             "Setores nos agregados",
-             "Códigos coincidentes"),
-  valor  = c(unique(nchar(setores_cnefe)),
-             unique(nchar(setores_agregados)),
-             length(setores_cnefe),
-             length(setores_agregados),
-             length(intersect(substr(setores_cnefe, 1, 15), setores_agregados)))
-) |>
-  knitr::kable(col.names = c("Medida", "Valor"),
-               format.args = list(big.mark = "."))
-```
-
-Os códigos do CNEFE têm um caractere a mais que os dos agregados. Mesmo descartando esse sufixo, os dois conjuntos não coincidem, já que dos 1.635 setores presentes no CNEFE apenas 1.449 encontram correspondência entre os 1.778 dos agregados. Juntar por código descartaria silenciosamente centenas de setores, e o pior é que a operação não produziria erro algum.
-
-A solução é usar aquilo que o CNEFE tem de mais confiável, que são as **coordenadas**. Cada registro traz latitude e longitude, e uma junção espacial atribui a cada ponto o polígono que o contém, sem depender de código nenhum. A operação é a `st_join()` apresentada no Capítulo 5.
+Resta agregar os pontos por bairro, e faremos isso pelas **coordenadas** de cada registro. Todo endereço do CNEFE traz latitude e longitude, e uma junção espacial atribui a cada ponto o polígono que o contém, sem depender de nenhum código de área. A operação é a `st_join()` apresentada no Capítulo 5:
 
 ```{r}
 #| label: juncao-espacial
@@ -649,6 +602,14 @@ construcoes_bairro |>
     sem_bairro      = sum(is.na(name_neighborhood))
   )
 ```
+
+::: callout-note
+## Por que não juntar pelo código de setor do CNEFE
+
+O CNEFE traz a coluna `COD_SETOR`, e o caminho aparentemente mais direto seria usá-la para ligar os pontos aos setores dos agregados. Em João Pessoa, essa junção não se sustenta. Os códigos do CNEFE têm dezesseis caracteres, contra quinze nos agregados, e mesmo descartando o caractere excedente os dois conjuntos não se alinham. O cadastro registra 1.635 setores distintos no município, os agregados registram 1.778, e apenas 1.449 códigos encontram correspondência entre os dois lados.
+
+O CNEFE aparenta, portanto, ter inconsistências no registro do setor censitário, ao menos na versão divulgada e para este município. O ponto delicado é que uma junção por código não produziria erro algum. Ela descartaria centenas de setores em silêncio, e o resultado pareceria plausível. Por isso trabalhamos diretamente com as coordenadas, que são a informação mais confiável do cadastro para fins de localização. Ao usar o CNEFE em outro município, vale repetir essa conferência antes de confiar no código de setor.
+:::
 
 Poucas dezenas de pontos ficam sem bairro, o que corresponde a construções situadas fora dos polígonos de bairro divulgados. Com a atribuição feita, produzimos a contagem por bairro, separando as construções de unidade única das de mais de dez unidades.
 
@@ -669,11 +630,11 @@ expansao |>
   slice_max(total, n = 10) |>
   knitr::kable(
     col.names = c("Bairro", "Total", "Unidade única", "Mais de dez unidades"),
-    format.args = list(big.mark = ".")
+    format.args = list(big.mark = ".", decimal.mark = ",")
   )
 ```
 
-Os bairros com mais canteiros abertos não são os mesmos que lideram em verticalização, e a tabela seguinte deixa isso claro.
+Os bairros com mais canteiros abertos não são os mesmos que lideram em (*possível*) verticalização, e a tabela seguinte deixa isso claro:
 
 ```{r}
 #| label: tbl-hab-constr-vertical
@@ -689,9 +650,7 @@ expansao |>
   )
 ```
 
-O contraste é o achado da seção. Há bairros em que a construção é abundante e quase toda horizontal, com centenas de endereços de unidade única, e há bairros em que o número de canteiros é menor mas a proporção de edifícios é muito maior. São dois modos de produzir cidade, com consequências distintas sobre densidade, infraestrutura e preço da terra.
-
-Para ver o padrão espacialmente, mapeamos as duas contagens por bairro.
+O contraste é um achado importante desta seção. Há bairros em que a construção é abundante e quase toda horizontal, com centenas de endereços de unidade única, e há bairros em que o número de canteiros é menor mas a proporção de edifícios é muito maior. São dois modos de produzir cidade, com consequências distintas sobre densidade, infraestrutura e preço da terra. Para ver o padrão espacialmente, mapeamos as duas contagens por bairro:
 
 ```{r}
 #| label: fig-expansao
@@ -728,21 +687,19 @@ mapa_vertical <- ggplot(expansao_geo) +
 mapa_horizontal + mapa_vertical
 ```
 
-Os dois mapas descrevem frentes de expansão que ocupam partes diferentes do município. A expansão horizontal se espalha pelas bordas, e a verticalização se concentra em manchas menores e mais próximas das áreas já urbanizadas.
+Note como em ambos os casos, há uma expansão mais ao Sul do município, mas um destaque à expansão de unidades únicas mais próxima do litoral.
 
-## Precariedade, vazio e expansão {#sec-hab-sintese}
+## Síntese {#sec-hab-sintese}
 
-O capítulo produziu três leituras do estoque habitacional de João Pessoa, e vale reuni-las.
+O capítulo produziu três leituras do estoque habitacional de João Pessoa, e vale reuni-las. O primeiro resultado é que mais de um quinto dos domicílios particulares não tinha morador, distribuído em situações que o mapa por bairro mostrou serem heterogêneas, com a faixa litorânea de segunda residência, o par formado pelo Centro e pelo Varadouro e ainda bairros do interior do município que não se encaixam em nenhum dos dois padrões. O segundo é que o adensamento, medido pelos moradores por dormitório, se distribui de forma bem mais desigual do que a média de moradores por domicílio sugere. O terceiro é que a expansão se concentra no sul do município, com predomínio de endereços de unidade única, que também são os que chegam mais perto do litoral.
 
-O primeiro resultado é que a precariedade medida pelos improvisados praticamente não existe nos números, o que diz mais sobre o alcance da variável do que sobre a cidade. O segundo é que mais de um quinto dos domicílios particulares não tinha morador, com dois padrões sobrepostos, o da orla e o do centro esvaziado. O terceiro é que o adensamento, medido pelos moradores por dormitório, se distribui de forma bem mais desigual do que a média de moradores sugere.
+A relação entre o vazio e a expansão merece uma última observação, e ela se concentra em um bairro. Muçumagro aparece em quarto lugar tanto na proporção de domicílios não ocupados quanto no número de edificações em construção, e é o segundo bairro em endereços com mais de dez unidades previstas. Uma explicação plausível é que parte do seu estoque não ocupado seja recente e ainda não vendido ou não habitado, o que colocaria o indicador de domicílios não ocupados e o de expansão medindo faces do mesmo processo. Os dados deste capítulo sustentam a coincidência, mas não a explicação, que exigiria informação sobre data de conclusão das obras, ausente no Censo.
 
-A relação entre o vazio e a expansão merece uma última observação. Alguns bairros aparecem simultaneamente entre os de maior proporção de domicílios não ocupados e entre os de maior número de edifícios em construção. Uma explicação plausível é que parte do estoque não ocupado seja recente e ainda não vendido ou não habitado, o que colocaria o indicador de vacância e o de expansão medindo faces do mesmo processo. Os dados deste capítulo sustentam a coincidência, mas não a explicação, que exigiria informação sobre data de conclusão das obras, ausente no Censo.
-
-Descrito o domicílio, a pergunta seguinte é o que chega até ele. É dela que trata o próximo capítulo.
+Descrito o domicílio, a pergunta seguinte é a de como ele se liga às redes que o servem. Por onde chega a água e se ela entra de fato na moradia, por onde sai o esgoto e o que acontece com ele quando não há rede, se o lixo é recolhido e se a rua em frente tem elementos de drenagem para escoar a chuva. É disso que trata o próximo capítulo.
 
 ## Exercícios {#sec-hab-exercicios}
 
-1. Recalcule a proporção de domicílios improvisados usando `dom_part` no lugar de `dom_ocup` no denominador. A diferença no resultado é pequena, mas o indicador passa a ser conceitualmente incorreto. Explique por quê, retomando as definições da @sec-hab-improvisados.
+1. Leia também a variável `V0002` do arquivo Básico e recalcule a proporção de domicílios não ocupados usando esse total no denominador, no lugar de `dom_part`. A diferença no resultado é pequena, mas o indicador passa a ser conceitualmente incorreto. Explique por quê, retomando a composição das variáveis na @tbl-hab-somas.
 
 2. O indicador de domicílios não ocupados soma vagos e de uso ocasional. Consulte a documentação dos Agregados do Censo 2010 e verifique se aquela edição permitia separar as duas categorias. Em caso positivo, calcule as duas separadamente para João Pessoa em 2010 e discuta o que se perdeu com a mudança.
 

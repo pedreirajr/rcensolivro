@@ -8,11 +8,6 @@ execute:
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(cache = TRUE)
-library(tidyverse)
-library(censobr)
-library(geobr)
-library(sf)
-library(patchwork)
 ```
 
 ## Introdução {#sec-san-intro}
@@ -24,6 +19,20 @@ Estar ligado à rede geral garante que a água chegue dentro de casa? O esgoto q
 O município escolhido é **Macapá (AP)**, e a escolha não é arbitrária. Em junho de 2023, ao divulgar a publicação [Características gerais dos domicílios e dos moradores 2022](https://biblioteca.ibge.gov.br/visualizacao/livros/liv102004_informativo.pdf), da Pesquisa Nacional por Amostra de Domicílios Contínua, o IBGE apontou a região Norte como a de menor acesso à rede geral de esgoto do país. No detalhamento por unidade da federação, [o Amapá aparece na última posição](https://g1.globo.com/ap/amapa/noticia/2023/06/16/amapa-foi-o-estado-com-menor-cobertura-de-esgoto-no-pais-em-2022-aponta-ibge.ghtml), com menos de 30% dos domicílios urbanos conectados.
 
 Estudar a capital do estado com a pior cobertura do país tem uma vantagem didática. Em casos extremos os fenômenos aparecem com nitidez suficiente para não deixar dúvida sobre o que se está medindo, e as limitações dos indicadores usuais ficam evidentes.
+
+Comecemos carregando os pacotes usados ao longo do capítulo^[Lembre-se de instalá-los com `install.packages()` caso ainda não o tenha feito].
+
+```{r}
+#| label: pacotes
+#| cache: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(censobr)
+library(geobr)
+library(sf)
+library(patchwork)
+```
 
 Antes de descer ao município, vale confirmar o diagnóstico com a fonte deste livro. A PNAD Contínua é uma pesquisa amostral e mede domicílios urbanos conectados à rede. O Censo é do universo e permite calcular o mesmo tipo de indicador para todas as unidades da federação, a partir dos agregados por setor censitário.
 
@@ -118,7 +127,7 @@ basico |>
   group_by(name_district) |>
   summarise(setores = n(), populacao = sum(V0001, na.rm = TRUE)) |>
   arrange(desc(setores)) |>
-  knitr::kable(format.args = list(big.mark = "."))
+  knitr::kable(format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
 Os distritos de Macapá e Fazendinha formam a mancha urbana contínua da cidade e concentram mais de 99% da população urbana. Os outros três aparecem com pouquíssimos setores, que são sedes de vila isoladas, entre elas o arquipélago do Bailique, a cerca de cem quilômetros da capital. Restringimos a análise aos dois primeiros.
@@ -413,7 +422,7 @@ bairros |>
     sem_nenhuma_ligacao = sum(perc_rede == 0),
     domicilios_nesses_bairros = sum(dom[perc_rede == 0])
   ) |>
-  knitr::kable(format.args = list(big.mark = "."))
+  knitr::kable(format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
 Não se trata de cobertura baixa. Trata-se de ausência completa de rede em boa parte dos bairros da cidade.

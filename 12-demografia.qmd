@@ -8,12 +8,6 @@ execute:
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(cache = TRUE)
-library(tidyverse)
-library(censobr)
-library(geobr)
-library(sf)
-library(srvyr)
-library(patchwork)
 ```
 
 ## Introdução {#sec-dem-intro}
@@ -30,6 +24,21 @@ Entre os recortes dos agregados, o do arranjo domiciliar é o menos explorado e 
 O município escolhido para o capítulo é **Goiânia (GO)**. Os indicadores dos agregados são calculados para os setores censitários do município no Censo 2022, os da amostra para as áreas de ponderação do Censo 2010^[já que até o momento de elaboração deste livro, os microdados de 2022 ainda não haviam sido divulgados], e sempre que a comparação entre as duas edições for possível ela é feita.
 
 Antes de qualquer cálculo, vale reter uma advertência: nenhum dos indicadores deste capítulo é uma contagem bruta. Todos são proporções, e a escolha de qual total vai no denominador é a decisão que mais afeta o resultado. Essa escolha reaparecerá em cada seção, e em uma delas ela muda de uma linha para a outra.
+
+Comecemos carregando os pacotes usados ao longo do capítulo^[Lembre-se de instalá-los com `install.packages()` caso ainda não o tenha feito].
+
+```{r}
+#| label: pacotes
+#| cache: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(censobr)
+library(geobr)
+library(sf)
+library(srvyr)
+library(patchwork)
+```
 
 ## Estruturação dos dados dos agregados do Censo de 2022 {#sec-dem-dados}
 

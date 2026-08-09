@@ -8,13 +8,6 @@ execute:
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(cache = TRUE)
-library(tidyverse)
-library(censobr)
-library(cnefetools)
-library(geobr)
-library(sf)
-library(srvyr)
-library(patchwork)
 ```
 
 ## Introdução {#sec-ren-intro}
@@ -26,6 +19,22 @@ Quem usou os Agregados por Setor Censitário de 2010 tinha o rendimento domicili
 Este capítulo trata do problema de frente. Mostra o que se perdeu, o que restou, como contornar a perda e o que os microdados da amostra ainda permitem que nenhum agregado permite. Ao final, olha para a origem da renda, que é o trabalho, com duas variáveis pouco exploradas, a posição na ocupação e as horas trabalhadas.
 
 O município escolhido é **Manaus (AM)**, a maior cidade da região Norte e um caso em que a distância entre a renda média e a renda típica é particularmente grande.
+
+Comecemos carregando os pacotes usados ao longo do capítulo^[Lembre-se de instalá-los com `install.packages()` caso ainda não o tenha feito].
+
+```{r}
+#| label: pacotes
+#| cache: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(censobr)
+library(cnefetools)
+library(geobr)
+library(sf)
+library(srvyr)
+library(patchwork)
+```
 
 ## Por que este capítulo olha só a área urbana {#sec-ren-urbano}
 
@@ -113,7 +122,7 @@ tibble(
   Setores = c(nrow(basico_2010), nrow(domrenda_2010), nrow(resprenda_2022))
 ) |>
   knitr::kable(col.names = c("Arquivo", "Setores lidos"),
-               format.args = list(big.mark = "."))
+               format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
 Os dois arquivos de 2010 vêm com o município inteiro, e o de 2022 já vem restrito aos setores urbanos. A diferença de contagem tem essa origem, e não uma mudança no número de setores entre as edições. Vale registrar que os arquivos de 2010 disponibilizados pelo `censobr` não trazem a coluna `situacao`, de modo que a restrição urbana aplicada neste capítulo alcança os dados de 2022 e os microdados, e não os agregados de 2010, que entram apenas como material de comparação estrutural.

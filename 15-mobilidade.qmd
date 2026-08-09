@@ -8,12 +8,6 @@ execute:
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(cache = TRUE)
-library(tidyverse)
-library(censobr)
-library(geobr)
-library(sf)
-library(srvyr)
-library(patchwork)
 ```
 
 ## Introdução {#sec-mob-intro}
@@ -25,6 +19,21 @@ Pesquisas de origem e destino descrevem isso com um detalhe que nenhuma outra fo
 Este capítulo trata de duas coisas diferentes que costumam ser confundidas. A primeira é o **comportamento**, ou seja, quanto tempo as pessoas gastam, para onde vão e com que meios contam. A segunda é a **infraestrutura**, ou seja, o que a rua em frente à casa oferece a quem sai dela a pé, de bicicleta ou de ônibus. As duas vêm de produtos diferentes do Censo e nenhuma explica a outra sozinha.
 
 O município escolhido é **Florianópolis (SC)**, capital insular cuja geografia impõe restrições de deslocamento que poucas cidades brasileiras enfrentam com a mesma intensidade.
+
+Comecemos carregando os pacotes usados ao longo do capítulo^[Lembre-se de instalá-los com `install.packages()` caso ainda não o tenha feito].
+
+```{r}
+#| label: pacotes
+#| cache: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(censobr)
+library(geobr)
+library(sf)
+library(srvyr)
+library(patchwork)
+```
 
 ## O que cada edição do Censo permite investigar {#sec-mob-edicoes}
 
@@ -447,7 +456,7 @@ tibble(
   nd_calcada            = totais$domicilios_V05023,
   soma_sem_mais_nd      = totais$domicilios_V05022 + totais$domicilios_V05023
 ) |>
-  knitr::kable(format.args = list(big.mark = "."))
+  knitr::kable(format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
 Os números fecham exatamente. O total de não declarados em obstáculo e em rampa é igual à soma dos domicílios sem calçada com os de calçada não declarada. A explicação é que **não existe obstáculo nem rampa onde não existe calçada**, e o questionário registra essa impossibilidade como não declarado, conforme a @sec-entorno-nd já havia apontado.
