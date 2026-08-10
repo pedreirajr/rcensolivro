@@ -21,7 +21,7 @@ Esta segunda pergunta é importante, pois uma cidade proporciona melhores condi�
 ::: callout-note
 ## Como o termo acessibilidade é usado neste capítulo
 
-No planejamento de transportes, **acessibilidade** designa a facilidade com que se alcança um destino a partir de um lugar, e é uma função da rede de transporte e da distribuição das atividades no território. Calculá-la nesse sentido estrito exige matrizes de tempo de viagem e a localização das oportunidades de emprego, saúde e educação, insumos que o Censo Demográfico não fornece.
+No planejamento de transportes, **acessibilidade** designa a facilidade com que se alcança um destino a partir de um lugar, e é uma função, principalmente, da rede de transporte e da distribuição das atividades no território. Calculá-la nesse sentido estrito exige matrizes de tempo de viagem e a localização das oportunidades de emprego, saúde e educação, insumos que o Censo Demográfico não fornece.
 
 Não é isso que faremos aqui. Este capítulo trata da **camada física** sobre a qual qualquer medida de acessibilidade se apoia, ou seja, da infraestrutura que torna o território percorrível. Quando dissermos que um setor censitário é mais acessível que outro, estaremos afirmando algo verificável nos dados, que é a maior presença de calçada, de pavimentação, de rampa e de ponto de ônibus no entorno imediato dos seus domicílios.
 
@@ -74,11 +74,11 @@ A segunda é que, em contrapartida, **2022 ganhou o modo de transporte**, que nu
 
 A terceira é mais sutil e mais perigosa. O quesito sobre retorno ao domicílio mudou de redação, de "retorna do trabalho para casa **diariamente**" em 2010 para "retorna do trabalho para casa **três dias ou mais** na semana" em 2022. São perguntas diferentes, e comparar as duas respostas produziria uma variação que pode trazer imprecisões importantes sobre esse aspecto.
 
-Como os microdados de 2022 ainda não foram divulgados, conforme discutido no Capítulo 8, todo o comportamento de deslocamento deste capítulo vem de 2010. Todavia, a infraestrutura que vem do Entorno é de 2022, e a @sec-mob-acessibilidade explica por que ela não é comparada com a de 2010.
+Como os microdados de 2022 ainda não foram divulgados, todo o comportamento de deslocamento deste capítulo vem de 2010. Todavia, a infraestrutura que vem do Entorno é de 2022, e a @sec-mob-acessibilidade explica por que ela não é comparada com a de 2010.
 
 ## Estruturação dos microdados da amostra de 2010 {#sec-mob-dados}
 
-Como sabemos, os microdados da amostra são divulgados por área de ponderação, unidade apresentada na @sec-areas-pond do Capítulo 8. Precisamos, então, do código do município e da malha dessas áreas, que servirá de base para todos os mapas da primeira metade do capítulo.
+Para os microdados de 2010, precisamos do código do município e da malha de áreas de ponderação dessas áreas, que servirá de base para todos os mapas da primeira metade do capítulo.
 
 ```{r}
 #| label: salvador-codigo
@@ -141,14 +141,13 @@ md_dom |>
 
 Todos os ausentes estão nos tipos 05 e 06, que são o domicílio particular improvisado e o domicílio coletivo. O quesito de bens duráveis só é aplicado a **domicílios particulares permanentes**, de código 01, e por isso os demais chegam em branco. É meramente um caso de "não se aplica".
 
-A conduta correta, portanto, não é descartar os ausentes com `na.rm = TRUE`, e sim restringir a análise ao universo em que a pergunta foi feita. As duas coisas produzem o mesmo número neste caso, mas apenas a segunda deixa o universo explícito para quem lê. Feito o recorte, declaramos o desenho amostral na forma apresentada no Capítulo 8.
+A conduta correta, portanto, não é descartar os ausentes com `na.rm = TRUE`, e sim restringir a análise ao universo em que a pergunta foi feita. As duas coisas produzem o mesmo número neste caso, mas apenas a segunda deixa o universo explícito para quem lê.
+
+Esse recorte, porém, não é aplicado à tabela. Declaramos o desenho amostral sobre todos os domicílios lidos, na forma apresentada no Capítulo 8, e só então restringimos o universo filtrando o próprio desenho. O objeto resultante, que chamaremos de `pa_dpp`, mantém a estratificação e a correção de população finita originais e passa a tratar os domicílios particulares permanentes como um domínio dentro da amostra, que é o que eles de fato são. A @sec-mob-tempo retoma essa distinção em detalhe, quando o universo em jogo for o das pessoas que se deslocam para o trabalho.
 
 ```{r}
 #| label: plano-domicilios
 #| message: false
-md_dom <- md_dom |>
-  filter(V4001 == "01")
-
 dom_ap <- md_dom |>
   group_by(code_weighting) |>
   summarize(n_dom = sum(V0010))
@@ -156,12 +155,17 @@ dom_ap <- md_dom |>
 md_dom <- md_dom |>
   left_join(dom_ap, by = join_by(code_weighting))
 
+## Produzindo o plano amostral para os domicílios:
 pa_dom <- md_dom |>
   as_survey_design(
     strata  = code_weighting,
     weights = V0010,
     fpc     = n_dom
   )
+
+## Restringindo o universo aos domicílios particulares permanentes:
+pa_dpp <- pa_dom |>
+  filter(V4001 == "01")
 ```
 
 O arquivo de pessoas segue a mesma lógica, com a diferença já discutida no Capítulo 8, que é a necessidade de declarar o domicílio como unidade de conglomeração. Pedimos as três variáveis de deslocamento que serão usadas adiante.
@@ -190,6 +194,7 @@ pes_ap <- md_pes |>
 md_pes <- md_pes |>
   left_join(pes_ap, by = join_by(code_weighting))
 
+## Produzindo o plano amostral para os indivíduos:
 pa_pes <- md_pes |>
   as_survey_design(
     ids     = V0300,
@@ -201,9 +206,9 @@ pa_pes <- md_pes |>
 
 Com os dois desenhos amostrais declarados, podemos calcular.
 
-## Posse de veículos {#sec-mob-veiculos}
+## Posse de automóvel e motocicleta {#sec-mob-veiculos}
 
-A posse de veículo não mede mobilidade, mas uma *possibilidade*, configurando, inclusive, uma medida importante de acessibilidade. Um domicílio com automóvel tem uma alternativa de deslocamento que um domicílio sem automóvel não tem, e essa diferença estrutura tudo o mais, do tempo de viagem à sensibilidade à qualidade do transporte público. Comecemos pelo retrato municipal, com os intervalos de confiança que o desenho amostral exige.
+A posse de veículo não mede mobilidade, mas uma *possibilidade*, configurando, inclusive, uma medida importante de acessibilidade. Um domicílio com automóvel tem uma alternativa de deslocamento que outro que não possui, e essa diferença costuma influenciar consideravelmente todo o restante, do tempo de viagem à sensibilidade quanto à qualidade do transporte público. Comecemos pelo retrato municipal, com os intervalos de confiança que o desenho amostral exige.
 
 Os dois veículos vêm de variáveis diferentes, e por isso cada um exige uma chamada própria a `survey_mean()`. Para levá-los ao mesmo gráfico, empilhamos os dois resultados com `bind_rows()`, acrescentando em cada um a coluna que identifica o veículo. O formato longo resultante, com uma linha por veículo, é o que o `ggplot2` espera, e o resultado aparece na @fig-mob-posse.
 
@@ -213,10 +218,10 @@ Os dois veículos vêm de variáveis diferentes, e por isso cada um exige uma ch
 #| fig-height: 2.6
 #| message: false
 posse_mun <- bind_rows(
-  pa_dom |>
+  pa_dpp |>
     summarize(proporcao = survey_mean(V0222 == "1", vartype = "ci")) |>
     mutate(veiculo = "Automóvel"),
-  pa_dom |>
+  pa_dpp |>
     summarize(proporcao = survey_mean(V0221 == "1", vartype = "ci")) |>
     mutate(veiculo = "Motocicleta")
 )
@@ -243,7 +248,9 @@ O interesse está na distribuição interna. Os dois mapas da @fig-veiculos traz
 #| fig-height: 9
 #| message: false
 #| warning: false
-veic_ap <- pa_dom |>
+
+## Sumarização dos que possuem automóvel e motocicleta:
+veic_ap <- pa_dpp |>
   group_by(code_weighting) |>
   summarize(
     automovel   = survey_mean(V0222 == "1"),
@@ -253,8 +260,10 @@ veic_ap <- pa_dom |>
 veic_geo <- ap_ssa |>
   left_join(veic_ap, by = join_by(code_weighting))
 
+## Produzindo os gráficos:
 tema_mapa <- theme_minimal() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        plot.subtitle = element_text(hjust = 0.5),
         panel.grid = element_blank())
 
 mapa_auto <- ggplot(veic_geo) +
@@ -276,7 +285,7 @@ mapa_moto <- ggplot(veic_geo) +
 mapa_auto / mapa_moto
 ```
 
-Os dois mapas mostram uma inconveniência cartográfica antes de mostrarem qualquer resultado. Uma única área de ponderação, a de código `2927408005038`, ocupa quase metade da figura e empurra o restante da cidade para o canto inferior direito. Ela tem mais de quatrocentos quilômetros quadrados porque incorpora as águas da Baía de Todos-os-Santos que estão dentro dos limites de Salvador, e sua população mora toda em terra firme, nos bairros de Paripe e São Tomé, no Subúrbio Ferroviário.
+Os dois mapas mostram uma inconveniência cartográfica que precisa ser discutida preliminarmente. Uma única área de ponderação, a de código `2927408005038`, ocupa quase metade da figura e empurra o restante da cidade para o canto inferior direito. Ela tem mais de quatrocentos quilômetros quadrados porque incorpora as águas da Baía de Todos-os-Santos, que estão dentro dos limites de Salvador, e os bairros de Paripe e São Tomé, no Subúrbio Ferroviário, onde se encontra toda a sua população.
 
 As ilhas habitadas do município não pertencem a essa área. Elas formam a área de ponderação `2927408005027`, que aparece nos dois recortes claros desenhados no alto de cada mapa, reunindo Ilha de Maré, Ilha dos Frades, Ilha de Santo Antônio e Ilha de Bom Jesus dos Passos. É ela que registra a menor posse de automóvel de todo o município, e o valor não expressa somente privação de renda, porque nas ilhas de Salvador praticamente não há por onde dirigir. O mesmo problema de enquadramento reaparece com os setores censitários de 2022, e a @sec-mob-mapas mostra como resolvê-lo.
 
@@ -358,9 +367,9 @@ As duas casas fora da diagonal valem **exatamente zero**, e é isso que o `.drop
 
 ## Tempo de deslocamento {#sec-mob-tempo}
 
-Fixado o universo, podemos calcular. O tempo de deslocamento é o indicador de mobilidade mais próximo da experiência cotidiana, e em 2010 ele foi coletado em cinco faixas, o que impede calcular média ou mediana e limita a análise a proporções.
+Fixado o universo, podemos calcular a métrica mais interessante sobre mobilidade do Censo de 2010. O tempo de deslocamento é o indicador de mobilidade mais próximo da experiência cotidiana, e em 2010 ele foi coletado em cinco níveis de natureza categórica ordinal, o que impede calcular uma média ou mediana.
 
-Declaramos o universo filtrando o próprio desenho amostral, e não a tabela de origem. Essa distinção importa, porque o `srvyr` trata o subconjunto como domínio e calcula os erros-padrão levando em conta que ele é parte de uma amostra maior, o que um filtro aplicado antes de `as_survey_design()` não faria. A @tbl-mob-tempo traz a distribuição pelas cinco faixas.
+Como fizemos com os domicílios, declaramos o universo filtrando o próprio desenho amostral, e não a tabela de origem. Vale insistir na razão, agora que o recorte é mais delicado. O `srvyr` trata o subconjunto como domínio e calcula os erros-padrão levando em conta que ele é parte de uma amostra maior, preservando a estratificação, os conglomerados e a correção de população finita declarados no desenho. Um filtro aplicado antes de `as_survey_design()` faria o `srvyr` enxergar o subconjunto como se fosse a amostra inteira, produzindo erros-padrão que não correspondem ao desenho efetivamente realizado. A @tbl-mob-tempo traz a distribuição pelas cinco faixas.
 
 ```{r}
 #| label: tbl-mob-tempo
@@ -388,7 +397,11 @@ pa_pes |>
   )
 ```
 
-Cerca de quatro em cada dez viagens cabiam em meia hora e **pouco mais de um quinto passava de uma hora**. Esse último grupo é o que interessa à política pública, porque tempo de deslocamento excessivo é uma forma de privação que se acumula todos os dias e que consome horas que não voltam. Vale registrar que essa proporção é bem superior à que se observa na maior parte dos municípios brasileiros, e ela dá a medida do que significa atravessar Salvador em hora de pico.
+Cerca de quatro em cada dez viagens cabiam em meia hora e **pouco mais de um quinto passava de uma hora**. Esse último grupo é um dos que mais interessa à política pública, porque tempo de deslocamento excessivo é uma forma de privação que se acumula todos os dias e que consome horas que não voltam. Vale dimensionar o quanto essa proporção é alta. A [Tabela 3422 do SIDRA](https://sidra.ibge.gov.br/tabela/3422) traz esse mesmo quesito para todos os municípios do país em 2010 e permite situar Salvador entre as capitais. Apenas São Paulo, com 31,0%, e Rio de Janeiro, com 25,3%, registravam proporção maior. A mediana das 27 capitais era de 9,3%, com Curitiba em 10,8%, Porto Alegre em 10,1% e Goiânia em 9,3%, e mesmo capitais populosas como Fortaleza e Recife ficavam em 12,7% e 11,2%. Salvador estava, portanto, entre as três capitais em que o deslocamento casa-trabalho mais consumia tempo, o que dá a medida do que significava atravessar a cidade em hora de pico no período investigado no Censo de 2010.
+
+Convém olhar com o mesmo cuidado para o outro extremo da tabela. As viagens de até meia hora reúnem quase quatro em cada dez pessoas, com a faixa de 6 a 30 minutos concentrando sozinha um terço do total, e seria apressado ler esse resultado como sinal de boa mobilidade. Um tempo curto de deslocamento pode significar que a pessoa mora perto de um bom emprego, mas também pode corresponder ao contrário, que o seu **espaço de atividades** é restrito e que ela trabalha perto de casa por não conseguir custear um deslocamento maior, seja por motorização individual, seja por transporte coletivo. 
+
+A literatura de transportes trata o tamanho do espaço de atividades como indicador de risco de exclusão social por essa razão [@schonfelder2003activity], e os estudos sobre exclusão social relacionada ao transporte mostram que a restrição de deslocamento estreita o leque de oportunidades de emprego, estudo e serviços ao alcance da pessoa [@lucas2012transport; @vasconcellos2001transporte]. 
 
 A @fig-tempo leva o indicador ao território, somando as duas faixas superiores, compreendendo os indivíduos que se deslocam por mais de uma hora:
 
@@ -435,11 +448,11 @@ Descrito o comportamento, passamos à infraestrutura que o sustenta.
 
 Agora mudamos a fonte, o ano e a unidade espacial. A Pesquisa Urbanística do Entorno dos Domicílios, apresentada no Capítulo 11, descreve por observação direta as características urbanísticas do trecho de rua em frente a cada domicílio, e é divulgada por setor censitário. Ela não pergunta nada ao morador, o que a torna independente de declaração e a coloca em outro registro de evidência.
 
-Convém ter em mente, desde já, que **a área observada não é a mesma em todos os itens**, conforme a @tbl-criterios do Capítulo 11 detalha. Os itens ligados à via, entre eles a pavimentação, o ponto de ônibus e a sinalização para bicicleta, são observados na face percorrida, na face confrontante e no canteiro central. Já os itens ligados à calçada, que são a existência, o obstáculo e a rampa, são observados **somente na face percorrida**. Percentuais desses dois grupos apresentados lado a lado não descrevem a mesma extensão de espaço público.
+Convém ter em mente, desde já, que **o local observada não é a mesma em todos os itens**, conforme a @tbl-criterios do Capítulo 11 detalha. Os itens ligados à via, entre eles a pavimentação, o ponto de ônibus e a sinalização para bicicleta, são observados na face percorrida, na face confrontante e no canteiro central. Já os itens ligados à calçada, que são a existência, o obstáculo e a rampa, são observados **somente na face percorrida**. Percentuais desses dois grupos apresentados lado a lado não descrevem a mesma extensão de espaço público.
 
 Dos dez itens investigados em 2022, seis dizem respeito direto à acessibilidade física no sentido definido na introdução. Dois deles descrevem a via, que são a pavimentação e a sinalização para bicicleta. Três descrevem a calçada, que são a existência, a presença de obstáculo e a rampa para cadeirante. E um descreve um componente da oferta de transporte coletivo, que é o ponto de ônibus ou van.
 
-Convém dizer desde já o que esses seis itens não são. Eles registram a presença ou a ausência de cada elemento, e nada informam sobre largura, estado de conservação, continuidade ao longo do percurso, declividade ou frequência do serviço, todos determinantes da experiência de quem caminha ou espera o ônibus. Não sustentam, portanto, um diagnóstico completo da infraestrutura física, nem uma avaliação rigorosa de macroacessibilidade, que trata do alcance da rede de transporte na escala da cidade, nem de microacessibilidade, que trata das condições de circulação no percurso imediato. O que eles oferecem são bons primeiros indícios, disponíveis para todos os setores censitários do país e comparáveis entre si, e é assim que devem ser lidos ao longo do capítulo.
+Além disso, é importante frisar que estes itens registram somente a presença ou a ausência de cada elemento, e nada informam sobre largura, estado de conservação, continuidade ao longo do percurso, declividade ou frequência do serviço, todos determinantes da experiência de quem caminha ou espera o ônibus. Não sustentam, portanto, um diagnóstico completo da infraestrutura física, nem uma avaliação rigorosa de macroacessibilidade, que trata do alcance da rede de transporte na escala da cidade, nem de microacessibilidade, que trata das condições de circulação no percurso imediato. O que eles oferecem são bons primeiros indícios, disponíveis para todos os setores censitários do país e comparáveis entre si, e é assim que devem ser lidos ao longo do capítulo.
 
 Usaremos apenas os dados de 2022 por uma razão metodológica. Conforme vimos na @tbl-comparabilidade do Capítulo 11, somente iluminação pública e bueiro ou boca de lobo mantiveram o mesmo conceito e critério entre os dois censos. Calçada e pavimentação mudaram de definição, a rampa passou a ser investigada apenas nas faces que têm calçada, e nenhum dos itens que interessam a este capítulo admite comparação direta com 2010. Uma série histórica montada com esses números mediria a mudança do questionário, e não a da cidade.
 
@@ -541,7 +554,7 @@ Essa é a forma de contar que adotaremos em todo o restante do capítulo sempre 
 
 ### Onde está a infraestrutura {#sec-mob-mapas}
 
-Levemos os indicadores ao mapa. A leitura das geometrias exige dois cuidados, ambos resolvidos no mesmo bloco de código. O primeiro é descartar o setor `292740805100008`, que tem 386 km², nenhum morador e nenhuma classificação de situação, porque corresponde à porção da Baía de Todos-os-Santos que está dentro dos limites municipais. Mantê-lo comprimiria a cidade em um canto da figura, como aconteceu com a área de ponderação da @fig-veiculos. O filtro `!is.na(situacao)` dá conta dele, e as ilhas habitadas permanecem no mapa. O segundo é que a malha do `geobr` traz três setores repartidos em mais de uma linha, por terem partes desconexas, e é preciso dissolvê-los pelo código com `group_by()` e `summarize()`, na forma apresentada no Capítulo 5, para que nenhum setor entre duas vezes nas somas por bairro.
+Levemos os indicadores ao mapa. A leitura das geometrias exige dois cuidados, ambos resolvidos no mesmo bloco de código. O primeiro é descartar o setor `292740805100008`, que tem 386 km², nenhum morador e nenhuma classificação de situação, porque corresponde à porção da Baía de Todos-os-Santos que está dentro dos limites municipais. É importante frisar que, neste caso, ele só se encontra sobre as águas da baía e não compreende nenhuma porção terrestre habitada^[diferentemente da área de ponderação `2927408005038` que contém as águas da baía e outros dois bairros, Paripe e São Tomé]. Mantê-lo comprimiria a cidade em um canto da figura, como aconteceu com a área de ponderação da @fig-veiculos. O filtro `!is.na(situacao)` dá conta dele, e as ilhas habitadas permanecem no mapa. O segundo é que a malha de setores censitários do `geobr` para Salvador traz três setores repartidos em mais de uma linha. Por terem partes desconexas, e é preciso dissolvê-los pelo código com `group_by()` e `summarize()`, na forma apresentada no Capítulo 5, para que nenhum setor entre duas vezes nas somas por bairro.
 
 ```{r}
 #| label: entorno-geo
@@ -585,7 +598,7 @@ tema_legenda <- theme(
   legend.title      = element_text(size = 7),
   legend.text       = element_text(size = 6),
   legend.margin     = margin(l = 0, r = 0),
-  plot.subtitle     = element_text(size = 9)
+  plot.subtitle     = element_text(size = 9, hjust = 0.5)
 )
 
 e1 <- ggplot(ent_geo) +
@@ -700,7 +713,7 @@ Com as duas figuras à vista, podemos ler os quatro indicadores de uma vez. A **
 
 A **calçada** muda completamente a figura, e nela reaparece a dicotomia socioespacial anunciada na introdução. Uma faixa quase contínua de tom escuro acompanha a orla atlântica e a ponta sul da península, com valores próximos de cem por cento, enquanto o miolo e boa parte do Subúrbio Ferroviário aparecem nos tons mais claros. É no mapa por bairro que essa faixa se fecha e vira um bloco reconhecível. A separação entre quem anda e quem dirige, portanto, existe sobretudo onde moram os grupos de maior renda, e falta justamente onde a dependência do deslocamento a pé é maior.
 
-Os dois painéis inferiores repetem parcialmente esse desenho. O **obstáculo** é escuro em quase toda a cidade, com setores inteiros em que todas as calçadas pesquisadas têm alguma obstrução, mas com maior predominância no miolo e no Subúrbio Ferroviário. A leitura que ele autoriza também carrega a desigualdade territorial, mas também revela um padrão construtivo generalizado, já que onde a calçada existe ela costuma estar obstruída, em maior ou menor grau ao longo de toda a cidade. A **rampa** é o item mais escasso do conjunto, e os dois painéis ficam quase todos no tom mais claro da escala. Onde ela é mais frequente, tende a ser no eixo que vai da Pituba ao Imbuí e nos bairros da orla atlântica, exatamente onde a cobertura de calçada é maior, de modo que a desigualdade da calçada se reproduz e se agrava na sua acessibilidade.
+Os dois painéis inferiores repetem parcialmente esse desenho. O **obstáculo** é escuro em quase toda a cidade, com setores inteiros em que todas as calçadas pesquisadas têm alguma obstrução, mas com maior predominância no miolo e no Subúrbio Ferroviário. A leitura que ele autoriza também carrega a desigualdade territorial, mas também revela um padrão construtivo generalizado, já que onde a calçada existe ela costuma estar obstruída, em maior ou menor grau ao longo de toda a cidade. A **rampa** é o item mais escasso do conjunto, e os dois painéis ficam quase todos no tom mais claro da escala. Onde ela é mais frequente, tende a ser no eixo que vai dos bairros da Pituba ao Imbuí e em outros bairros da orla atlântica, exatamente onde a cobertura de calçada é maior, de modo que a desigualdade da calçada se reproduz e se agrava na sua acessibilidade.
 
 Passemos aos extremos. Na @tbl-mob-entorno-bairro, mantemos apenas os bairros com ao menos quinhentos domicílios investigados, para que percentuais calculados sobre denominadores muito pequenos não dominem as pontas.
 
@@ -712,8 +725,8 @@ bairros_500 <- bairros_ent |>
   filter(investigados >= 500)
 
 bind_rows(
-  bairros_500 |> slice_min(p_calcada, n = 6),
-  bairros_500 |> slice_max(p_calcada, n = 4)
+  bairros_500 |> slice_max(p_calcada, n = 4),
+  bairros_500 |> slice_min(p_calcada, n = 6)
 ) |>
   select(name_neighborhood, investigados, p_pavimentada, p_calcada, p_rampa) |>
   knitr::kable(
