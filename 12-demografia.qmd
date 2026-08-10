@@ -196,7 +196,7 @@ Antes de processar e mapear os dados do Censo para Goiânia, cabe uma advertênc
 #| message: false
 goiania_sc |>
   group_by(situacao) |>
-  summarise(setores = n(), populacao = sum(pop, na.rm = TRUE)) |>
+  summarize(setores = n(), populacao = sum(pop, na.rm = TRUE)) |>
   mutate(perc_populacao = 100 * populacao / sum(populacao)) |>
   knitr::kable(
     col.names = c("Situação", "Setores", "População", "% da população"),
@@ -454,7 +454,7 @@ raca_sub <- goiania_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_subdistrict)) |>
   group_by(name_subdistrict) |>
-  summarise(
+  summarize(
     pop           = sum(pop, na.rm = TRUE),
     pretos_pardos = sum(preta, na.rm = TRUE) + sum(parda, na.rm = TRUE),
     dppo          = sum(dppo, na.rm = TRUE)
@@ -492,7 +492,7 @@ goiania_geo <- goiania_geo |>
 
 goiania_geo |>
   st_drop_geometry() |>
-  summarise(
+  summarize(
     responsaveis   = sum(resp_m, na.rm = TRUE) + sum(resp_f, na.rm = TRUE),
     resp_femininas = sum(resp_f, na.rm = TRUE)
   ) |>
@@ -513,7 +513,7 @@ goiania_geo <- goiania_geo |>
 
 goiania_geo |>
   st_drop_geometry() |>
-  summarise(
+  summarize(
     resp_f_negra = sum(resp_f_preta, na.rm = TRUE) + sum(resp_f_parda, na.rm = TRUE),
     resp_f       = sum(resp_f, na.rm = TRUE),
     resp_total   = sum(resp_m, na.rm = TRUE) + sum(resp_f, na.rm = TRUE)
@@ -652,7 +652,7 @@ O bloco de Parentesco dos agregados classifica cada domicílio segundo a composi
 #| tbl-cap: "Distribuição dos domicílios de Goiânia (GO) segundo a composição da unidade doméstica, Censo 2022."
 #| message: false
 arranjos <- goiania_sc |>
-  summarise(
+  summarize(
     `Responsável e cônjuge, sem filhos`              = sum(arr_casal,  na.rm = TRUE),
     `Responsável e cônjuge, com filhos de ambos`     = sum(arr_ambos,  na.rm = TRUE),
     `Responsável e cônjuge, com filhos de um deles`  = sum(arr_um,     na.rm = TRUE),
@@ -677,7 +677,7 @@ O bloco traz ainda a mesma categoria desagregada por sexo da pessoa responsável
 ```{r}
 #| label: mono-sexo
 goiania_sc |>
-  summarise(
+  summarize(
     total_mono = sum(arr_mono, na.rm = TRUE),
     masculino  = sum(mono_m,   na.rm = TRUE),
     feminino   = sum(mono_f,   na.rm = TRUE),
@@ -692,7 +692,7 @@ Faltam mais de setecentos domicílios na soma por sexo. A explicação está nas
 ```{r}
 #| label: supressao
 goiania_sc |>
-  summarise(
+  summarize(
     setores           = n(),
     na_total_mono     = sum(is.na(arr_mono)),
     na_mono_masculino = sum(is.na(mono_m)),

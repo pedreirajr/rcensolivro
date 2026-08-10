@@ -424,7 +424,7 @@ perc <- function(numerador, total) {
 # Totais municipais de cada variável dos três blocos
 # Obs.: mais explicações sobre as funções novas que aparecem abaixo na nota mais adiante.
 tot_for2022 <- ent_for2022 |>
-  summarise(across(starts_with(c("faces_", "domicilios_")),
+  summarize(across(starts_with(c("faces_", "domicilios_")),
                    \(x) sum(x, na.rm = TRUE)))
 
 tibble(
@@ -456,7 +456,7 @@ tibble(
 ::: {.callout-note}
 ## Três novidades de sintaxe no código acima
 
-- **`across()`** aplica a mesma operação a várias colunas de uma só vez, dentro de um `summarise()` ou de um `mutate()`. Sem ela, seria preciso escrever uma linha de `sum()` para cada uma das 70 variáveis dos blocos de faces e de domicílios.
+- **`across()`** aplica a mesma operação a várias colunas de uma só vez, dentro de um `summarize()` ou de um `mutate()`. Sem ela, seria preciso escrever uma linha de `sum()` para cada uma das 70 variáveis dos blocos de faces e de domicílios.
 - **`starts_with()`** é uma das funções de seleção auxiliar do `tidyselect`, que escolhe colunas por padrão no nome. Aqui ela captura de uma vez todas as colunas iniciadas por `faces_` e por `domicilios_`. Existem outras da mesma família, como `ends_with()`, `contains()` e `all_of()`, esta última usada mais adiante neste capítulo.
 - **`\(x) sum(x, na.rm = TRUE)`** é a forma abreviada de escrever uma função anônima em R, equivalente a `function(x) sum(x, na.rm = TRUE)`. Ela é útil quando precisamos passar como argumento uma função que não existe pronta, no caso a soma que ignora valores ausentes.
 :::
@@ -470,7 +470,7 @@ A @sec-entorno-fluxo antecipou que os saltos do questionário não fazem as face
 ```{r}
 #| label: entorno-nao-declarado
 ent_for2022 |>
-  summarise(
+  summarize(
     total          = sum(domicilios_V05000, na.rm = TRUE),
     com_calcada    = sum(domicilios_V05021, na.rm = TRUE),
     nd_bueiro      = sum(domicilios_V05011, na.rm = TRUE),
@@ -488,7 +488,7 @@ Daí decorrem duas taxas legítimas e bem diferentes para a rampa de acessibilid
 ```{r}
 #| label: entorno-rampa-duas-taxas
 ent_for2022 |>
-  summarise(
+  summarize(
     rampa_sobre_total       = perc(sum(domicilios_V05027, na.rm = TRUE),
                                    sum(domicilios_V05000, na.rm = TRUE)),
     rampa_sobre_com_calcada = perc(sum(domicilios_V05027, na.rm = TRUE),
@@ -536,7 +536,7 @@ O mapa mostra uma cidade majoritariamente calçada com bolsões bem definidos de
 #| label: entorno-calcada-resumo
 ent_for2022 |>
   transmute(perc_calcada = perc(faces_V05421, faces_V05400)) |>
-  summarise(
+  summarize(
     mediana           = median(perc_calcada),
     perc_acima_90     = 100 * sum(perc_calcada >= 90) / n(),
     setores_abaixo_50 = sum(perc_calcada < 50),
@@ -556,7 +556,7 @@ O mapa sugere um padrão espacial, e a agregação por bairro permite nomeá-lo.
 ## Sumarizando os resultados por bairro (name_neighborhood):
 calcada_bairro <- ent_for2022 |>
   group_by(name_neighborhood) |>
-  summarise(setores = n(),
+  summarize(setores = n(),
             perc_calcada = perc(sum(faces_V05421, na.rm = TRUE),
                                 sum(faces_V05400, na.rm = TRUE)))
 

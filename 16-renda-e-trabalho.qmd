@@ -64,7 +64,7 @@ basico_2022 <- read_tracts(dataset = "Basico", year = 2022) |>
 
 basico_2022 |>
   group_by(situacao) |>
-  summarise(
+  summarize(
     setores   = n(),
     populacao = sum(V0001,    na.rm = TRUE),
     area_km2  = sum(area_km2, na.rm = TRUE)
@@ -311,7 +311,7 @@ O objeto devolvido é um `sf` com um polígono por bairro e a variável já inte
 #| message: false
 renda_bairro |>
   st_drop_geometry() |>
-  summarise(
+  summarize(
     bairros = n(),
     minimo  = min(avg_inc_resp, na.rm = TRUE),
     mediana = median(avg_inc_resp, na.rm = TRUE),
@@ -412,7 +412,7 @@ Calculamos a média e a mediana do rendimento domiciliar per capita, junto com o
 #| tbl-cap: "Média e mediana do rendimento domiciliar per capita em Manaus (AM), com intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus |>
-  summarise(
+  summarize(
     media   = survey_mean(V6531,   na.rm = TRUE, vartype = "ci"),
     mediana = survey_median(V6531, na.rm = TRUE, vartype = "ci")
   ) |>
@@ -428,7 +428,7 @@ Os quartis completam o retrato.
 #| tbl-cap: "Quartis e nonagésimo percentil do rendimento domiciliar per capita em Manaus (AM), microdados da amostra do Censo 2010."
 #| message: false
 pa_manaus |>
-  summarise(
+  summarize(
     quartis = survey_quantile(V6531, quantiles = c(0.25, 0.5, 0.75, 0.9),
                               na.rm = TRUE, vartype = "ci")
   ) |>
@@ -449,7 +449,7 @@ A comparação entre média e mediana pode ser levada ao território, e o result
 #| warning: false
 renda_ap <- pa_manaus |>
   group_by(code_weighting) |>
-  summarise(
+  summarize(
     media   = survey_mean(V6531,   na.rm = TRUE),
     mediana = survey_median(V6531, na.rm = TRUE)
   )
@@ -493,7 +493,7 @@ As duas escalas de cor são deliberadamente iguais, para que a comparação seja
 #| tbl-cap: "Razão entre a média e a mediana do rendimento domiciliar per capita nas áreas de ponderação de Manaus (AM), com valores mínimo, mediano e máximo, microdados da amostra do Censo 2010."
 renda_ap |>
   mutate(razao = media / mediana) |>
-  summarise(
+  summarize(
     razao_minima = min(razao),
     razao_mediana = median(razao),
     razao_maxima = max(razao)
@@ -521,7 +521,7 @@ md_manaus <- md_manaus |>
   )
 
 md_manaus |>
-  summarise(
+  summarize(
     registros           = n(),
     ocupados            = sum(ocupado),
     apenas_autoconsumo  = sum(autoconsumo),
@@ -536,7 +536,7 @@ O resultado dessa checagem é o ponto metodológico da seção. A variável de h
 #| label: ausentes-v0648
 md_manaus |>
   filter(ocupado, is.na(V0648)) |>
-  summarise(
+  summarize(
     ausentes_em_V0648        = n(),
     destes_apenas_autoconsumo = sum(autoconsumo)
   )
@@ -580,7 +580,7 @@ pa_manaus |>
   filter(ocupado, !autoconsumo) |>
   mutate(posicao = factor(V0648, levels = names(posicoes), labels = posicoes)) |>
   group_by(posicao) |>
-  summarise(proporcao = survey_prop(vartype = "ci")) |>
+  summarize(proporcao = survey_prop(vartype = "ci")) |>
   knitr::kable(digits = 4, format.args = list(decimal.mark = ","))
 ```
 
@@ -594,7 +594,7 @@ As horas trabalhadas completam o quadro.
 #| message: false
 pa_manaus |>
   filter(ocupado) |>
-  summarise(
+  summarize(
     media          = survey_mean(V0653,   na.rm = TRUE, vartype = "ci"),
     mediana        = survey_median(V0653, na.rm = TRUE, vartype = "ci"),
     acima_de_44h   = survey_mean(V0653 > 44, na.rm = TRUE, vartype = "ci")
@@ -612,7 +612,7 @@ pa_manaus |>
   filter(ocupado, !autoconsumo) |>
   mutate(posicao = factor(V0648, levels = names(posicoes), labels = posicoes)) |>
   group_by(posicao) |>
-  summarise(
+  summarize(
     horas_medias        = survey_mean(V0653,   na.rm = TRUE),
     rendimento_mediano  = survey_median(V6511, na.rm = TRUE)
   ) |>
@@ -638,7 +638,7 @@ Por fim, levamos a informalidade ao território.
 informal_ap <- pa_manaus |>
   filter(ocupado, !autoconsumo) |>
   group_by(code_weighting) |>
-  summarise(sem_carteira = survey_mean(V0648 == "4", na.rm = TRUE))
+  summarize(sem_carteira = survey_mean(V0648 == "4", na.rm = TRUE))
 
 ap_manaus |>
   left_join(informal_ap, by = join_by(code_weighting)) |>

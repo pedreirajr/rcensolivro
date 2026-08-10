@@ -171,7 +171,7 @@ Antes de calcular qualquer coisa, uma verificação de coerência. Os três tota
 ```{r}
 #| label: checagem-totais
 jp_sc |>
-  summarise(
+  summarize(
     populacao      = sum(pop,      na.rm = TRUE),
     dom_particular = sum(dom_part, na.rm = TRUE),
     dom_ocupado    = sum(dom_ocup, na.rm = TRUE),
@@ -205,7 +205,7 @@ jp_geo <- jp_geo |>
 
 jp_geo |>
   st_drop_geometry() |>
-  summarise(
+  summarize(
     nao_ocupados = sum(nao_ocup, na.rm = TRUE),
     percentual   = 100 * sum(nao_ocup, na.rm = TRUE) / sum(dom_part, na.rm = TRUE)
   )
@@ -235,7 +235,7 @@ Para nomear as áreas, agregamos por bairro. Aqui cabe uma observação prática
 ```{r}
 #| label: recortes-disponiveis
 jp_sc |>
-  summarise(
+  summarize(
     bairros_distintos = n_distinct(name_neighborhood),
     setores_sem_bairro = sum(is.na(name_neighborhood))
   )
@@ -251,7 +251,7 @@ bairros <- jp_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_neighborhood)) |>
   group_by(name_neighborhood) |>
-  summarise(
+  summarize(
     pop      = sum(pop,      na.rm = TRUE),
     dom_part = sum(dom_part, na.rm = TRUE),
     dom_ocup = sum(dom_ocup, na.rm = TRUE)
@@ -319,7 +319,7 @@ jp_geo |>
     tipo = ifelse(code_type == 1, "Favela e Comunidade Urbana", "Demais setores")
   ) |>
   group_by(tipo) |>
-  summarise(
+  summarize(
     dom_part = sum(dom_part, na.rm = TRUE),
     dom_ocup = sum(dom_ocup, na.rm = TRUE)
   ) |>
@@ -439,7 +439,7 @@ Um detalhe preliminar importante é que precisamos olhar os valores ausentes, po
 ```{r}
 #| label: ausentes-dormitorio
 md_jp |>
-  summarise(
+  summarize(
     registros        = n(),
     sem_dormitorio   = sum(is.na(V0204)),
     sem_densidade    = sum(is.na(V6204))
@@ -454,7 +454,7 @@ Feita a ressalva, calculamos as estatísticas municipais. Além da média e da m
 #| label: estimativas-densidade
 #| message: false
 estimativas <- pa_jp |>
-  summarise(
+  summarize(
     media          = survey_mean(V6204, na.rm = TRUE, vartype = "ci"),
     mediana        = survey_median(V6204, na.rm = TRUE, vartype = "ci"),
     acima_de_dois  = survey_mean(V6204 > 2, na.rm = TRUE, vartype = "ci")
@@ -537,7 +537,7 @@ Vale uma verificação que dá confiança no que virá. O número de registros d
 #| label: checagem-cnefe
 jp_cnefe |>
   st_drop_geometry() |>
-  summarise(
+  summarize(
     dom_particulares_cnefe = sum(COD_ESPECIE == 1),
     dom_particulares_agreg = sum(jp_sc$dom_part, na.rm = TRUE)
   )
@@ -597,7 +597,7 @@ construcoes_bairro <- construcoes |>
   st_drop_geometry()
 
 construcoes_bairro |>
-  summarise(
+  summarize(
     pontos          = n(),
     sem_bairro      = sum(is.na(name_neighborhood))
   )
@@ -620,7 +620,7 @@ Poucas dezenas de pontos ficam sem bairro, o que corresponde a construções sit
 expansao <- construcoes_bairro |>
   filter(!is.na(name_neighborhood)) |>
   group_by(name_neighborhood) |>
-  summarise(
+  summarize(
     total      = n(),
     horizontal = sum(COD_INDICADOR_CONST_ENDERECO == 1),
     vertical   = sum(COD_INDICADOR_CONST_ENDERECO == 3)

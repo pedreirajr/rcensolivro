@@ -370,7 +370,7 @@ corresp_2022 <- ge_mcz2022 |>
 
 corresp_2022 |>
   group_by(situacao, .drop = FALSE) |>
-  summarise(celulas = n(), pop = sum(pop_total), .groups = "drop")
+  summarize(celulas = n(), pop = sum(pop_total), .groups = "drop")
 ```
 
 O teste mostra que, em Maceió, **nenhuma** célula resultou de subdivisão. A quase totalidade tem correspondência direta, e sobra um resíduo de algumas dezenas de células sem par, que reúnem pouco mais de meia centena de habitantes. Convém repetir a verificação no sentido inverso, partindo de 2010, para detectar células que existiam naquela edição e não têm correspondente em 2022.
@@ -396,7 +396,7 @@ corresp_2010 <- ge_mcz2010 |>
 
 corresp_2010 |>
   group_by(situacao, .drop = FALSE) |>
-  summarise(celulas = n(), pop = sum(pop_total), .groups = "drop")
+  summarize(celulas = n(), pop = sum(pop_total), .groups = "drop")
 ```
 
 O resultado confirma o diagnóstico. Não há subdivisões em nenhum dos dois sentidos e o mesmo conjunto de células se corresponde diretamente nas duas edições, cobrindo mais de 99% da população municipal em cada ano. Para Maceió, portanto, o *join* direto por `id_unico` é legítimo, e a etapa de agregação hierárquica que seria necessária em outros municípios pode ser dispensada.

@@ -133,7 +133,7 @@ Há registros sem resposta, e antes de aplicar `na.rm = TRUE` convém entender d
 #| message: false
 md_dom |>
   group_by(V4001) |>
-  summarise(
+  summarize(
     registros       = n(),
     sem_resposta    = sum(is.na(V0222))
   )
@@ -214,10 +214,10 @@ Os dois veículos vêm de variáveis diferentes, e por isso cada um exige uma ch
 #| message: false
 posse_mun <- bind_rows(
   pa_dom |>
-    summarise(proporcao = survey_mean(V0222 == "1", vartype = "ci")) |>
+    summarize(proporcao = survey_mean(V0222 == "1", vartype = "ci")) |>
     mutate(veiculo = "Automóvel"),
   pa_dom |>
-    summarise(proporcao = survey_mean(V0221 == "1", vartype = "ci")) |>
+    summarize(proporcao = survey_mean(V0221 == "1", vartype = "ci")) |>
     mutate(veiculo = "Motocicleta")
 )
 
@@ -285,7 +285,7 @@ Descontada a distorção do enquadramento, o padrão do automóvel é nítido, c
 ```{r}
 #| label: mob-veiculos-amplitude
 veic_ap |>
-  summarise(
+  summarize(
     auto_minimo = 100 * min(automovel),
     auto_maximo = 100 * max(automovel),
     moto_minimo = 100 * min(motocicleta),
@@ -418,7 +418,7 @@ Sem surpresa, as manchas mais escuras estão nas áreas de maior vulnerabilidade
 ```{r}
 #| label: mob-tempo-amplitude
 tempo_ap |>
-  summarise(
+  summarize(
     minimo              = 100 * min(mais_de_uma_hora),
     maximo              = 100 * max(mais_de_uma_hora),
     largura_media_do_ic = 100 * mean(2 * 1.96 * mais_de_uma_hora_se)
@@ -496,7 +496,7 @@ Calculamos agora os indicadores municipais, e eles não cabem todos em uma tabel
 #| tbl-cap: "Presença dos itens de infraestrutura do entorno investigados em todas as faces, sobre o total de domicílios com entorno pesquisado, Salvador (BA), Censo 2022."
 #| message: false
 totais <- ent_ssa |>
-  summarise(across(starts_with("domicilios_"), \(x) sum(x, na.rm = TRUE)))
+  summarize(across(starts_with("domicilios_"), \(x) sum(x, na.rm = TRUE)))
 
 tibble(
   Item = c("Via pavimentada", "Ponto de ônibus ou van",
@@ -628,7 +628,7 @@ bairros_ent <- ent_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_neighborhood)) |>
   group_by(name_neighborhood) |>
-  summarise(
+  summarize(
     investigados = sum(domicilios_V05000, na.rm = TRUE),
     pavimentada  = sum(domicilios_V05006, na.rm = TRUE),
     calcada      = sum(domicilios_V05021, na.rm = TRUE),
