@@ -510,7 +510,7 @@ Tabela&nbsp;15.1: Quesitos de mobilidade nos Questionários da Amostra dos Censo
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>md_dom <span class="sc">|&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(V4001) <span class="sc">|&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">registros       =</span> <span class="fu">n</span>(),</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_resposta    =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(V0222))</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
@@ -582,10 +582,10 @@ Tabela&nbsp;15.1: Quesitos de mobilidade nos Questionários da Amostra dos Censo
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>posse_mun <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  pa_dom <span class="sc">|&gt;</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">proporcao =</span> <span class="fu">survey_mean</span>(V0222 <span class="sc">==</span> <span class="st">"1"</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_mean</span>(V0222 <span class="sc">==</span> <span class="st">"1"</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">veiculo =</span> <span class="st">"Automóvel"</span>),</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  pa_dom <span class="sc">|&gt;</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">proporcao =</span> <span class="fu">survey_mean</span>(V0221 <span class="sc">==</span> <span class="st">"1"</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">proporcao =</span> <span class="fu">survey_mean</span>(V0221 <span class="sc">==</span> <span class="st">"1"</span>, <span class="at">vartype =</span> <span class="st">"ci"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">veiculo =</span> <span class="st">"Motocicleta"</span>)</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
@@ -670,7 +670,7 @@ Figura&nbsp;15.2: Domicílios particulares permanentes com automóvel (acima) e 
 <p>Descontada a distorção do enquadramento, o padrão do automóvel é nítido, com as proporções mais altas concentradas na ponta sul da península e ao longo da orla atlântica, e um declínio contínuo em direção ao miolo e ao norte do município, compreendendo também a região do Subúrbio Ferroviário. A motocicleta desenha um padrão aproximadamente invertido, com as maiores proporções no Subúrbio Ferroviário e algumas áreas do miolo, com as menores exatamente onde o automóvel é mais frequente. Convém não exagerar a leitura dessa inversão, porque as duas escalas são incomparáveis em magnitude, conforme o resultado abaixo deixa claro.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>veic_ap <span class="sc">|&gt;</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">auto_minimo =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">min</span>(automovel),</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">auto_maximo =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">max</span>(automovel),</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">moto_minimo =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">min</span>(motocicleta),</span>
@@ -941,7 +941,7 @@ Figura&nbsp;15.3: Proporção de trabalhadores com mais de uma hora de deslocame
 <p>Sem surpresa, as manchas mais escuras estão nas áreas de maior vulnerabilidade socioeconômica do município, que também são as mais distantes dos centros de emprego. Elas formam um bloco contínuo no extremo nordeste da malha urbana. Antes de qualquer leitura mais fina, vale medir o tamanho da variação e confrontá-lo com a incerteza das estimativas.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tempo_ap <span class="sc">|&gt;</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">minimo              =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">min</span>(mais_de_uma_hora),</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">maximo              =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">max</span>(mais_de_uma_hora),</span>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">largura_media_do_ic =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">mean</span>(<span class="dv">2</span> <span class="sc">*</span> <span class="fl">1.96</span> <span class="sc">*</span> mais_de_uma_hora_se)</span>
@@ -1010,7 +1010,7 @@ Figura&nbsp;15.3: Proporção de trabalhadores com mais de uma hora de deslocame
 <p>Calculamos agora os indicadores municipais, e eles não cabem todos em uma tabela só. Quatro dos seis itens são perguntados em toda face pesquisada, e o denominador deles é o total de domicílios com entorno pesquisado. Os outros dois, obstáculo e rampa, só são investigados onde existe calçada, e por isso pedem denominador próprio. Começamos pelos quatro primeiros.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>totais <span class="ot">&lt;-</span> ent_ssa <span class="sc">|&gt;</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"domicilios_"</span>), \(x) <span class="fu">sum</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"domicilios_"</span>), \(x) <span class="fu">sum</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="fu">c</span>(<span class="st">"Via pavimentada"</span>, <span class="st">"Ponto de ônibus ou van"</span>,</span>
@@ -1245,7 +1245,7 @@ Figura&nbsp;15.4: Indicadores de acessibilidade do entorno por setor censitário
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(name_neighborhood)) <span class="sc">|&gt;</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name_neighborhood) <span class="sc">|&gt;</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">investigados =</span> <span class="fu">sum</span>(domicilios_V05000, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">pavimentada  =</span> <span class="fu">sum</span>(domicilios_V05006, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">calcada      =</span> <span class="fu">sum</span>(domicilios_V05021, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
