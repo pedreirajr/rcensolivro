@@ -215,10 +215,7 @@ Na @fig-dem-situacao, são espacializados onde cada tipo se encontra:
 #| warning: false
 ggplot(goiania_geo) +
   geom_sf(aes(fill = situacao), color = NA) +
-  scale_fill_manual(
-    values   = c("Urbana" = "gray80", "Rural" = "#1B7837"),
-    name     = NULL
-  ) +
+  scale_fill_brewer(palette = "Set2", name = NULL) +
   coord_sf(expand = FALSE) +
   theme_minimal() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
