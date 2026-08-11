@@ -113,7 +113,7 @@ basico |>
   knitr::kable(digits = 0, format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
-Veja como a mancha urbana concentra a quase totalidade da população em cerca de 2,5% da área do município. Vale levar essa mesma informação ao mapa, porque a tabela diz quanto e o mapa diz onde. Antes, vamos ler as geometrias dos setores com `read_census_tract()` e uni-las ao arquivo Básico, guardando o resultado em `setores_geo`, que será reaproveitado em todos os mapas do capítulo:
+Veja como a mancha urbana concentra a quase totalidade da população em cerca de 2,5% da área do município. Vale levar essa mesma informação ao mapa, porque a tabela diz quanto e o mapa diz onde. Antes, vamos ler as geometrias dos setores com `read_census_tract()`, guardando o resultado em `setores_geo`, que será reaproveitado em todos os mapas do capítulo:
 
 ```{r}
 #| label: leitura-geometrias
@@ -123,12 +123,10 @@ setores_geo <- read_census_tract(
   code_tract = macapa,
   year       = 2022,
   simplified = FALSE
-) |>
-  select(code_tract) |>
-  left_join(basico, by = "code_tract")
+)
 ```
 
-Produzindo então um mapa coroplético cuja cor de preenchimento é baseada no tipo de setor, temos:
+Note que não foi preciso juntar nada ao arquivo Básico. A própria malha de setores já vem com a coluna `zone`, que classifica o setor entre urbano e rural, e com as colunas `name_district` e `name_neighborhood`, que trazem o distrito e o bairro. Produzindo então um mapa coroplético cuja cor de preenchimento é a `zone` de cada setor, temos:
 
 ```{r}
 #| label: fig-san-situacao
@@ -137,7 +135,7 @@ Produzindo então um mapa coroplético cuja cor de preenchimento é baseada no t
 #| message: false
 #| warning: false
 ggplot(setores_geo) +
-  geom_sf(aes(fill = situacao), color = NA) +
+  geom_sf(aes(fill = zone), color = NA) +
   scale_fill_brewer(palette = "Set2", name = "Situação", na.value = "gray85",
                     labels = c("Rural", "Urbana", "Sem classificação")) +
   coord_sf(expand = FALSE) +
@@ -190,7 +188,7 @@ Observemos no mapa para deixar o argumento visível. Na parte superior, os setor
 #| message: false
 #| warning: false
 urbanos_geo <- setores_geo |>
-  filter(situacao == "Urbana")
+  filter(zone == "Urbana")
 
 recorte <- urbanos_geo |>
   filter(name_district %in% c("Macapá", "Fazendinha")) |>
@@ -209,9 +207,9 @@ mapa_municipio <- ggplot() +
         plot.subtitle = element_text(hjust = 0.5))
 
 mapa_mancha <- ggplot() +
-  geom_sf(data = setores_geo, fill = "gray93", color = NA) +
   geom_sf(data = urbanos_geo, aes(fill = name_district),
           color = NA) +
+  geom_sf(data = setores_geo, fill = NA, color = "gray65") +
   scale_fill_brewer(palette = "Dark2", name = "Distrito") +
   coord_sf(xlim = recorte[c("xmin", "xmax")],
            ylim = recorte[c("ymin", "ymax")], expand = FALSE) +

@@ -514,20 +514,18 @@ Tabela&nbsp;14.1: Setores censitários, população e área de Macapá (AP) segu
 </figure>
 </div>
 </div>
-<p>Veja como a mancha urbana concentra a quase totalidade da população em cerca de 2,5% da área do município. Vale levar essa mesma informação ao mapa, porque a tabela diz quanto e o mapa diz onde. Antes, vamos ler as geometrias dos setores com <code>read_census_tract()</code> e uni-las ao arquivo Básico, guardando o resultado em <code>setores_geo</code>, que será reaproveitado em todos os mapas do capítulo:</p>
+<p>Veja como a mancha urbana concentra a quase totalidade da população em cerca de 2,5% da área do município. Vale levar essa mesma informação ao mapa, porque a tabela diz quanto e o mapa diz onde. Antes, vamos ler as geometrias dos setores com <code>read_census_tract()</code>, guardando o resultado em <code>setores_geo</code>, que será reaproveitado em todos os mapas do capítulo:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>setores_geo <span class="ot">&lt;-</span> <span class="fu">read_census_tract</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_tract =</span> macapa,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">year       =</span> <span class="dv">2022</span>,</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplified =</span> <span class="cn">FALSE</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract) <span class="sc">|&gt;</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(basico, <span class="at">by =</span> <span class="st">"code_tract"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Produzindo então um mapa coroplético cuja cor de preenchimento é baseada no tipo de setor, temos:</p>
+<p>Note que não foi preciso juntar nada ao arquivo Básico. A própria malha de setores já vem com a coluna <code>zone</code>, que classifica o setor entre urbano e rural, e com as colunas <code>name_district</code> e <code>name_neighborhood</code>, que trazem o distrito e o bairro. Produzindo então um mapa coroplético cuja cor de preenchimento é a <code>zone</code> de cada setor, temos:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(setores_geo) <span class="sc">+</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> situacao), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> zone), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>, <span class="at">name =</span> <span class="st">"Situação"</span>, <span class="at">na.value =</span> <span class="st">"gray85"</span>,</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Rural"</span>, <span class="st">"Urbana"</span>, <span class="st">"Sem classificação"</span>)) <span class="sc">+</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
@@ -626,7 +624,7 @@ Tabela&nbsp;14.2: Distribuição dos setores censitários urbanos de Macapá (AP
 <p>Observemos no mapa para deixar o argumento visível. Na parte superior, os setores urbanos coloridos por distrito sobre o município inteiro, desenhado em cinza claro. Embaixo, o mesmo mapa recortado na mancha urbana contínua, o que exige apenas informar ao <code>coord_sf()</code> os limites desejados nos argumentos <code>xlim</code> e <code>ylim</code>. Esses limites saem do próprio dado, com a caixa delimitadora, dada por <code>st_bbox()</code>, aplicada aos setores dos dois distritos centrais:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>urbanos_geo <span class="ot">&lt;-</span> setores_geo <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(situacao <span class="sc">==</span> <span class="st">"Urbana"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(zone <span class="sc">==</span> <span class="st">"Urbana"</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>recorte <span class="ot">&lt;-</span> urbanos_geo <span class="sc">|&gt;</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(name_district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Macapá"</span>, <span class="st">"Fazendinha"</span>)) <span class="sc">|&gt;</span></span>
@@ -645,9 +643,9 @@ Tabela&nbsp;14.2: Distribuição dos setores censitários urbanos de Macapá (AP
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>mapa_mancha <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> setores_geo, <span class="at">fill =</span> <span class="st">"gray93"</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> urbanos_geo, <span class="fu">aes</span>(<span class="at">fill =</span> name_district),</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> urbanos_geo, <span class="fu">aes</span>(<span class="at">fill =</span> name_district),</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> setores_geo, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">color =</span> <span class="st">"gray65"</span>) <span class="sc">+</span></span>
 <span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Dark2"</span>, <span class="at">name =</span> <span class="st">"Distrito"</span>) <span class="sc">+</span></span>
 <span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> recorte[<span class="fu">c</span>(<span class="st">"xmin"</span>, <span class="st">"xmax"</span>)],</span>
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">ylim =</span> recorte[<span class="fu">c</span>(<span class="st">"ymin"</span>, <span class="st">"ymax"</span>)], <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
