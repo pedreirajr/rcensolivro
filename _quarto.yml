@@ -7,6 +7,11 @@ lang: pt-BR
 book:
   title: "Censo Demográfico no R"
   subtitle: "Conceitos e aplicações para a análise do território brasileiro"
+  # Imagem de prévia ao compartilhar o link (redes sociais, mensageiros).
+  # As meta tags só são geradas com site-url e open-graph definidos.
+  image: img/capa/capa-web.jpg
+  site-url: https://pedreirajr.github.io/rcensolivro/
+  open-graph: true
   author:
     - name: "Jorge Ubirajara Pedreira Junior"
       url: https://pedreirajr.github.io/website/

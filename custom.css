@@ -149,6 +149,29 @@ table.table {
 }
 
 /* ========================================
+   CAPA DO LIVRO (prefácio)
+   ======================================== */
+
+img.capa-livro {
+  float: right;
+  width: 40%;
+  margin: 0.3em 0 1.2em 1.8em;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* Em telas estreitas, o texto ao lado ficaria espremido demais */
+@media (max-width: 700px) {
+  img.capa-livro {
+    float: none;
+    display: block;
+    width: 65%;
+    margin: 0 auto 1.5em auto;
+  }
+}
+
+/* ========================================
    UTILITÁRIOS
    ======================================== */
 

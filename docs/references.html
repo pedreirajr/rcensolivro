@@ -93,6 +93,9 @@ div.csl-indent {
 
 
 <link rel="stylesheet" href="custom.css">
+<meta property="og:title" content="Referências – Censo Demográfico no R">
+<meta property="og:image" content="https://pedreirajr.github.io/rcensolivro/img/capa/capa-web.jpg">
+<meta property="og:site_name" content="Censo Demográfico no R">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -671,7 +674,7 @@ introduction with {srvyr} and {survey}</em>. CRC Press.
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/pedreirajr\.github\.io\/rcensolivro\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

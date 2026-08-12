@@ -134,6 +134,10 @@ div.csl-indent {
 
 
 <link rel="stylesheet" href="custom.css">
+<meta property="og:title" content="9&nbsp; Grade Estatística – Censo Demográfico no R">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://pedreirajr.github.io/rcensolivro/img/9-grade-estatistica/articulacao.jpg">
+<meta property="og:site_name" content="Censo Demográfico no R">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -1101,7 +1105,7 @@ OpenStreetMap Wiki contributors. (2024). <em>Brazil/<span>G</span>rade <span>E</
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/pedreirajr\.github\.io\/rcensolivro\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
