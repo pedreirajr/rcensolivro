@@ -34,7 +34,7 @@ tibble::tibble(
     align = c("l", "l", "l"),
     table.attr = 'style="width:auto"'
   ) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 Apesar das poucas variáveis, a Grade possui um conjunto de características que a torna um produto analítico poderoso, especialmente para estudos de distribuição espacial da população e para comparações entre os Censos de 2010 e 2022.
@@ -51,15 +51,21 @@ Além da resolução básica, a Grade é disponibilizada em seis níveis hierár
 
 ![Articulação 500 x 500 km da grade estatística. Fonte: [FTP IBGE (2025)](https://geoftp.ibge.gov.br/recortes_para_fins_estatisticos/grade_estatistica/censo_2022/grade_estatistica/)](img/9-grade-estatistica/articulacao.jpg){#fig-art_500km}
 
-Esse nível de 500km é também a unidade de distribuição dos arquivos originais no FTP do IBGE, e cada quadrante recebe um identificador numérico próprio. O mapa interativo da @fig-mapa-quadrantes permite explorar essa articulação sobre o território nacional. Navegando até Salvador (BA), por exemplo, percebe-se que a cidade é atravessada pela fronteira entre dois quadrantes, o ID 47, que cobre a porção Sul, e o ID 57, que cobre a porção Norte. Como veremos na @sec-ge-dados, o quadrante de cada célula acompanha os dados baixados no campo `quadrante`, de modo que essa informação hoje serve para compreender a articulação e localizar os arquivos originais, e não como uma etapa prévia ao *download*.
+Esse nível de 500km é também a unidade de distribuição dos arquivos originais no FTP do IBGE, e cada quadrante recebe um identificador numérico próprio. O mapa da @fig-mapa-quadrantes permite explorar essa articulação sobre o território nacional, de forma interativa para quem estiver utilizando o livro no formato digital. Navegando até Salvador (BA), por exemplo, percebe-se que a cidade é atravessada pela fronteira entre dois quadrantes, o ID 47, que cobre a porção Sul, e o ID 57, que cobre a porção Norte. Como veremos na @sec-ge-dados, o quadrante de cada célula acompanha os dados baixados no campo `quadrante`, de modo que essa informação hoje serve para compreender a articulação e localizar os arquivos originais, e não como uma etapa prévia ao *download*.
 
 ::: {#fig-mapa-quadrantes}
 
+::: {.content-visible when-format="html"}
 ```{=html}
 <iframe src="img/9-grade-estatistica/articulacao_500x500_mun.html" width="100%" height="500px" frameborder="0"></iframe>
 ```
+:::
 
-Mapa interativo da articulação 500 × 500 km da Grade Estatística do IBGE. Fontes: @ibge_grade2016; @ibge_grade2025.
+::: {.content-visible unless-format="html"}
+![](img/9-grade-estatistica/articulacao_quadrantes.png)
+:::
+
+Articulação 500 × 500 km da Grade Estatística do IBGE sobre os municípios brasileiros. Fontes: @ibge_grade2016; @ibge_grade2025.
 :::
 
 As estatísticas das células são derivadas dos microdados **do universo** do Censo Demográfico. Lembre-se que o universo compreende a totalidade dos domicílios visitados pelo recenseador, independentemente de terem respondido ao questionário básico ou ao da amostra. Esse ponto é relevante porque os microdados do universo não são disponibilizados ao público, uma vez que temos acesso apenas aos microdados da amostra, produto abordado no Capítulo 8. A vinculação entre os microdados do universo e as células da Grade é feita pelas coordenadas geográficas dos domicílios registradas no CNEFE.
@@ -102,7 +108,7 @@ tibble::tibble(
     col.names = c("Campo IBGE (2010)", "Campo IBGE (2022)", "Campo `geobr`", "Descrição"),
     align = c("c", "c", "c", "l")
   ) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 É relevante mencionar que o número de células na resolução 200m/1km também muda entre os Censos. O Censo 2010 gerou 13,3 milhões de células na resolução básica, sendo 4.610.350 de 200m (34,7%) e 8.676.139 de 1km (65,3%). Em 2022, esse número cresceu para 14,1 milhões, um acréscimo de cerca de 841 mil células, com 5.486.725 células de 200m (38,84%) e 8.641.084 células de 1km (61,16%). Isso ocorre porque, ao se tornarem urbanizadas^[interceptarem setores censitários do tipo urbano no Censo mais recente], algumas áreas que estavam em células de 1km são subdivididas em células de 200m. Cabe destacar que células de 200m que porventura tenham se tornado rurais não passam por um processo de agregação^[*downgrade*] para a resolução de 1km em um Censo posterior.
@@ -141,7 +147,7 @@ tibble::tibble(
     align = c("l", "l", "l"),
     table.attr = 'style="width:auto"'
   ) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 Com esse panorama metodológico em vista, a próxima seção examina as principais vantagens e limitações da Grade para fins analíticos.

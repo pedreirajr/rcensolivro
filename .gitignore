@@ -3,6 +3,8 @@
 /_freeze/
 /*_files/
 /*_cache/
+/_pdf/
+/_docx/
 *.html
 !docs/*.html
 !docs/**/*.html

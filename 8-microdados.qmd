@@ -57,7 +57,7 @@ tibble::tibble(
     align = c("c", "c","c", "c"),
     table.attr = 'style="width:auto"'
   ) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 A fração mais alta nos municípios menores garante que mesmo localidades com poucos domicílios tenham amostras de tamanho suficiente para a divulgação de resultados com qualidade estatística aceitável. Em contrapartida, nos 49 municípios com mais de 500 mil habitantes em 2022, a fração de 5% já representa volumes consideráveis de domicílios entrevistados.

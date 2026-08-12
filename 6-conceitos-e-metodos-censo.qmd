@@ -244,6 +244,7 @@ Para visualizar os setores censitários e as áreas de ponderação de forma com
 ```{r}
 #| label: map-recortes-intra-institucionais
 #| message: false
+#| eval: !expr knitr::is_html_output()
 
 library(mapview)
 library(leafsync)
@@ -261,6 +262,10 @@ m_setores <- mapview(setores, layer.name = "Setores censitários",
 
 sync(m_pond, m_setores)
 ```
+
+::: {.content-visible unless-format="html"}
+![Áreas de ponderação (à esquerda) e setores censitários (à direita) de Maceió (AL) em 2010, exibidos em painéis sincronizados. Fonte: elaboração própria com dados do `geobr`.](img/6-conceitos-e-metodos/recortes-intra-institucionais.png)
+:::
 
 ::: {.callout-tip}
 Aproxime o zoom nos dois mapas e observe os contornos dos polígonos. É comum perceber pequenas imperfeições nas bordas das feições, com vértices deslocados. Isso ocorre porque o parâmetro `simplified = TRUE` é o padrão em todas as funções do `geobr`, o que reduz o tamanho dos arquivos e acelera o processamento, ao custo de simplificar a geometria. Para reproduzir os mapas com geometrias precisas, execute o código localmente com `simplified = FALSE` nos dois downloads e aproxime o zoom novamente para verificar como as bordas ficam com os contornos regularizados.

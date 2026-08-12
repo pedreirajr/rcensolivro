@@ -58,7 +58,7 @@ tibble::tribble(
   "Obstáculo na calçada",            "—",     "—",     "X"
 ) |>
   knitr::kable(align = c("c", "c", "c", "c")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 Duas leituras saltam do quadro. A primeira é que a continuidade temática é menor do que parece, já que apenas seis itens aparecem em 2010 e em 2022. A segunda é que 2022 deslocou o eixo do produto. Saíram os itens que descreviam **degradação** do espaço público, como lixo acumulado e esgoto a céu aberto, e entraram itens que descrevem **oferta de mobilidade e acessibilidade**, como capacidade da via, ponto de ônibus, ciclovia e obstáculo na calçada. Como veremos na @sec-entorno-variaveis, a semelhança de nomes entre os itens que sobreviveram esconde armadilhas de comparação, e há apenas dois casos em que o confronto direto entre 2010 e 2022 é legítimo.
@@ -189,7 +189,7 @@ tibble::tribble(
   "Arborização",                     "Contagem (0, 1 a 2, 3 a 4, 5+)", "Face percorrida e canteiro central"
 ) |>
   knitr::kable(align = c("l", "l", "l")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 São três as consequências principais. Primeiro, os itens ligados à calçada olham **apenas para a face percorrida**, enquanto os itens ligados à via olham para os dois lados. Um percentual de calçadas e um percentual de iluminação, ainda que apresentados lado a lado, não descrevem a mesma extensão de espaço público. Segundo, a arborização é o único item que considera a face e o canteiro central sem considerar a face confrontante, escolha que, como veremos adiante, inviabiliza a comparação com 2010. Por fim, a pesquisa investiga **existência, não estado de conservação, funcionamento ou eficácia** [@ibge_entorno2022]. Um poste sem lâmpada conta como iluminação pública existente. Um bueiro entupido conta como bueiro existente. Os dados descrevem a presença do equipamento urbano, e não a sua qualidade.
@@ -239,7 +239,7 @@ tibble::tribble(
   "Moradores",        "moradores_V052xx",    "moradores_V05200",    "Moradores desses domicílios"
 ) |>
   knitr::kable(align = c("c", "c", "c", "c")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 Os três blocos têm 35 variáveis cada e seguem exatamente o mesmo *layout*, com os itens na mesma ordem e na mesma posição relativa à variável de total. A existência de bueiro, por exemplo, ocupa o nono deslocamento nos três blocos, em `faces_V05409`, `domicilios_V05009` e `moradores_V05209`^[Essa regularidade é uma boa notícia para quem programa, porque permite escrever uma única rotina que atende aos três blocos.].
@@ -274,7 +274,7 @@ tibble::tribble(
   "Itens com classes múltiplas",  "Nenhum",                                               "Arborização e capacidade da via"
 ) |>
   knitr::kable(align = c("c", "c", "c")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 Para entender o que é possível ou não comparar, vale mencionar que seis itens aparecem nos dois censos, o que sugere uma série histórica confortável. No entanto, a realidade é bem mais restrita, já que o próprio IBGE alerta que apenas **dois** itens admitem comparação direta, e a @tbl-comparabilidade explica o motivo caso a caso.
@@ -294,7 +294,7 @@ tibble::tribble(
   "Arborização",            "Não",            "Em 2010 considerava a face confrontante e em 2022 considera apenas a face e o canteiro central"
 ) |>
   knitr::kable(align = c("c", "c", "c")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+  (\(tab) if (knitr::pandoc_to("docx")) tab else kableExtra::kable_styling(tab, full_width = FALSE))()
 ```
 
 Note que as três incomparabilidades apontam em direções previsíveis. A mudança no conceito de calçada tende a **inflar** o resultado de 2022, porque o conceito ficou mais abrangente. As mudanças em pavimentação e arborização tendem a **reduzi-lo**, porque o critério ficou mais exigente em um caso e a área observada diminuiu no outro. Uma queda aparente na arborização entre 2010 e 2022 pode ser inteiramente artefato metodológico.
@@ -388,8 +388,7 @@ tibble(
   )
 ) |>
   knitr::kable(align = c("c", "c", "c", "c"),
-               format.args = list(big.mark = ".", decimal.mark = ",")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+               format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
 Os 23 setores de 2010 e os 27 de 2022 que ficam sem par são setores que não foram selecionados para a pesquisa, **não consistindo em falha de dado**. Eles aparecerão nos mapas com a cor reservada a valores ausentes. Repare também que a malha de Fortaleza cresceu de 3.043 para 4.408 setores entre os dois censos, informação que será decisiva na @sec-entorno-comparacao.
@@ -449,8 +448,7 @@ tibble(
     face = NULL, domicilio = NULL
   ) |>
   knitr::kable(digits = 1, align = c("l", "c", "c"),
-               format.args = list(decimal.mark = ",")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+               format.args = list(decimal.mark = ","))
 ```
 
 ::: {.callout-note}
@@ -571,8 +569,7 @@ bind_rows(
   arrange(desc(perc_calcada)) |>
   knitr::kable(col.names = c("Bairro", "Setores", "% das faces c/ calçada"),
                digits = 1, align = c("c", "c", "c"),
-               format.args = list(decimal.mark = ",")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+               format.args = list(decimal.mark = ","))
 ```
 
 ::: {.callout-note}
@@ -689,8 +686,7 @@ resumo_2010 |>
             `Domicílios` = total,
             `% com o item` = perc(existe, total)) |>
   knitr::kable(digits = 1, align = c("l", "c", "c"),
-               format.args = list(big.mark = ".", decimal.mark = ",")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+               format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
 ::: {.callout-note}
@@ -780,8 +776,7 @@ tibble(
 ) |>
   mutate(`Variação (p.p.)` = `2022` - `2010`) |>
   knitr::kable(digits = 1, align = c("c", "c", "c", "c"),
-               format.args = list(decimal.mark = ",")) |>
-  kableExtra::kable_styling(full_width = FALSE)
+               format.args = list(decimal.mark = ","))
 ```
 
 Os dois itens que sobrevivem à comparação contam histórias opostas, e é essa oposição que torna o par interessante. A iluminação pública sobe apenas 1,1 ponto porque já estava perto do teto em 2010, sem para onde crescer. O bueiro dobra em doze anos, com um ganho de 16,6 pontos, e ainda assim os 33,1% de 2022 permanecem bem abaixo dos 55,0% da média nacional. O avanço é real e o passivo continua grande.

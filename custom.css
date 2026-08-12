@@ -136,6 +136,19 @@ caption {
 }
 
 /* ========================================
+   TABELAS
+   ======================================== */
+
+/* Tabelas com a largura do conteúdo, e não da página inteira,
+   centralizadas e sem estourar a margem em telas estreitas */
+table.table {
+  width: auto;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ========================================
    UTILITÁRIOS
    ======================================== */
 
