@@ -27,5 +27,14 @@ format:
     number-sections: true
     toc: true
     toc-depth: 3
+    lof: true
+    lot: true
     fig-cap-location: top
     tbl-cap-location: top
+
+# As listas de figuras e de tabelas do Word sao campos que buscam pelo estilo
+# da legenda, e o Quarto marca legenda de tabela com o estilo das figuras.
+# O script corrige isso na saida .docx e ignora as demais renderizacoes.
+project:
+  post-render:
+    - ajusta-legendas-docx.py
