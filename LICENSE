@@ -1,0 +1,38 @@
+Censo Demográfico no R
+Conceitos e aplicações para a análise do território brasileiro
+
+Copyright (c) 2026 Jorge Ubirajara Pedreira Junior
+Todos os direitos reservados.
+
+
+CONDIÇÕES DE USO
+
+Esta obra, incluindo seu texto, suas figuras, sua estrutura de capítulos e
+o código-fonte dos exemplos, é protegida pela Lei nº 9.610/1998 (Lei de
+Direitos Autorais).
+
+A reprodução, a distribuição, a comunicação ao público, a adaptação, a
+tradução e a criação de obras derivadas, no todo ou em parte e por
+qualquer meio ou processo, dependem de autorização prévia e por escrito
+do autor.
+
+São livres, independentemente de autorização, a leitura e a consulta
+online da obra, bem como os usos admitidos pelo art. 46 da Lei nº
+9.610/1998, entre eles a citação de passagens para fins de estudo,
+crítica ou polêmica, na medida justificada para o fim a atingir e com
+indicação do nome do autor e da origem da obra.
+
+Para solicitar autorização, entre em contato pelo endereço
+https://pedreirajr.github.io/website/
+
+
+DADOS DE TERCEIROS
+
+Os dados do Censo Demográfico e demais bases utilizadas nos exemplos são
+de titularidade do Instituto Brasileiro de Geografia e Estatística (IBGE)
+e de outros produtores de estatística oficial, e seu uso segue as
+condições definidas por essas instituições. Este aviso de direitos
+autorais não se estende a eles.
+
+Os pacotes de R utilizados ao longo do livro pertencem a seus respectivos
+autores e são regidos por suas próprias licenças.
