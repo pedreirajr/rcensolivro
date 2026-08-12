@@ -1053,24 +1053,25 @@ Figura&nbsp;13.4: Média de moradores em domicílios particulares ocupados, por 
 </div>
 <p>Cada uma das três estimativas veio acompanhada de um limite inferior e de um superior, o que dá nove colunas em uma única linha, formato pouco amigável para leitura direta. Reorganizamos esses valores em uma tabela longa, com uma linha por estimativa, e convertemos a proporção para percentual no código abaixo:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">medida =</span> <span class="fu">fct_inorder</span>(<span class="fu">c</span>(</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Média de moradores por dormitório"</span>,</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mediana de moradores por dormitório"</span>,</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% de domicílios com mais de 2 moradores por dormitório"</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  )),</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimativa =</span> <span class="fu">c</span>(estimativas<span class="sc">$</span>media,</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                 estimativas<span class="sc">$</span>mediana,</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">100</span> <span class="sc">*</span> estimativas<span class="sc">$</span>acima_de_dois),</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">inferior   =</span> <span class="fu">c</span>(estimativas<span class="sc">$</span>media_low,</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                 estimativas<span class="sc">$</span>mediana_low,</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">100</span> <span class="sc">*</span> estimativas<span class="sc">$</span>acima_de_dois_low),</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">superior   =</span> <span class="fu">c</span>(estimativas<span class="sc">$</span>media_upp,</span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>                 estimativas<span class="sc">$</span>mediana_upp,</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">100</span> <span class="sc">*</span> estimativas<span class="sc">$</span>acima_de_dois_upp)</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>ic</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Reorganizando as três estimativas e seus intervalos em formato de tabela:</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">medida =</span> <span class="fu">fct_inorder</span>(<span class="fu">c</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Média de moradores por dormitório"</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mediana de moradores por dormitório"</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"% de domicílios com mais de 2 moradores por dormitório"</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  )),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimativa =</span> <span class="fu">c</span>(estimativas<span class="sc">$</span>media,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                 estimativas<span class="sc">$</span>mediana,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">100</span> <span class="sc">*</span> estimativas<span class="sc">$</span>acima_de_dois),</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">inferior   =</span> <span class="fu">c</span>(estimativas<span class="sc">$</span>media_low,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>                 estimativas<span class="sc">$</span>mediana_low,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">100</span> <span class="sc">*</span> estimativas<span class="sc">$</span>acima_de_dois_low),</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">superior   =</span> <span class="fu">c</span>(estimativas<span class="sc">$</span>media_upp,</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>                 estimativas<span class="sc">$</span>mediana_upp,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">100</span> <span class="sc">*</span> estimativas<span class="sc">$</span>acima_de_dois_upp)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>ic</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 4
   medida                                            estimativa inferior superior
@@ -1119,13 +1120,14 @@ Figura&nbsp;13.5: Proporção de domicílios com mais de dois moradores por dorm
 <p>O CNEFE é o único produto do Censo que registra edificações <strong>em construção</strong>. A espécie de código 7 identifica esses endereços, e dois campos adicionais os qualificam. O <code>COD_INDICADOR_FINALIDADE_CONST</code> informa a destinação planejada, e o <code>COD_INDICADOR_CONST_ENDERECO</code> informa quantas unidades estão sendo construídas naquele endereço. Ambos foram apresentados no Capítulo 10 e é aqui que os usamos pela primeira vez em análise.</p>
 <p>Começamos lendo o CNEFE do município como objeto espacial.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>jp_cnefe <span class="ot">&lt;-</span> <span class="fu">read_cnefe</span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> joao_pessoa,</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cache     =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">output    =</span> <span class="st">"sf"</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(jp_cnefe)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Lendo o CNEFE de João Pessoa como pontos, já em objeto espacial:</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>jp_cnefe <span class="ot">&lt;-</span> <span class="fu">read_cnefe</span>(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">code_muni =</span> joao_pessoa,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cache     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">output    =</span> <span class="st">"sf"</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(jp_cnefe)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 426733</code></pre>
 </div>

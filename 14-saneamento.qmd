@@ -846,7 +846,8 @@ Repare ainda que a mancha urbana vem dos setores de 2022 e as áreas de pondera�
 ```{r}
 #| label: fig-san-banheiro-ap
 #| fig-cap: "Domicílios particulares permanentes urbanos sem banheiro de uso exclusivo, decompostos entre os que dispunham e os que não dispunham de sanitário, por área de ponderação, Macapá (AP), microdados da amostra do Censo 2010. Apenas as áreas de ponderação centradas na mancha urbana contínua."
-#| fig-height: 4
+#| fig-width: 5
+#| fig-height: 8
 #| message: false
 #| warning: false
 ## Mesmas estimativas, agora por área de ponderação:
@@ -864,7 +865,7 @@ banheiro_ap <- pa_macapa |>
     sem_nada     = survey_mean(sem_nada)
   )
 
-## Mapa em três painéis, um por situação:
+## Mapa em três painéis empilhados, um por situação:
 ap_urbanas |>
   left_join(banheiro_ap, by = join_by(code_weighting)) |>
   pivot_longer(c(sem_banheiro, so_sanitario, sem_nada),
@@ -879,7 +880,7 @@ ap_urbanas |>
   )) |>
   ggplot() +
   geom_sf(aes(fill = 100 * proporcao), color = "white", linewidth = 0.2) +
-  facet_grid(. ~ situacao_banheiro) +
+  facet_wrap(~ situacao_banheiro, ncol = 1) +
   scale_fill_distiller(palette = "PuRd", direction = 1, name = "%",
                        na.value = "gray90") +
   coord_sf(expand = FALSE) +
@@ -888,7 +889,7 @@ ap_urbanas |>
         panel.grid = element_blank())
 ```
 
-A dispersão entre as áreas é considerável, com o déficit indo de 2,1% a 16,0% dos domicílios entre as quinze exibidas, quase oito vezes de uma ponta à outra da cidade. O valor mais alto do município, de 16,3%, está justamente em uma das quatro áreas que o mapa não mostra, o que serve de lembrete de que a seleção feita acima é de enquadramento e não de análise. Os dois primeiros painéis são quase idênticos, com correlação de 0,98 entre eles, o que revela uma composição estável do déficit em todo o território. Em nenhuma área de ponderação o grupo que dispunha de sanitário representa menos de 70% dos domicílios sem banheiro. O terceiro painel traz menos nitidez por construção, já que o grupo sem instalação alguma não passa de 2,7% em área alguma, e ainda assim varia, ficando acima de 2% em cinco das dezenove áreas do município, duas delas entre as exibidas.
+A dispersão entre as áreas é considerável, com o déficit indo de 2,1% a 16,0% dos domicílios entre as quinze exibidas, quase oito vezes de uma ponta à outra da cidade. O valor mais alto do município, de 16,3%, está justamente em uma das quatro áreas que o mapa não mostra, o que serve de lembrete de que a seleção feita acima é de enquadramento e não de análise. Os dois painéis de cima são quase idênticos, com correlação de 0,98 entre eles, o que revela uma composição estável do déficit em todo o território. Em nenhuma área de ponderação o grupo que dispunha de sanitário representa menos de 70% dos domicílios sem banheiro. O painel de baixo traz menos nitidez por construção, já que o grupo sem instalação alguma não passa de 2,7% em área alguma, e ainda assim varia, ficando acima de 2% em cinco das dezenove áreas do município, duas delas entre as exibidas.
 
 Cabe a cautela de sempre com essa unidade. Dezenove polígonos para o município inteiro, dos quais quinze aparecem no mapa, suavizam contrastes internos que os 655 setores urbanos revelariam, e por isso estes mapas não são comparáveis aos demais do capítulo, que foram construídos por setor censitário.
 

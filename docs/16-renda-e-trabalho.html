@@ -1175,7 +1175,7 @@ Figura&nbsp;16.5: Rendimento médio mensal das pessoas responsáveis com rendime
 </div>
 </div>
 <p>O filtro por <code>V1006</code> mantém a coerência com a restrição urbana da <a href="#sec-ren-dados" class="quarto-xref"><span>Seção 16.2</span></a>. Ele remove poucas centenas de registros e todas as áreas de ponderação seguem com amostra suficiente, o que confirma que a restrição é de recorte territorial, e não de conteúdo.</p>
-<p>As áreas de ponderação, porém, são polígonos que cobrem o município inteiro, inclusive a parte rural, e uma delas sozinha responde por 96% da área de Manaus. Dedicar quase todo o mapa a ela deixaria o restante ilegível, e por isso ficamos apenas com as áreas de ponderação <strong>centradas</strong> na mancha urbana. O teste é feito em dois passos, unindo os setores urbanos de <code>setores_geo</code> numa geometria só e verificando se o centroide de cada área de ponderação cai dentro dela.</p>
+<p>As áreas de ponderação, porém, são polígonos que cobrem o município inteiro, inclusive a parte rural, e uma delas sozinha responde por 96% da área de Manaus. Dedicar quase todo o mapa a ela deixaria o restante ilegível, e por isso reutilizamos aqui o recurso aplicado na <a href="14-saneamento.html#sec-san-banheiro-amostra" class="quarto-xref"><span>Seção 14.6.1</span></a> do Capítulo 14, ficando apenas com as áreas de ponderação <strong>centradas</strong> na mancha urbana. O teste é o mesmo de lá, feito em dois passos, unindo os setores urbanos de <code>setores_geo</code> numa geometria só e verificando se o centroide de cada área de ponderação cai dentro dela.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Unindo os setores urbanos em uma geometria única:</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>urbana_2022 <span class="ot">&lt;-</span> setores_geo <span class="sc">|&gt;</span></span>
@@ -1191,21 +1191,8 @@ Figura&nbsp;16.5: Rendimento médio mensal das pessoas responsáveis com rendime
 <pre><code>[1] 32</code></pre>
 </div>
 </div>
-<p>Das 33 áreas de ponderação de Manaus, 32 passam no teste. A única descartada é a maior de todas, com 11.038 km², e o descarte vale apenas para os mapas, já que as estimativas municipais continuam calculadas sobre a amostra inteira.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span><code>st_within()</code> e a escolha do predicado espacial
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>O <code>st_within()</code> compara duas geometrias e informa se a primeira está contida na segunda. Ele devolve uma lista com uma posição por elemento de <code>x</code>, e cada posição guarda os índices de <code>y</code> que satisfazem a relação, de modo que <code>lengths()</code> conta quantos são e o <code>&gt; 0</code> transforma isso no vetor lógico que o <code>filter()</code> espera.</p>
-<p>A escolha do predicado é o ponto delicado. O caminho mais óbvio seria manter as áreas de ponderação que <strong>cruzam</strong> a mancha urbana, com <code>st_intersects()</code>, mas em Manaus isso não descarta nada, porque as áreas rurais fazem fronteira com as urbanas e o simples encostar já conta como interseção. Testar o centroide é mais exigente e resolve o caso, ao custo de descartar áreas cuja ocupação urbana existe, mas não está no meio do polígono.</p>
-</div>
-</div>
+<p>Das 33 áreas de ponderação de Manaus, 32 passam no teste. A única descartada é a maior de todas, com 11.038 km², e o descarte vale apenas para os mapas, já que as estimativas municipais continuam calculadas sobre a amostra inteira. O caso de Manaus é mais confortável que o de Macapá, onde quatro das dezenove áreas ficaram de fora e três delas tinham parte relevante da sua superfície sobre a mancha urbana. Aqui a única área descartada é praticamente toda rural, de modo que o mapa não deixa de fora nenhuma porção urbana com peso.</p>
+<p>Vale lembrar da observação feita no Capítulo 14 sobre a escolha do predicado. Manter as áreas que <strong>cruzam</strong> a mancha urbana, com <code>st_intersects()</code>, não descartaria nada em Manaus, pelo mesmo motivo que não descartaria nada em Macapá, já que as áreas rurais fazem fronteira com as urbanas e o simples encostar conta como interseção.</p>
 <p>Com as predefinições realizadas, calculamos, primeiro, a média e a mediana do rendimento domiciliar per capita. As duas medidas vêm de funções diferentes, a <code>survey_mean()</code> e a <code>survey_median()</code>, e por isso cada uma exige a sua própria chamada. Para colocá-las no mesmo gráfico, repetimos a estratégia da <a href="15-mobilidade.html#fig-mob-posse" class="quarto-xref">Figura&nbsp;<span>15.1</span></a> do Capítulo 15, empilhando os dois resultados com <code>bind_rows()</code> e identificando cada um por uma coluna nova. O resultado aparece na <a href="#fig-ren-distribuicao" class="quarto-xref">Figura&nbsp;<span>16.6</span></a>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimando média e mediana municipais e empilhando os resultados:</span></span>
