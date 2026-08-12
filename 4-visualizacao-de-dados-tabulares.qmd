@@ -1194,6 +1194,103 @@ A lista de ajustes possíveis é longa demais para caber em um capítulo, e vale
 - a folha de referência de visualização de dados do Posit, em <https://rstudio.github.io/cheatsheets/data-visualization.pdf>, útil para consulta rápida.
 :::
 
+## Plotando múltiplos gráficos com *layout* customizado
+
+Até aqui cada gráfico ocupou uma figura própria. Acontece que a comparação costuma ser o objetivo da análise, e colocar dois ou três painéis na mesma figura torna a leitura imediata. É o que faz o pacote `patchwork`, a partir de uma ideia bastante simples, que é tratar gráficos do `ggplot2` como termos de uma operação matemática^[a página do pacote reúne a lista completa de possibilidades, com exemplos de cada uma, em <https://patchwork.data-imaginist.com/>]. O pacote não faz parte do `tidyverse`, de modo que é preciso instalá-lo uma única vez com `install.packages("patchwork")` antes de carregá-lo.
+
+O ponto de partida é guardar cada gráfico em um objeto, em vez de deixá-lo ser impresso na tela assim que é criado. Abaixo construímos dois histogramas da base `em`, um da renda e outro da idade, e os reunimos com o operador `+`, que posiciona os gráficos um ao lado do outro quando são apenas dois:
+
+```{r}
+#| label: fig-patchwork-lado
+#| fig-cap: "Distribuições da renda e da idade reunidas lado a lado com o operador `+`."
+#| fig-width: 8
+#| fig-height: 3.2
+#| message: false
+library(patchwork)
+
+graf_renda <- em |>
+  ggplot(aes(x = renda)) +
+  geom_histogram(binwidth = 500, color = "black", fill = "gray70") +
+  labs(x = "Renda (R$)", y = "Frequência") +
+  theme_bw()
+
+graf_idade <- em |>
+  ggplot(aes(x = idade)) +
+  geom_histogram(binwidth = 5, color = "black", fill = "gray70") +
+  labs(x = "Idade (anos)", y = "Frequência") +
+  theme_bw()
+
+graf_renda + graf_idade
+```
+
+Repare que os objetos `graf_renda` e `graf_idade` continuam sendo gráficos comuns do `ggplot2`, e podem ser exibidos isoladamente a qualquer momento. O `patchwork` apenas ensina o R a interpretar o `+` entre dois deles como uma instrução de montagem.
+
+O segundo operador é o `/`, que empilha os gráficos um sobre o outro. A escolha entre os dois não é apenas estética, já que empilhar alinha os eixos horizontais e favorece a comparação de valores na mesma escala, enquanto dispor lado a lado preserva a altura de cada painel:
+
+```{r}
+#| label: fig-patchwork-empilhado
+#| fig-cap: "As mesmas duas distribuições empilhadas com o operador `/`."
+#| fig-width: 6.5
+#| fig-height: 5.5
+#| message: false
+graf_renda / graf_idade
+```
+
+Os dois operadores podem ser combinados, e é aí que os parênteses passam a importar. No exemplo abaixo, os dois histogramas ficam na linha de cima e o gráfico de barras dos modos de viagem ocupa a linha de baixo, sozinho:
+
+```{r}
+#| label: fig-patchwork-composto
+#| fig-cap: "Composição em duas linhas, com dois histogramas acima e o gráfico de barras abaixo."
+#| fig-width: 8
+#| fig-height: 6
+#| message: false
+graf_modo <- em |>
+  ggplot(aes(x = modo_viagem)) +
+  geom_bar(color = "black", fill = "gray70") +
+  labs(x = "Modo de viagem", y = "Frequência") +
+  theme_bw()
+
+(graf_renda + graf_idade) / graf_modo
+```
+
+:::{.callout-warning}
+## Precedência entre `+` e `/`
+
+Em R, o operador `/` é avaliado antes do `+`, como na aritmética. Sem os parênteses, a expressão `graf_renda + graf_idade / graf_modo` seria lida como `graf_renda + (graf_idade / graf_modo)`, produzindo a renda à esquerda e os outros dois empilhados à direita. Nenhum erro é gerado, e o único aviso é a figura sair diferente do que se pretendia. Por isso, ao combinar operadores, use parênteses para deixar o agrupamento explícito.
+:::
+
+Um último recurso resolve um incômodo frequente. Quando os gráficos reunidos compartilham a mesma variável na cor, cada um traz a sua própria legenda, e a repetição consome espaço sem acrescentar informação. A função `plot_layout()` reúne as legendas idênticas em uma só, por meio do argumento `guides`:
+
+```{r}
+#| label: fig-patchwork-legendas
+#| fig-cap: "Dispersão e *boxplot* por modo de viagem, com as duas legendas recolhidas em uma só."
+#| fig-width: 9
+#| fig-height: 3.6
+#| message: false
+graf_disp <- em |>
+  ggplot(aes(x = dist_viagem, y = tempo_viagem, color = modo_viagem)) +
+  geom_point(alpha = 0.6) +
+  labs(x = "Distância da viagem (km)", y = "Tempo de viagem (h)",
+       color = "Modo de viagem") +
+  theme_bw()
+
+graf_vel <- em |>
+  ggplot(aes(x = modo_viagem, y = vel_media_viagem, color = modo_viagem)) +
+  geom_boxplot() +
+  labs(x = NULL, y = "Velocidade média (km/h)", color = "Modo de viagem") +
+  theme_bw()
+
+graf_disp + graf_vel + plot_layout(guides = "collect")
+```
+
+:::{.callout-note}
+## A função `plot_layout()`
+
+A `plot_layout()` controla o arranjo da composição inteira e é adicionada ao final com o `+`. Além de `guides`, que recolhe legendas repetidas quando recebe `"collect"`, ela aceita `ncol` e `nrow` para fixar o número de colunas e de linhas, e `widths` e `heights` para definir a proporção entre os painéis. Assim, `plot_layout(heights = c(2, 1))` faz a linha de cima ficar com o dobro da altura da de baixo.
+:::
+
+As possibilidades do pacote vão bem além do que cabe aqui, e incluem títulos comuns a toda a composição, numeração automática dos painéis e inserção de um gráfico dentro de outro. A página do pacote, indicada no início desta seção, traz cada uma delas com exemplos executáveis.
+
 ## Salvando gráficos
 
 Por fim, gráficos costumam sair do R para relatórios, artigos e apresentações. A função `ggsave()` exporta o último gráfico produzido, ou um gráfico armazenado em um objeto, com controle sobre dimensões e resolução:

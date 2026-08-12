@@ -383,8 +383,9 @@ window.Quarto = {
   <li><a href="#anotações-e-linhas-de-referência" id="toc-anotações-e-linhas-de-referência" class="nav-link" data-scroll-target="#anotações-e-linhas-de-referência"><span class="header-section-number">4.8.4</span> Anotações e linhas de referência</a></li>
   <li><a href="#ajustes-de-tema" id="toc-ajustes-de-tema" class="nav-link" data-scroll-target="#ajustes-de-tema"><span class="header-section-number">4.8.5</span> Ajustes de tema</a></li>
   </ul></li>
-  <li><a href="#salvando-gráficos" id="toc-salvando-gráficos" class="nav-link" data-scroll-target="#salvando-gráficos"><span class="header-section-number">4.9</span> Salvando gráficos</a></li>
-  <li><a href="#exercícios" id="toc-exercícios" class="nav-link" data-scroll-target="#exercícios"><span class="header-section-number">4.10</span> Exercícios</a></li>
+  <li><a href="#plotando-múltiplos-gráficos-com-layout-customizado" id="toc-plotando-múltiplos-gráficos-com-layout-customizado" class="nav-link" data-scroll-target="#plotando-múltiplos-gráficos-com-layout-customizado"><span class="header-section-number">4.9</span> Plotando múltiplos gráficos com <em>layout</em> customizado</a></li>
+  <li><a href="#salvando-gráficos" id="toc-salvando-gráficos" class="nav-link" data-scroll-target="#salvando-gráficos"><span class="header-section-number">4.10</span> Salvando gráficos</a></li>
+  <li><a href="#exercícios" id="toc-exercícios" class="nav-link" data-scroll-target="#exercícios"><span class="header-section-number">4.11</span> Exercícios</a></li>
   </ul>
 </nav>
     </div>
@@ -2097,23 +2098,152 @@ Figura&nbsp;4.57: A <a href="#fig-barras-modo" class="quarto-xref">Figura&nbsp;<
 </div>
 </section>
 </section>
-<section id="salvando-gráficos" class="level2" data-number="4.9">
-<h2 data-number="4.9" class="anchored" data-anchor-id="salvando-gráficos"><span class="header-section-number">4.9</span> Salvando gráficos</h2>
+<section id="plotando-múltiplos-gráficos-com-layout-customizado" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="plotando-múltiplos-gráficos-com-layout-customizado"><span class="header-section-number">4.9</span> Plotando múltiplos gráficos com <em>layout</em> customizado</h2>
+<p>Até aqui cada gráfico ocupou uma figura própria. Acontece que a comparação costuma ser o objetivo da análise, e colocar dois ou três painéis na mesma figura torna a leitura imediata. É o que faz o pacote <code>patchwork</code>, a partir de uma ideia bastante simples, que é tratar gráficos do <code>ggplot2</code> como termos de uma operação matemática<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a>. O pacote não faz parte do <code>tidyverse</code>, de modo que é preciso instalá-lo uma única vez com <code>install.packages("patchwork")</code> antes de carregá-lo.</p>
+<p>O ponto de partida é guardar cada gráfico em um objeto, em vez de deixá-lo ser impresso na tela assim que é criado. Abaixo construímos dois histogramas da base <code>em</code>, um da renda e outro da idade, e os reunimos com o operador <code>+</code>, que posiciona os gráficos um ao lado do outro quando são apenas dois:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>graf_renda <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> renda)) <span class="sc">+</span></span>
+<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">500</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb98-6"><a href="#cb98-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Renda (R$)"</span>, <span class="at">y =</span> <span class="st">"Frequência"</span>) <span class="sc">+</span></span>
+<span id="cb98-7"><a href="#cb98-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb98-8"><a href="#cb98-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb98-9"><a href="#cb98-9" aria-hidden="true" tabindex="-1"></a>graf_idade <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb98-10"><a href="#cb98-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> idade)) <span class="sc">+</span></span>
+<span id="cb98-11"><a href="#cb98-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb98-12"><a href="#cb98-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Idade (anos)"</span>, <span class="at">y =</span> <span class="st">"Frequência"</span>) <span class="sc">+</span></span>
+<span id="cb98-13"><a href="#cb98-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb98-14"><a href="#cb98-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb98-15"><a href="#cb98-15" aria-hidden="true" tabindex="-1"></a>graf_renda <span class="sc">+</span> graf_idade</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-patchwork-lado" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-patchwork-lado-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.58: Distribuições da renda e da idade reunidas lado a lado com o operador <code>+</code>.
+</figcaption>
+<div aria-describedby="fig-patchwork-lado-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="4-visualizacao-de-dados-tabulares_files/figure-html/fig-patchwork-lado-1.png" class="img-fluid figure-img" width="768">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Repare que os objetos <code>graf_renda</code> e <code>graf_idade</code> continuam sendo gráficos comuns do <code>ggplot2</code>, e podem ser exibidos isoladamente a qualquer momento. O <code>patchwork</code> apenas ensina o R a interpretar o <code>+</code> entre dois deles como uma instrução de montagem.</p>
+<p>O segundo operador é o <code>/</code>, que empilha os gráficos um sobre o outro. A escolha entre os dois não é apenas estética, já que empilhar alinha os eixos horizontais e favorece a comparação de valores na mesma escala, enquanto dispor lado a lado preserva a altura de cada painel:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>graf_renda <span class="sc">/</span> graf_idade</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-patchwork-empilhado" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-patchwork-empilhado-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.59: As mesmas duas distribuições empilhadas com o operador <code>/</code>.
+</figcaption>
+<div aria-describedby="fig-patchwork-empilhado-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="4-visualizacao-de-dados-tabulares_files/figure-html/fig-patchwork-empilhado-1.png" class="img-fluid figure-img" width="624">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Os dois operadores podem ser combinados, e é aí que os parênteses passam a importar. No exemplo abaixo, os dois histogramas ficam na linha de cima e o gráfico de barras dos modos de viagem ocupa a linha de baixo, sozinho:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>graf_modo <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> modo_viagem)) <span class="sc">+</span></span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Modo de viagem"</span>, <span class="at">y =</span> <span class="st">"Frequência"</span>) <span class="sc">+</span></span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a>(graf_renda <span class="sc">+</span> graf_idade) <span class="sc">/</span> graf_modo</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-patchwork-composto" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-patchwork-composto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.60: Composição em duas linhas, com dois histogramas acima e o gráfico de barras abaixo.
+</figcaption>
+<div aria-describedby="fig-patchwork-composto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="4-visualizacao-de-dados-tabulares_files/figure-html/fig-patchwork-composto-1.png" class="img-fluid figure-img" width="768">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Aviso</span>Precedência entre <code>+</code> e <code>/</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Em R, o operador <code>/</code> é avaliado antes do <code>+</code>, como na aritmética. Sem os parênteses, a expressão <code>graf_renda + graf_idade / graf_modo</code> seria lida como <code>graf_renda + (graf_idade / graf_modo)</code>, produzindo a renda à esquerda e os outros dois empilhados à direita. Nenhum erro é gerado, e o único aviso é a figura sair diferente do que se pretendia. Por isso, ao combinar operadores, use parênteses para deixar o agrupamento explícito.</p>
+</div>
+</div>
+<p>Um último recurso resolve um incômodo frequente. Quando os gráficos reunidos compartilham a mesma variável na cor, cada um traz a sua própria legenda, e a repetição consome espaço sem acrescentar informação. A função <code>plot_layout()</code> reúne as legendas idênticas em uma só, por meio do argumento <code>guides</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>graf_disp <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dist_viagem, <span class="at">y =</span> tempo_viagem, <span class="at">color =</span> modo_viagem)) <span class="sc">+</span></span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Distância da viagem (km)"</span>, <span class="at">y =</span> <span class="st">"Tempo de viagem (h)"</span>,</span>
+<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Modo de viagem"</span>) <span class="sc">+</span></span>
+<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb101-7"><a href="#cb101-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-8"><a href="#cb101-8" aria-hidden="true" tabindex="-1"></a>graf_vel <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb101-9"><a href="#cb101-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> modo_viagem, <span class="at">y =</span> vel_media_viagem, <span class="at">color =</span> modo_viagem)) <span class="sc">+</span></span>
+<span id="cb101-10"><a href="#cb101-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb101-11"><a href="#cb101-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Velocidade média (km/h)"</span>, <span class="at">color =</span> <span class="st">"Modo de viagem"</span>) <span class="sc">+</span></span>
+<span id="cb101-12"><a href="#cb101-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb101-13"><a href="#cb101-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-14"><a href="#cb101-14" aria-hidden="true" tabindex="-1"></a>graf_disp <span class="sc">+</span> graf_vel <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">guides =</span> <span class="st">"collect"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-patchwork-legendas" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-patchwork-legendas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;4.61: Dispersão e <em>boxplot</em> por modo de viagem, com as duas legendas recolhidas em uma só.
+</figcaption>
+<div aria-describedby="fig-patchwork-legendas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="4-visualizacao-de-dados-tabulares_files/figure-html/fig-patchwork-legendas-1.png" class="img-fluid figure-img" width="864">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>A função <code>plot_layout()</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A <code>plot_layout()</code> controla o arranjo da composição inteira e é adicionada ao final com o <code>+</code>. Além de <code>guides</code>, que recolhe legendas repetidas quando recebe <code>"collect"</code>, ela aceita <code>ncol</code> e <code>nrow</code> para fixar o número de colunas e de linhas, e <code>widths</code> e <code>heights</code> para definir a proporção entre os painéis. Assim, <code>plot_layout(heights = c(2, 1))</code> faz a linha de cima ficar com o dobro da altura da de baixo.</p>
+</div>
+</div>
+<p>As possibilidades do pacote vão bem além do que cabe aqui, e incluem títulos comuns a toda a composição, numeração automática dos painéis e inserção de um gráfico dentro de outro. A página do pacote, indicada no início desta seção, traz cada uma delas com exemplos executáveis.</p>
+</section>
+<section id="salvando-gráficos" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="salvando-gráficos"><span class="header-section-number">4.10</span> Salvando gráficos</h2>
 <p>Por fim, gráficos costumam sair do R para relatórios, artigos e apresentações. A função <code>ggsave()</code> exporta o último gráfico produzido, ou um gráfico armazenado em um objeto, com controle sobre dimensões e resolução:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>grafico_renda <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
-<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> renda)) <span class="sc">+</span></span>
-<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">500</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
-<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Renda (R$)"</span>, <span class="at">y =</span> <span class="st">"Frequência"</span>) <span class="sc">+</span></span>
-<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb98-6"><a href="#cb98-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb98-7"><a href="#cb98-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"histograma_renda.png"</span>, <span class="at">plot =</span> grafico_renda,</span>
-<span id="cb98-8"><a href="#cb98-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">16</span>, <span class="at">height =</span> <span class="dv">10</span>, <span class="at">units =</span> <span class="st">"cm"</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>grafico_renda <span class="ot">&lt;-</span> em <span class="sc">|&gt;</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> renda)) <span class="sc">+</span></span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">500</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Renda (R$)"</span>, <span class="at">y =</span> <span class="st">"Frequência"</span>) <span class="sc">+</span></span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"histograma_renda.png"</span>, <span class="at">plot =</span> grafico_renda,</span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">16</span>, <span class="at">height =</span> <span class="dv">10</span>, <span class="at">units =</span> <span class="st">"cm"</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Os argumentos <code>width</code> e <code>height</code> definem as dimensões na unidade indicada em <code>units</code>, e <code>dpi</code> define a resolução em pontos por polegada. Para publicação impressa, 300 dpi é o valor usualmente exigido. O formato de saída é deduzido da extensão do nome do arquivo, o que permite gerar <code>.png</code>, <code>.jpg</code>, <code>.pdf</code> ou <code>.svg</code> sem argumentos adicionais.</p>
 </section>
-<section id="exercícios" class="level2" data-number="4.10">
-<h2 data-number="4.10" class="anchored" data-anchor-id="exercícios"><span class="header-section-number">4.10</span> Exercícios</h2>
+<section id="exercícios" class="level2" data-number="4.11">
+<h2 data-number="4.11" class="anchored" data-anchor-id="exercícios"><span class="header-section-number">4.11</span> Exercícios</h2>
 <p>Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde você irá processá-los. Crie um projeto do R dentro dessa pasta e um novo script <code>.R</code> dentro desse projeto para responder às questões abaixo.</p>
 <ul>
 <li><a href="https://github.com/pedreirajr/rcensolivro/releases/download/dados/escolha_modal.csv"><code>escolha_modal.csv</code></a></li>
@@ -2174,6 +2304,7 @@ Wilkinson, L. (2005). <em>The Grammar of Graphics</em> (2º ed.). Springer.
 <li id="fn8"><p>Por padrão, os pontos ficam entre 1 e 6 milímetros, com o menor valor observado recebendo o menor tamanho e o maior valor recebendo o maior. O tamanho comunica, portanto, a posição relativa de cada observação dentro da faixa observada, e não uma proporção exata, de forma que um ponto com o dobro da área não corresponde a alguém com o dobro da idade.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn9"><p>caso queiramos que vá do roxo escuro até o azul claro, utilizamos <code>direction = -1</code>. Por incrível que pareça, essa última escoha é o <em>default</em> das funções de escala do <code>ggplot2</code>, ou seja, se nada for definido para <code>direction</code>, a função entenderá que o valor é <code>-1</code><a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn10"><p>Neste caso, é importante entender qual a ordem desses níveis preliminarmente para saber qual categoria receberá qual cor<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>a página do pacote reúne a lista completa de possibilidades, com exemplos de cada uma, em <a href="https://patchwork.data-imaginist.com/" class="uri">https://patchwork.data-imaginist.com/</a><a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 

@@ -1,0 +1,31 @@
+# Perfil das versões impressas (PDF e Word).
+# Só entra em ação com `--profile impresso`, de modo que o `quarto render`
+# comum continua renderizando apenas o site HTML.
+#
+#   quarto render --profile impresso --to pdf  --output-dir _pdf
+#   quarto render --profile impresso --to docx --output-dir _docx
+
+format:
+  pdf:
+    documentclass: scrbook
+    papersize: a4
+    classoption: [11pt]
+    number-sections: true
+    toc: true
+    toc-depth: 3
+    fig-cap-location: top
+    tbl-cap-location: top
+    fig-pos: "H"
+    code-overflow: wrap
+    colorlinks: true
+    include-in-header:
+      text: |
+        \usepackage{xurl}
+
+  docx:
+    reference-doc: modelo-word.docx
+    number-sections: true
+    toc: true
+    toc-depth: 3
+    fig-cap-location: top
+    tbl-cap-location: top

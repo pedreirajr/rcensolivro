@@ -55,29 +55,8 @@ format:
     fig-cap-location: top
     tbl-cap-location: top
 
-  pdf:
-    documentclass: scrbook
-    papersize: a4
-    classoption: [11pt]
-    number-sections: true
-    toc: true
-    toc-depth: 3
-    fig-cap-location: top
-    tbl-cap-location: top
-    fig-pos: "H"
-    code-overflow: wrap
-    colorlinks: true
-    include-in-header:
-      text: |
-        \usepackage{xurl}
-
-  docx:
-    reference-doc: modelo-word.docx
-    number-sections: true
-    toc: true
-    toc-depth: 3
-    fig-cap-location: top
-    tbl-cap-location: top
+# Os formatos PDF e Word ficam em _quarto-impresso.yml, para que o
+# `quarto render` comum continue produzindo apenas o site.
 
 bibliography: references.bib
 csl: apa.csl
