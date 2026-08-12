@@ -51,3 +51,21 @@ Patrícia, Vivian e Mauro: dados geográficos
 Jorge Ubirajara Pedreira Junior\
 Salvador, 2026
 :::
+
+::: {.content-visible when-format="html"}
+
+------------------------------------------------------------------------
+
+## Como citar {.unnumbered}
+
+> Pedreira Junior, J. U. (2026). *Censo Demográfico no R: conceitos e aplicações para a análise do território brasileiro*. <https://pedreirajr.github.io/rcensolivro/>
+
+## Licença de uso {.unnumbered}
+
+Copyright © 2026 Jorge Ubirajara Pedreira Junior. Todos os direitos reservados.
+
+O texto, as figuras e o código desta obra são protegidos pela Lei nº 9.610/1998. A leitura e a consulta online são livres, assim como a citação de passagens com indicação da fonte. A reprodução, a distribuição, a adaptação e a criação de obras derivadas dependem de autorização prévia e por escrito do autor, que pode ser solicitada pelo [site do autor](https://pedreirajr.github.io/website/). Os termos completos estão no arquivo [LICENSE](https://github.com/pedreirajr/rcensolivro/blob/main/LICENSE) do repositório.
+
+Os dados do IBGE e das demais fontes usadas nos exemplos não são cobertos por esse aviso e seguem as condições de uso definidas por cada instituição.
+
+:::

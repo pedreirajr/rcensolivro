@@ -7,7 +7,7 @@
 
 📖 **[Leia o livro online](https://pedreirajr.github.io/rcensolivro/)**
 
-### Para encurtar o caminho entre a pergunta e o dado
+### Propósito do livro
 
 <img src="img/capa/capa-web.jpg" align="right" width="300" alt="Capa do livro Censo Demográfico no R">
 
@@ -123,6 +123,22 @@ quarto render --profile impresso --to docx --output-dir _docx
 
 O `execute: freeze: auto` mantém os resultados congelados em `_freeze/`,
 de modo que só os capítulos alterados são reexecutados a cada build.
+
+## Como citar
+
+> Pedreira Junior, J. U. (2026). *Censo Demográfico no R: conceitos e
+> aplicações para a análise do território brasileiro*.
+> <https://pedreirajr.github.io/rcensolivro/>
+
+``` bibtex
+@book{pedreirajunior2026censo,
+  author = {Pedreira Junior, Jorge Ubirajara},
+  title  = {Censo Demográfico no R: conceitos e aplicações para a
+            análise do território brasileiro},
+  year   = {2026},
+  url    = {https://pedreirajr.github.io/rcensolivro/}
+}
+```
 
 ## Licença
 

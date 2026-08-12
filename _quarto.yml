@@ -18,6 +18,9 @@ book:
   language: pt
   page-navigation: true
   search: true
+  page-footer:
+    left: "© 2026 Jorge Ubirajara Pedreira Junior. Todos os direitos reservados."
+    right: "[Licença de uso](https://github.com/pedreirajr/rcensolivro/blob/main/LICENSE)"
   chapters:
     - index.qmd
 
