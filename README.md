@@ -89,41 +89,6 @@ baixados pelo próprio código dos capítulos, direto da URL. Boa parte dos
 dados vem diretamente do IBGE em tempo de execução, pelos pacotes
 `censobr` e `geobr`.
 
-## Como renderizar localmente
-
-O livro é escrito em [Quarto](https://quarto.org) com o motor do R. Além
-do R e do Quarto, são necessários os pacotes usados ao longo dos
-capítulos, entre eles `tidyverse`, `sf`, `geobr`, `censobr`, `srvyr`,
-`patchwork`, `mapview`, `cnefetools` e `odbr`.
-
-``` bash
-quarto render                 # site HTML completo, em docs/
-quarto render 7-agregados.qmd # um capítulo apenas
-quarto preview                # preview com recarregamento automático
-```
-
-As versões impressas ficam num perfil separado, de modo que o
-`quarto render` comum continua produzindo apenas o site.
-
-``` bash
-quarto render --profile impresso --to pdf  --output-dir _pdf
-quarto render --profile impresso --to docx --output-dir _docx
-```
-
-## Organização do repositório
-
-    *.qmd                 capítulos, na ordem da numeração
-    index.qmd             prefácio
-    _quarto.yml           configuração do livro e da saída HTML
-    _quarto-impresso.yml  perfil das saídas em PDF e Word
-    references.bib        bibliografia
-    custom.css            estilos do site
-    img/                  imagens, um diretório por capítulo
-    docs/                 site renderizado, publicado pelo GitHub Pages
-
-O `execute: freeze: auto` mantém os resultados congelados em `_freeze/`,
-de modo que só os capítulos alterados são reexecutados a cada build.
-
 ## Como citar
 
 > Pedreira Junior, J. U. (2026). *Censo Demográfico no R: conceitos e
