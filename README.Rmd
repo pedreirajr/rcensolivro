@@ -15,15 +15,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-<img src="img/capa/capa-web.jpg" align="right" width="300" alt="Capa do livro Censo Demográfico no R">
 
-## Censo Demográfico no R
+
+# Censo Demográfico no R
 
 **Conceitos e aplicações para a análise do território brasileiro**
 
 📖 **[Leia o livro online](https://pedreirajr.github.io/rcensolivro/)**
 
 ### Para encurtar o caminho entre a pergunta e o dado
+
+<img src="img/capa/capa-web.jpg" align="right" width="300" alt="Capa do livro Censo Demográfico no R">
 
 O Censo Demográfico é a maior operação estatística do Brasil e a única fonte que descreve a população e os domicílios do país inteiro em recortes territoriais de alta resolução. Entretanto, essa riqueza chega ao usuário fragmentada, distribuída por milhares de tabelas, arquivos geográficos e registros de endereços. Quem se aproxima desse material pela primeira vez costuma gastar mais tempo descobrindo onde o dado está e o que ele significa do que analisando o fenômeno que motivou a busca.
 

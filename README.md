@@ -1,15 +1,15 @@
 
 <!-- README.md é gerado a partir do README.Rmd. Edite o .Rmd e rode `rmarkdown::render("README.Rmd")`. -->
 
-<img src="img/capa/capa-web.jpg" align="right" width="300" alt="Capa do livro Censo Demográfico no R">
-
-## Censo Demográfico no R
+# Censo Demográfico no R
 
 **Conceitos e aplicações para a análise do território brasileiro**
 
 📖 **[Leia o livro online](https://pedreirajr.github.io/rcensolivro/)**
 
 ### Para encurtar o caminho entre a pergunta e o dado
+
+<img src="img/capa/capa-web.jpg" align="right" width="300" alt="Capa do livro Censo Demográfico no R">
 
 O Censo Demográfico é a maior operação estatística do Brasil e a única
 fonte que descreve a população e os domicílios do país inteiro em
