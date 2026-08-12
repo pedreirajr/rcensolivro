@@ -400,8 +400,9 @@ Por fim, mapeamos abaixo a situação dos setores tanto quanto ao fato de a águ
 
 ```{r}
 #| label: fig-agua
-#| fig-cap: "Domicílios abastecidos pela rede geral (à esquerda) e domicílios com água encanada até dentro do domicílio (à direita), por setor censitário urbano, Macapá (AP), Censo 2022."
-#| fig-height: 4.5
+#| fig-cap: "Domicílios abastecidos pela rede geral (acima) e domicílios com água encanada até dentro do domicílio (abaixo), por setor censitário urbano, Macapá (AP), Censo 2022."
+#| fig-width: 6
+#| fig-height: 8
 #| message: false
 #| warning: false
 macapa_geo <- setores_geo |>
@@ -432,10 +433,10 @@ mapa_encanada <- ggplot(macapa_geo) +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-mapa_rede + mapa_encanada
+mapa_rede / mapa_encanada
 ```
 
-As duas escalas vão de zero a cem, de propósito, para que a comparação seja direta. O mapa da direita é quase todo escuro e o da esquerda é irregular, o que confirma no território o que a tabela mostrou.
+As duas escalas vão de zero a cem, de propósito, para que a comparação seja direta. O mapa de baixo é quase todo escuro e o de cima é irregular, o que confirma no território o que a tabela mostrou.
 
 ## Esgotamento Sanitário {#sec-san-esgoto}
 

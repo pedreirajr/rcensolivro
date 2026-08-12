@@ -767,7 +767,7 @@ Figura&nbsp;12.1: Setores censitários de Goiânia (GO) segundo a situação urb
 </div>
 </div>
 <p>As duas distribuições têm amplitudes bem diferentes. A proporção de crianças de 0 a 4 anos vai de zero a 21% dos residentes, com mediana de 5,5%, próxima dos 5,8% do município como um todo. Já a proporção de pessoas de 60 anos ou mais vai de 1,4% a 46,9%, com mediana de 16,0% contra 15,0% no município. Há setores em que quase metade dos moradores já passou dos 60 anos, e essa amplitude é o primeiro sinal de que o envelhecimento de Goiânia está longe de se distribuir de maneira homogênea pelo território.</p>
-<p>Levar os dois indicadores ao mapa mostra que eles descrevem um padrão bem marcado. Como partilham a mesma unidade, a porcentagem da população do setor, podemos exibi-los lado a lado com o <code>patchwork</code>.</p>
+<p>Levar os dois indicadores ao mapa mostra que eles descrevem um padrão bem marcado. Como partilham a mesma unidade, a porcentagem da população do setor, podemos exibi-los um sobre o outro com o <code>patchwork</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mapa_criancas <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(goiania_geo) <span class="sc">+</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> perc_0_4), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
@@ -791,15 +791,15 @@ Figura&nbsp;12.1: Setores censitários de Goiânia (GO) segundo a situação urb
 <span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
 <span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>mapa_criancas <span class="sc">+</span> mapa_idosos</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>mapa_criancas <span class="sc">/</span> mapa_idosos</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-idade-pares" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-idade-pares-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;12.2: Proporção de pessoas de 0 a 4 anos e de 60 anos ou mais na população de cada setor censitário, Goiânia (GO), Censo 2022.
+Figura&nbsp;12.2: Proporção de pessoas de 0 a 4 anos (acima) e de 60 anos ou mais (abaixo) na população de cada setor censitário, Goiânia (GO), Censo 2022.
 </figcaption>
 <div aria-describedby="fig-idade-pares-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-demografia_files/figure-html/fig-idade-pares-1.png" class="img-fluid figure-img" width="672">
+<img src="12-demografia_files/figure-html/fig-idade-pares-1.png" class="img-fluid figure-img" width="576">
 </div>
 </figure>
 </div>
@@ -1273,21 +1273,21 @@ Tabela&nbsp;12.5: Subdistritos de Goiânia (GO) com as cinco maiores e as cinco 
 <span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
 <span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>mapa_resp_f <span class="sc">+</span> mapa_resp_negra</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>mapa_resp_f <span class="sc">/</span> mapa_resp_negra</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-resp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-resp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;12.5: Domicílios com pessoa responsável do sexo feminino (à esquerda) e proporção de responsáveis mulheres que são pretas ou pardas (à direita), por setor censitário, Goiânia (GO), Censo 2022.
+Figura&nbsp;12.5: Domicílios com pessoa responsável do sexo feminino (acima) e proporção de responsáveis mulheres que são pretas ou pardas (abaixo), por setor censitário, Goiânia (GO), Censo 2022.
 </figcaption>
 <div aria-describedby="fig-resp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-demografia_files/figure-html/fig-resp-1.png" class="img-fluid figure-img" width="672">
+<img src="12-demografia_files/figure-html/fig-resp-1.png" class="img-fluid figure-img" width="576">
 </div>
 </figure>
 </div>
 </div>
 </div>
-<p>O mapa da esquerda é relativamente uniforme, com a chefia feminina distribuída por toda a cidade. O da direita reproduz de perto os mapas de idade e de cor ou raça das seções anteriores, reforçando mais um aspecto do padrão socioeconômico encontrado.</p>
+<p>O mapa de cima é relativamente uniforme, com a chefia feminina distribuída por toda a cidade. O de baixo reproduz de perto os mapas de idade e de cor ou raça das seções anteriores, reforçando mais um aspecto do padrão socioeconômico encontrado.</p>
 </section>
 <section id="sec-dem-2010" class="level2" data-number="12.6">
 <h2 data-number="12.6" class="anchored" data-anchor-id="sec-dem-2010"><span class="header-section-number">12.6</span> O que mudou desde 2010</h2>

@@ -247,12 +247,13 @@ summary(goiania_geo$perc_idosos)
 
 As duas distribuições têm amplitudes bem diferentes. A proporção de crianças de 0 a 4 anos vai de zero a 21% dos residentes, com mediana de 5,5%, próxima dos 5,8% do município como um todo. Já a proporção de pessoas de 60 anos ou mais vai de 1,4% a 46,9%, com mediana de 16,0% contra 15,0% no município. Há setores em que quase metade dos moradores já passou dos 60 anos, e essa amplitude é o primeiro sinal de que o envelhecimento de Goiânia está longe de se distribuir de maneira homogênea pelo território.
 
-Levar os dois indicadores ao mapa mostra que eles descrevem um padrão bem marcado. Como partilham a mesma unidade, a porcentagem da população do setor, podemos exibi-los lado a lado com o `patchwork`.
+Levar os dois indicadores ao mapa mostra que eles descrevem um padrão bem marcado. Como partilham a mesma unidade, a porcentagem da população do setor, podemos exibi-los um sobre o outro com o `patchwork`.
 
 ```{r}
 #| label: fig-idade-pares
-#| fig-cap: "Proporção de pessoas de 0 a 4 anos e de 60 anos ou mais na população de cada setor censitário, Goiânia (GO), Censo 2022."
-#| fig-height: 4.5
+#| fig-cap: "Proporção de pessoas de 0 a 4 anos (acima) e de 60 anos ou mais (abaixo) na população de cada setor censitário, Goiânia (GO), Censo 2022."
+#| fig-width: 6
+#| fig-height: 8
 #| message: false
 #| warning: false
 mapa_criancas <- ggplot(goiania_geo) +
@@ -277,7 +278,7 @@ mapa_idosos <- ggplot(goiania_geo) +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-mapa_criancas + mapa_idosos
+mapa_criancas / mapa_idosos
 ```
 
 Note que os dois mapas são quase o inverso um do outro. A área central consolidada reúne as maiores proporções de pessoas idosas e as menores de crianças pequenas, ao passo que as bordas do município apresentam o padrão oposto. O coeficiente de correlação de Pearson^[varia de $-1$ a $+1$, sendo $-1$ correlação altamente negativa, $+1$ altamente positiva e valores próximos de $0$ correlação baixa ou inexistente] entre os dois indicadores obtido com a função `cor()` abaixo confirma o que o padrão dos mapas acima sugere:
@@ -527,8 +528,9 @@ Os dois mapas a seguir tornam a diferença visível. Repare que as legendas traz
 
 ```{r}
 #| label: fig-resp
-#| fig-cap: "Domicílios com pessoa responsável do sexo feminino (à esquerda) e proporção de responsáveis mulheres que são pretas ou pardas (à direita), por setor censitário, Goiânia (GO), Censo 2022."
-#| fig-height: 4.5
+#| fig-cap: "Domicílios com pessoa responsável do sexo feminino (acima) e proporção de responsáveis mulheres que são pretas ou pardas (abaixo), por setor censitário, Goiânia (GO), Censo 2022."
+#| fig-width: 6
+#| fig-height: 8
 #| message: false
 #| warning: false
 mapa_resp_f <- ggplot(goiania_geo) +
@@ -553,10 +555,10 @@ mapa_resp_negra <- ggplot(goiania_geo) +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-mapa_resp_f + mapa_resp_negra
+mapa_resp_f / mapa_resp_negra
 ```
 
-O mapa da esquerda é relativamente uniforme, com a chefia feminina distribuída por toda a cidade. O da direita reproduz de perto os mapas de idade e de cor ou raça das seções anteriores, reforçando mais um aspecto do padrão socioeconômico encontrado.
+O mapa de cima é relativamente uniforme, com a chefia feminina distribuída por toda a cidade. O de baixo reproduz de perto os mapas de idade e de cor ou raça das seções anteriores, reforçando mais um aspecto do padrão socioeconômico encontrado.
 
 ## O que mudou desde 2010 {#sec-dem-2010}
 

@@ -654,8 +654,9 @@ O contraste é um achado importante desta seção. Há bairros em que a constru�
 
 ```{r}
 #| label: fig-expansao
-#| fig-cap: "Edificações residenciais em construção por bairro, João Pessoa (PB), CNEFE 2022. À esquerda, endereços com unidade única. À direita, endereços com mais de dez unidades."
-#| fig-height: 4.5
+#| fig-cap: "Edificações residenciais em construção por bairro, João Pessoa (PB), CNEFE 2022. Acima, endereços com unidade única. Abaixo, endereços com mais de dez unidades."
+#| fig-width: 6
+#| fig-height: 8
 #| message: false
 #| warning: false
 expansao_geo <- bairros_geo |>
@@ -684,7 +685,7 @@ mapa_vertical <- ggplot(expansao_geo) +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-mapa_horizontal + mapa_vertical
+mapa_horizontal / mapa_vertical
 ```
 
 Note como em ambos os casos, há uma expansão mais ao Sul do município, mas um destaque à expansão de unidades únicas mais próxima do litoral.
