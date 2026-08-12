@@ -618,7 +618,7 @@ c(areas_de_ponderacao = length(ap_cods), registros = nrow(md_manaus))
 
 O filtro por `V1006` mantém a coerência com a restrição urbana da @sec-ren-dados. Ele remove poucas centenas de registros e todas as áreas de ponderação seguem com amostra suficiente, o que confirma que a restrição é de recorte territorial, e não de conteúdo.
 
-As áreas de ponderação, porém, são polígonos que cobrem o município inteiro, inclusive a parte rural, e uma delas sozinha responde por 96% da área de Manaus. Dedicar quase todo o mapa a ela deixaria o restante ilegível, e por isso ficamos apenas com as áreas de ponderação **centradas** na mancha urbana. O teste é feito em dois passos, unindo os setores urbanos de `setores_geo` numa geometria só e verificando se o centroide de cada área de ponderação cai dentro dela.
+As áreas de ponderação, porém, são polígonos que cobrem o município inteiro, inclusive a parte rural, e uma delas sozinha responde por 96% da área de Manaus. Dedicar quase todo o mapa a ela deixaria o restante ilegível, e por isso reutilizamos aqui o recurso aplicado na @sec-san-banheiro-amostra do Capítulo 14, ficando apenas com as áreas de ponderação **centradas** na mancha urbana. O teste é o mesmo de lá, feito em dois passos, unindo os setores urbanos de `setores_geo` numa geometria só e verificando se o centroide de cada área de ponderação cai dentro dela.
 
 ```{r}
 #| label: extensao-urbana
@@ -636,15 +636,9 @@ ap_urbanas <- ap_manaus |>
 nrow(ap_urbanas)
 ```
 
-Das 33 áreas de ponderação de Manaus, 32 passam no teste. A única descartada é a maior de todas, com 11.038 km², e o descarte vale apenas para os mapas, já que as estimativas municipais continuam calculadas sobre a amostra inteira.
+Das 33 áreas de ponderação de Manaus, 32 passam no teste. A única descartada é a maior de todas, com 11.038 km², e o descarte vale apenas para os mapas, já que as estimativas municipais continuam calculadas sobre a amostra inteira. O caso de Manaus é mais confortável que o de Macapá, onde quatro das dezenove áreas ficaram de fora e três delas tinham parte relevante da sua superfície sobre a mancha urbana. Aqui a única área descartada é praticamente toda rural, de modo que o mapa não deixa de fora nenhuma porção urbana com peso.
 
-::: callout-note
-## `st_within()` e a escolha do predicado espacial
-
-O `st_within()` compara duas geometrias e informa se a primeira está contida na segunda. Ele devolve uma lista com uma posição por elemento de `x`, e cada posição guarda os índices de `y` que satisfazem a relação, de modo que `lengths()` conta quantos são e o `> 0` transforma isso no vetor lógico que o `filter()` espera.
-
-A escolha do predicado é o ponto delicado. O caminho mais óbvio seria manter as áreas de ponderação que **cruzam** a mancha urbana, com `st_intersects()`, mas em Manaus isso não descarta nada, porque as áreas rurais fazem fronteira com as urbanas e o simples encostar já conta como interseção. Testar o centroide é mais exigente e resolve o caso, ao custo de descartar áreas cuja ocupação urbana existe, mas não está no meio do polígono.
-:::
+Vale lembrar da observação feita no Capítulo 14 sobre a escolha do predicado. Manter as áreas que **cruzam** a mancha urbana, com `st_intersects()`, não descartaria nada em Manaus, pelo mesmo motivo que não descartaria nada em Macapá, já que as áreas rurais fazem fronteira com as urbanas e o simples encostar conta como interseção.
 
 Com as predefinições realizadas, calculamos, primeiro, a média e a mediana do rendimento domiciliar per capita. As duas medidas vêm de funções diferentes, a `survey_mean()` e a `survey_median()`, e por isso cada uma exige a sua própria chamada. Para colocá-las no mesmo gráfico, repetimos a estratégia da @fig-mob-posse do Capítulo 15, empilhando os dois resultados com `bind_rows()` e identificando cada um por uma coluna nova. O resultado aparece na @fig-ren-distribuicao.
 

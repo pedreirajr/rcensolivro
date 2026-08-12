@@ -810,11 +810,42 @@ tibble(
 
 Em 2010, cerca de um em cada onze domicílios urbanos de Macapá não tinha banheiro de uso exclusivo, e a maior parte desse grupo se virava com sanitário ou buraco para dejeções. O grupo sem instalação alguma ficava em torno de um por cento, o que corresponde a mais de mil domicílios na cidade. Os intervalos de confiança são estreitos, porque a amostra do Censo em Macapá é grande.
 
-Os microdados permitem ainda descer da cidade para as áreas de ponderação, que são a menor unidade geográfica que eles identificam. Basta inserir um `group_by()` antes do `summarize()`, porque o restante do cálculo é o mesmo da tabela anterior. O recorte do mapa reaproveita o objeto `recorte` construído na @fig-san-distritos, de modo a enquadrar a mancha urbana contínua.
+Os microdados permitem ainda descer da cidade para as áreas de ponderação, que são a menor unidade geográfica que eles identificam. Basta inserir um `group_by()` antes do `summarize()`, porque o restante do cálculo é o mesmo da tabela anterior.
+
+Antes do mapa, porém, é preciso resolver o mesmo problema de enquadramento da @fig-san-distritos. As áreas de ponderação cobrem o município inteiro, inclusive a porção rural, e a maior delas tem mais de seis mil quilômetros quadrados, o que espremeria a cidade em um canto da figura. Em vez de recortar a imagem por uma caixa delimitadora, como fizemos antes, desta vez selecionamos quais polígonos entram no mapa. O teste é feito em dois passos, unindo os setores urbanos dos dois distritos centrais em uma geometria só e verificando se o centroide de cada área de ponderação cai dentro dela.
+
+```{r}
+#| label: ap-urbanas
+#| message: false
+#| warning: false
+## Unindo os setores urbanos dos dois distritos centrais em uma geometria única:
+urbana_2022 <- setores_geo |>
+  filter(zone == "Urbana",
+         name_district %in% c("Macapá", "Fazendinha")) |>
+  st_union()
+
+## Mantendo as áreas de ponderação cujo centroide cai na mancha urbana:
+ap_urbanas <- ap_macapa |>
+  filter(lengths(st_within(st_centroid(ap_macapa), urbana_2022)) > 0)
+
+nrow(ap_urbanas)
+```
+
+Das dezenove áreas de ponderação de Macapá, quinze passam no teste. Entre as quatro descartadas está a maior de todas, com 6.128 km² e praticamente nenhuma sobreposição com a mancha urbana. As outras três têm entre 18% e 47% da sua superfície sobre ela, de modo que o descarte tem um custo, que é deixar de exibir a porção urbana dessas áreas. Vale registrar que o corte vale apenas para o mapa, já que as estimativas da @tbl-san-banheiro-2010 continuam calculadas sobre a amostra inteira.
+
+::: callout-note
+## `st_within()` e a escolha do predicado espacial
+
+O `st_within()` compara duas geometrias e informa se a primeira está contida na segunda. Ele devolve uma lista com uma posição por elemento de `x`, e cada posição guarda os índices de `y` que satisfazem a relação, de modo que `lengths()` conta quantos são e o `> 0` transforma isso no vetor lógico que o `filter()` espera.
+
+A escolha do predicado é o ponto delicado. O caminho mais óbvio seria manter as áreas de ponderação que **cruzam** a mancha urbana, com `st_intersects()`, mas em Macapá isso não descartaria nada, porque as áreas rurais fazem fronteira com as urbanas e o simples encostar já conta como interseção. Testar o centroide é mais exigente e resolve o caso, ao custo de descartar áreas cuja ocupação urbana existe, mas não está no meio do polígono.
+
+Repare ainda que a mancha urbana vem dos setores de 2022 e as áreas de ponderação são de 2010. A mistura é aceitável porque aqui a geometria de 2022 serve apenas para delimitar onde fica a cidade, e não para calcular indicador algum.
+:::
 
 ```{r}
 #| label: fig-san-banheiro-ap
-#| fig-cap: "Domicílios particulares permanentes urbanos sem banheiro de uso exclusivo, decompostos entre os que dispunham e os que não dispunham de sanitário, por área de ponderação, Macapá (AP), microdados da amostra do Censo 2010. Enquadramento na mancha urbana contínua."
+#| fig-cap: "Domicílios particulares permanentes urbanos sem banheiro de uso exclusivo, decompostos entre os que dispunham e os que não dispunham de sanitário, por área de ponderação, Macapá (AP), microdados da amostra do Censo 2010. Apenas as áreas de ponderação centradas na mancha urbana contínua."
 #| fig-height: 4
 #| message: false
 #| warning: false
@@ -834,7 +865,7 @@ banheiro_ap <- pa_macapa |>
   )
 
 ## Mapa em três painéis, um por situação:
-ap_macapa |>
+ap_urbanas |>
   left_join(banheiro_ap, by = join_by(code_weighting)) |>
   pivot_longer(c(sem_banheiro, so_sanitario, sem_nada),
                names_to  = "situacao_banheiro",
@@ -851,16 +882,15 @@ ap_macapa |>
   facet_grid(. ~ situacao_banheiro) +
   scale_fill_distiller(palette = "PuRd", direction = 1, name = "%",
                        na.value = "gray90") +
-  coord_sf(xlim = recorte[c("xmin", "xmax")],
-           ylim = recorte[c("ymin", "ymax")], expand = FALSE) +
+  coord_sf(expand = FALSE) +
   theme_minimal() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 ```
 
-A dispersão entre as áreas é considerável, com o déficit indo de 2,1% a 16,3% dos domicílios, quase oito vezes de uma ponta à outra da cidade. Os dois primeiros painéis são quase idênticos, com correlação de 0,98 entre eles, o que revela uma composição estável do déficit em todo o território. Em nenhuma área de ponderação o grupo que dispunha de sanitário representa menos de 70% dos domicílios sem banheiro, e a mediana fica em 85%. O terceiro painel traz menos nitidez por construção, já que o grupo sem instalação alguma não passa de 2,7% em área alguma, e ainda assim varia, ficando acima de 2% em cinco das dezenove.
+A dispersão entre as áreas é considerável, com o déficit indo de 2,1% a 16,0% dos domicílios entre as quinze exibidas, quase oito vezes de uma ponta à outra da cidade. O valor mais alto do município, de 16,3%, está justamente em uma das quatro áreas que o mapa não mostra, o que serve de lembrete de que a seleção feita acima é de enquadramento e não de análise. Os dois primeiros painéis são quase idênticos, com correlação de 0,98 entre eles, o que revela uma composição estável do déficit em todo o território. Em nenhuma área de ponderação o grupo que dispunha de sanitário representa menos de 70% dos domicílios sem banheiro. O terceiro painel traz menos nitidez por construção, já que o grupo sem instalação alguma não passa de 2,7% em área alguma, e ainda assim varia, ficando acima de 2% em cinco das dezenove áreas do município, duas delas entre as exibidas.
 
-Cabe a cautela de sempre com essa unidade. Dezenove polígonos para uma cidade inteira suavizam contrastes internos que os 655 setores urbanos revelariam, e por isso estes mapas não são comparáveis aos demais do capítulo, que foram construídos por setor censitário.
+Cabe a cautela de sempre com essa unidade. Dezenove polígonos para o município inteiro, dos quais quinze aparecem no mapa, suavizam contrastes internos que os 655 setores urbanos revelariam, e por isso estes mapas não são comparáveis aos demais do capítulo, que foram construídos por setor censitário.
 
 ## Drenagem urbana {#sec-san-drenagem}
 

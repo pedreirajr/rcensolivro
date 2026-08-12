@@ -1674,51 +1674,83 @@ Tabela&nbsp;14.10: Domicílios particulares permanentes urbanos de Macapá (AP) 
 </div>
 </div>
 <p>Em 2010, cerca de um em cada onze domicílios urbanos de Macapá não tinha banheiro de uso exclusivo, e a maior parte desse grupo se virava com sanitário ou buraco para dejeções. O grupo sem instalação alguma ficava em torno de um por cento, o que corresponde a mais de mil domicílios na cidade. Os intervalos de confiança são estreitos, porque a amostra do Censo em Macapá é grande.</p>
-<p>Os microdados permitem ainda descer da cidade para as áreas de ponderação, que são a menor unidade geográfica que eles identificam. Basta inserir um <code>group_by()</code> antes do <code>summarize()</code>, porque o restante do cálculo é o mesmo da tabela anterior. O recorte do mapa reaproveita o objeto <code>recorte</code> construído na <a href="#fig-san-distritos" class="quarto-xref">Figura&nbsp;<span>14.2</span></a>, de modo a enquadrar a mancha urbana contínua.</p>
+<p>Os microdados permitem ainda descer da cidade para as áreas de ponderação, que são a menor unidade geográfica que eles identificam. Basta inserir um <code>group_by()</code> antes do <code>summarize()</code>, porque o restante do cálculo é o mesmo da tabela anterior.</p>
+<p>Antes do mapa, porém, é preciso resolver o mesmo problema de enquadramento da <a href="#fig-san-distritos" class="quarto-xref">Figura&nbsp;<span>14.2</span></a>. As áreas de ponderação cobrem o município inteiro, inclusive a porção rural, e a maior delas tem mais de seis mil quilômetros quadrados, o que espremeria a cidade em um canto da figura. Em vez de recortar a imagem por uma caixa delimitadora, como fizemos antes, desta vez selecionamos quais polígonos entram no mapa. O teste é feito em dois passos, unindo os setores urbanos dos dois distritos centrais em uma geometria só e verificando se o centroide de cada área de ponderação cai dentro dela.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Mesmas estimativas, agora por área de ponderação:</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>banheiro_ap <span class="ot">&lt;-</span> pa_macapa <span class="sc">|&gt;</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(V4001 <span class="sc">==</span> <span class="st">"01"</span>, V1006 <span class="sc">==</span> <span class="st">"1"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_banheiro =</span> V0205 <span class="sc">==</span> <span class="st">"0"</span>,</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">so_sanitario =</span> V0205 <span class="sc">==</span> <span class="st">"0"</span> <span class="sc">&amp;</span> V0206 <span class="sc">==</span> <span class="st">"1"</span>,</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_nada     =</span> V0205 <span class="sc">==</span> <span class="st">"0"</span> <span class="sc">&amp;</span> V0206 <span class="sc">==</span> <span class="st">"2"</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_banheiro =</span> <span class="fu">survey_mean</span>(sem_banheiro),</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">so_sanitario =</span> <span class="fu">survey_mean</span>(so_sanitario),</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_nada     =</span> <span class="fu">survey_mean</span>(sem_nada)</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Mapa em três painéis, um por situação:</span></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>ap_macapa <span class="sc">|&gt;</span></span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(banheiro_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting)) <span class="sc">|&gt;</span></span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(sem_banheiro, so_sanitario, sem_nada),</span>
-<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to  =</span> <span class="st">"situacao_banheiro"</span>,</span>
-<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"proporcao"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">situacao_banheiro =</span> <span class="fu">factor</span>(</span>
-<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>    situacao_banheiro,</span>
-<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"sem_banheiro"</span>, <span class="st">"so_sanitario"</span>, <span class="st">"sem_nada"</span>),</span>
-<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Sem banheiro de uso exclusivo"</span>,</span>
-<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Sem banheiro, com sanitário"</span>,</span>
-<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Sem banheiro e sem sanitário"</span>)</span>
-<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
-<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="dv">100</span> <span class="sc">*</span> proporcao), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> situacao_banheiro) <span class="sc">+</span></span>
-<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"PuRd"</span>, <span class="at">direction =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">"%"</span>,</span>
-<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>) <span class="sc">+</span></span>
-<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">xlim =</span> recorte[<span class="fu">c</span>(<span class="st">"xmin"</span>, <span class="st">"xmax"</span>)],</span>
-<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">ylim =</span> recorte[<span class="fu">c</span>(<span class="st">"ymin"</span>, <span class="st">"ymax"</span>)], <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Unindo os setores urbanos dos dois distritos centrais em uma geometria única:</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>urbana_2022 <span class="ot">&lt;-</span> setores_geo <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(zone <span class="sc">==</span> <span class="st">"Urbana"</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>         name_district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Macapá"</span>, <span class="st">"Fazendinha"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>()</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Mantendo as áreas de ponderação cujo centroide cai na mancha urbana:</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>ap_urbanas <span class="ot">&lt;-</span> ap_macapa <span class="sc">|&gt;</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">lengths</span>(<span class="fu">st_within</span>(<span class="fu">st_centroid</span>(ap_macapa), urbana_2022)) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(ap_urbanas)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15</code></pre>
+</div>
+</div>
+<p>Das dezenove áreas de ponderação de Macapá, quinze passam no teste. Entre as quatro descartadas está a maior de todas, com 6.128 km² e praticamente nenhuma sobreposição com a mancha urbana. As outras três têm entre 18% e 47% da sua superfície sobre ela, de modo que o descarte tem um custo, que é deixar de exibir a porção urbana dessas áreas. Vale registrar que o corte vale apenas para o mapa, já que as estimativas da <a href="#tbl-san-banheiro-2010" class="quarto-xref">Tabela&nbsp;<span>14.10</span></a> continuam calculadas sobre a amostra inteira.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span><code>st_within()</code> e a escolha do predicado espacial
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>O <code>st_within()</code> compara duas geometrias e informa se a primeira está contida na segunda. Ele devolve uma lista com uma posição por elemento de <code>x</code>, e cada posição guarda os índices de <code>y</code> que satisfazem a relação, de modo que <code>lengths()</code> conta quantos são e o <code>&gt; 0</code> transforma isso no vetor lógico que o <code>filter()</code> espera.</p>
+<p>A escolha do predicado é o ponto delicado. O caminho mais óbvio seria manter as áreas de ponderação que <strong>cruzam</strong> a mancha urbana, com <code>st_intersects()</code>, mas em Macapá isso não descartaria nada, porque as áreas rurais fazem fronteira com as urbanas e o simples encostar já conta como interseção. Testar o centroide é mais exigente e resolve o caso, ao custo de descartar áreas cuja ocupação urbana existe, mas não está no meio do polígono.</p>
+<p>Repare ainda que a mancha urbana vem dos setores de 2022 e as áreas de ponderação são de 2010. A mistura é aceitável porque aqui a geometria de 2022 serve apenas para delimitar onde fica a cidade, e não para calcular indicador algum.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Mesmas estimativas, agora por área de ponderação:</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>banheiro_ap <span class="ot">&lt;-</span> pa_macapa <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(V4001 <span class="sc">==</span> <span class="st">"01"</span>, V1006 <span class="sc">==</span> <span class="st">"1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_banheiro =</span> V0205 <span class="sc">==</span> <span class="st">"0"</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">so_sanitario =</span> V0205 <span class="sc">==</span> <span class="st">"0"</span> <span class="sc">&amp;</span> V0206 <span class="sc">==</span> <span class="st">"1"</span>,</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_nada     =</span> V0205 <span class="sc">==</span> <span class="st">"0"</span> <span class="sc">&amp;</span> V0206 <span class="sc">==</span> <span class="st">"2"</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(code_weighting) <span class="sc">|&gt;</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_banheiro =</span> <span class="fu">survey_mean</span>(sem_banheiro),</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">so_sanitario =</span> <span class="fu">survey_mean</span>(so_sanitario),</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">sem_nada     =</span> <span class="fu">survey_mean</span>(sem_nada)</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Mapa em três painéis, um por situação:</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>ap_urbanas <span class="sc">|&gt;</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(banheiro_ap, <span class="at">by =</span> <span class="fu">join_by</span>(code_weighting)) <span class="sc">|&gt;</span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(sem_banheiro, so_sanitario, sem_nada),</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to  =</span> <span class="st">"situacao_banheiro"</span>,</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"proporcao"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">situacao_banheiro =</span> <span class="fu">factor</span>(</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>    situacao_banheiro,</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"sem_banheiro"</span>, <span class="st">"so_sanitario"</span>, <span class="st">"sem_nada"</span>),</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Sem banheiro de uso exclusivo"</span>,</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Sem banheiro, com sanitário"</span>,</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Sem banheiro e sem sanitário"</span>)</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="dv">100</span> <span class="sc">*</span> proporcao), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> situacao_banheiro) <span class="sc">+</span></span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"PuRd"</span>, <span class="at">direction =</span> <span class="dv">1</span>, <span class="at">name =</span> <span class="st">"%"</span>,</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>) <span class="sc">+</span></span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-san-banheiro-ap" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-san-banheiro-ap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;14.7: Domicílios particulares permanentes urbanos sem banheiro de uso exclusivo, decompostos entre os que dispunham e os que não dispunham de sanitário, por área de ponderação, Macapá (AP), microdados da amostra do Censo 2010. Enquadramento na mancha urbana contínua.
+Figura&nbsp;14.7: Domicílios particulares permanentes urbanos sem banheiro de uso exclusivo, decompostos entre os que dispunham e os que não dispunham de sanitário, por área de ponderação, Macapá (AP), microdados da amostra do Censo 2010. Apenas as áreas de ponderação centradas na mancha urbana contínua.
 </figcaption>
 <div aria-describedby="fig-san-banheiro-ap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="14-saneamento_files/figure-html/fig-san-banheiro-ap-1.png" class="img-fluid figure-img" width="672">
@@ -1727,8 +1759,8 @@ Figura&nbsp;14.7: Domicílios particulares permanentes urbanos sem banheiro de u
 </div>
 </div>
 </div>
-<p>A dispersão entre as áreas é considerável, com o déficit indo de 2,1% a 16,3% dos domicílios, quase oito vezes de uma ponta à outra da cidade. Os dois primeiros painéis são quase idênticos, com correlação de 0,98 entre eles, o que revela uma composição estável do déficit em todo o território. Em nenhuma área de ponderação o grupo que dispunha de sanitário representa menos de 70% dos domicílios sem banheiro, e a mediana fica em 85%. O terceiro painel traz menos nitidez por construção, já que o grupo sem instalação alguma não passa de 2,7% em área alguma, e ainda assim varia, ficando acima de 2% em cinco das dezenove.</p>
-<p>Cabe a cautela de sempre com essa unidade. Dezenove polígonos para uma cidade inteira suavizam contrastes internos que os 655 setores urbanos revelariam, e por isso estes mapas não são comparáveis aos demais do capítulo, que foram construídos por setor censitário.</p>
+<p>A dispersão entre as áreas é considerável, com o déficit indo de 2,1% a 16,0% dos domicílios entre as quinze exibidas, quase oito vezes de uma ponta à outra da cidade. O valor mais alto do município, de 16,3%, está justamente em uma das quatro áreas que o mapa não mostra, o que serve de lembrete de que a seleção feita acima é de enquadramento e não de análise. Os dois primeiros painéis são quase idênticos, com correlação de 0,98 entre eles, o que revela uma composição estável do déficit em todo o território. Em nenhuma área de ponderação o grupo que dispunha de sanitário representa menos de 70% dos domicílios sem banheiro. O terceiro painel traz menos nitidez por construção, já que o grupo sem instalação alguma não passa de 2,7% em área alguma, e ainda assim varia, ficando acima de 2% em cinco das dezenove áreas do município, duas delas entre as exibidas.</p>
+<p>Cabe a cautela de sempre com essa unidade. Dezenove polígonos para o município inteiro, dos quais quinze aparecem no mapa, suavizam contrastes internos que os 655 setores urbanos revelariam, e por isso estes mapas não são comparáveis aos demais do capítulo, que foram construídos por setor censitário.</p>
 </section>
 </section>
 <section id="sec-san-drenagem" class="level2" data-number="14.7">
@@ -1736,31 +1768,31 @@ Figura&nbsp;14.7: Domicílios particulares permanentes urbanos sem banheiro de u
 <p>Água, esgoto, lixo e banheiro são características do domicílio, e todas descrevem o que existe dentro do lote. A drenagem faz o movimento inverso, no sentido do Capítulo 11. Ela pertence à via, e por isso não está no arquivo Domicílio nem nos microdados da amostra, e sim na Pesquisa Urbanística do Entorno dos Domicílios.</p>
 <p>Usamos o bloco de <strong>domicílios</strong> do arquivo de <strong>Entorno</strong>, pelo motivo já discutido na <a href="11-entorno.html#sec-entorno-denominador" class="quarto-xref"><span>Seção 11.4</span></a>, que é medir quantas moradias estão diante de cada situação, e não quantos metros de via existem.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Lendo o arquivo de Entorno, no bloco de domicílios:</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>entorno <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"Entorno"</span>, <span class="at">year =</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> macapa) <span class="sc">|&gt;</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract, name_neighborhood,</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>         domicilios_V05000,</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>         domicilios_V05006, domicilios_V05007, domicilios_V05008,</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>         domicilios_V05009, domicilios_V05010, domicilios_V05011) <span class="sc">|&gt;</span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_tract <span class="sc">%in%</span> setores_urbanos)</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Domicílios com entorno pesquisado, que é o denominador desta seção:</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>investigados <span class="ot">&lt;-</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05000, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Total de domicílios ocupados dos mesmos setores, p/ comparação:</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>dom_urbanos <span class="ot">&lt;-</span> basico <span class="sc">|&gt;</span></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_tract <span class="sc">%in%</span> setores_urbanos) <span class="sc">|&gt;</span></span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total =</span> <span class="fu">sum</span>(V0007, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(total)</span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Verificando a cobertura da pesquisa:</span></span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">setores_com_entorno =</span> <span class="fu">nrow</span>(entorno),</span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">domicilios_investigados =</span> investigados,</span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">cobertura =</span> <span class="dv">100</span> <span class="sc">*</span> investigados <span class="sc">/</span> dom_urbanos</span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Lendo o arquivo de Entorno, no bloco de domicílios:</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>entorno <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"Entorno"</span>, <span class="at">year =</span> <span class="dv">2022</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> macapa) <span class="sc">|&gt;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(code_tract, name_neighborhood,</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>         domicilios_V05000,</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>         domicilios_V05006, domicilios_V05007, domicilios_V05008,</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>         domicilios_V05009, domicilios_V05010, domicilios_V05011) <span class="sc">|&gt;</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_tract <span class="sc">%in%</span> setores_urbanos)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Domicílios com entorno pesquisado, que é o denominador desta seção:</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>investigados <span class="ot">&lt;-</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05000, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Total de domicílios ocupados dos mesmos setores, p/ comparação:</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>dom_urbanos <span class="ot">&lt;-</span> basico <span class="sc">|&gt;</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_tract <span class="sc">%in%</span> setores_urbanos) <span class="sc">|&gt;</span></span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total =</span> <span class="fu">sum</span>(V0007, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(total)</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Verificando a cobertura da pesquisa:</span></span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">setores_com_entorno =</span> <span class="fu">nrow</span>(entorno),</span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">domicilios_investigados =</span> investigados,</span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">cobertura =</span> <span class="dv">100</span> <span class="sc">*</span> investigados <span class="sc">/</span> dom_urbanos</span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   setores_com_entorno domicilios_investigados cobertura
@@ -1770,12 +1802,12 @@ Figura&nbsp;14.7: Domicílios particulares permanentes urbanos sem banheiro de u
 </div>
 <p>O denominador do Entorno é o total de domicílios com entorno pesquisado, e não o total de domicílios do setor. Feita a verificação de cobertura, calculamos o indicador:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="st">"Bueiro ou boca de lobo"</span>,</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">sim  =</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05009, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nao  =</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05010, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">% dos domicílios investigados</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> sim <span class="sc">/</span> investigados)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="st">"Bueiro ou boca de lobo"</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">sim  =</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05009, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nao  =</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05010, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">% dos domicílios investigados</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> sim <span class="sc">/</span> investigados)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
   Item                     sim   nao `% dos domicílios investigados`
@@ -1786,26 +1818,26 @@ Figura&nbsp;14.7: Domicílios particulares permanentes urbanos sem banheiro de u
 <p>Pouco mais de quatro em cada dez domicílios de Macapá estão em face de quadra com bueiro ou boca de lobo. É um número baixo para uma cidade da Amazônia, sujeita a chuvas intensas e situada em terreno de cotas baixas, com áreas alagáveis extensas.</p>
 <p>Levado ao mapa, o indicador mostra a distribuição espacial desse aspecto da drenagem urbana em Macapá:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Juntando o Entorno à geometria e criando o indicador de bueiro:</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>entorno_geo <span class="ot">&lt;-</span> macapa_geo <span class="sc">|&gt;</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    entorno <span class="sc">|&gt;</span> <span class="fu">select</span>(code_tract, domicilios_V05000, domicilios_V05009),</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"code_tract"</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">perc_bueiro =</span> <span class="dv">100</span> <span class="sc">*</span> domicilios_V05009 <span class="sc">/</span> domicilios_V05000</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Mapa:</span></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(entorno_geo) <span class="sc">+</span></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> perc_bueiro), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"PuBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% com bueiro</span><span class="sc">\n</span><span class="st">/boca de lobo</span><span class="sc">\n</span><span class="st">na face de quadra"</span>,</span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Juntando o Entorno à geometria e criando o indicador de bueiro:</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>entorno_geo <span class="ot">&lt;-</span> macapa_geo <span class="sc">|&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    entorno <span class="sc">|&gt;</span> <span class="fu">select</span>(code_tract, domicilios_V05000, domicilios_V05009),</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"code_tract"</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">perc_bueiro =</span> <span class="dv">100</span> <span class="sc">*</span> domicilios_V05009 <span class="sc">/</span> domicilios_V05000</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Mapa:</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(entorno_geo) <span class="sc">+</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> perc_bueiro), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"PuBu"</span>, <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name =</span> <span class="st">"% com bueiro</span><span class="sc">\n</span><span class="st">/boca de lobo</span><span class="sc">\n</span><span class="st">na face de quadra"</span>,</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.value =</span> <span class="st">"gray90"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-drenagem" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1826,55 +1858,55 @@ Figura&nbsp;14.8: Proporção de domicílios em face de quadra com bueiro ou boc
 <p>O bueiro é um dos seis itens que a Pesquisa do Entorno manteve entre as duas edições, conforme a <a href="11-entorno.html#tbl-quesitos-censos" class="quarto-xref">Tabela&nbsp;<span>11.1</span></a> do Capítulo 11, e por isso admite comparação temporal. Recuperá-lo em 2010 exige reconstruir o mapa de códigos daquele censo, com a mesma lógica da <a href="11-entorno.html#sec-entorno-r2010" class="quarto-xref"><span>Seção 11.6</span></a>, em que cada item ocupa quatro colunas consecutivas, duas para responsável do sexo masculino e duas para o feminino.</p>
 <p>Repare que o vetor <code>quesitos_2010</code> lista os dez itens do questionário, e não apenas o que nos interessa. A posição de cada coluna é calculada por aritmética sobre a ordem em que os itens aparecem, de modo que suprimir qualquer um deles deslocaria todos os seguintes.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Os dez itens do questionário de 2010, na ordem em que aparecem no arquivo:</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>quesitos_2010 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Identificação do logradouro"</span>, <span class="st">"Iluminação pública"</span>, <span class="st">"Pavimentação"</span>,</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Calçada"</span>, <span class="st">"Meio-fio ou guia"</span>, <span class="st">"Bueiro ou boca de lobo"</span>,</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Rampa para cadeirante"</span>, <span class="st">"Arborização"</span>, <span class="st">"Esgoto a céu aberto"</span>,</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Lixo acumulado nos logradouros"</span></span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Montando o dicionário de códigos, quatro colunas por item:</span></span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>dic_2010 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">quesito =</span> quesitos_2010,</span>
-<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">inicio  =</span> <span class="dv">382</span> <span class="sc">+</span> <span class="dv">4</span> <span class="sc">*</span> (<span class="fu">seq_along</span>(quesitos_2010) <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">masc_existe =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio),</span>
-<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">masc_nao    =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">1</span>),</span>
-<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">fem_existe  =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">2</span>),</span>
-<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">fem_nao     =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">3</span>)</span>
-<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Lendo o Entorno de 2010:</span></span>
-<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>entorno_2010 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"Entorno"</span>, <span class="at">year =</span> <span class="dv">2010</span>) <span class="sc">|&gt;</span></span>
-<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> macapa) <span class="sc">|&gt;</span></span>
-<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
-<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Somando existência e total de cada item, juntando os dois sexos do responsável:</span></span>
-<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a>resumo_2010 <span class="ot">&lt;-</span> dic_2010 <span class="sc">|&gt;</span></span>
-<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
-<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">existe =</span> <span class="fu">sum</span>(entorno_2010[[masc_existe]], entorno_2010[[fem_existe]],</span>
-<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">total  =</span> existe <span class="sc">+</span> <span class="fu">sum</span>(entorno_2010[[masc_nao]], entorno_2010[[fem_nao]],</span>
-<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a>                          <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb41-35"><a href="#cb41-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb41-36"><a href="#cb41-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-37"><a href="#cb41-37" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(resumo_2010<span class="sc">$</span>total)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Os dez itens do questionário de 2010, na ordem em que aparecem no arquivo:</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>quesitos_2010 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Identificação do logradouro"</span>, <span class="st">"Iluminação pública"</span>, <span class="st">"Pavimentação"</span>,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Calçada"</span>, <span class="st">"Meio-fio ou guia"</span>, <span class="st">"Bueiro ou boca de lobo"</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Rampa para cadeirante"</span>, <span class="st">"Arborização"</span>, <span class="st">"Esgoto a céu aberto"</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Lixo acumulado nos logradouros"</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Montando o dicionário de códigos, quatro colunas por item:</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>dic_2010 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">quesito =</span> quesitos_2010,</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">inicio  =</span> <span class="dv">382</span> <span class="sc">+</span> <span class="dv">4</span> <span class="sc">*</span> (<span class="fu">seq_along</span>(quesitos_2010) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">masc_existe =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio),</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">masc_nao    =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">fem_existe  =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">2</span>),</span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">fem_nao     =</span> <span class="fu">sprintf</span>(<span class="st">"entorno02_V%03d"</span>, inicio <span class="sc">+</span> <span class="dv">3</span>)</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Lendo o Entorno de 2010:</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>entorno_2010 <span class="ot">&lt;-</span> <span class="fu">read_tracts</span>(<span class="at">dataset =</span> <span class="st">"Entorno"</span>, <span class="at">year =</span> <span class="dv">2010</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code_muni <span class="sc">==</span> macapa) <span class="sc">|&gt;</span></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Somando existência e total de cada item, juntando os dois sexos do responsável:</span></span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a>resumo_2010 <span class="ot">&lt;-</span> dic_2010 <span class="sc">|&gt;</span></span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-29"><a href="#cb43-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb43-30"><a href="#cb43-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">existe =</span> <span class="fu">sum</span>(entorno_2010[[masc_existe]], entorno_2010[[fem_existe]],</span>
+<span id="cb43-31"><a href="#cb43-31" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb43-32"><a href="#cb43-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">total  =</span> existe <span class="sc">+</span> <span class="fu">sum</span>(entorno_2010[[masc_nao]], entorno_2010[[fem_nao]],</span>
+<span id="cb43-33"><a href="#cb43-33" aria-hidden="true" tabindex="-1"></a>                          <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-34"><a href="#cb43-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb43-35"><a href="#cb43-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(resumo_2010<span class="sc">$</span>total)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
 </div>
 <p>Um único valor de total nos dez itens confirma que o mapeamento de códigos está correto, porque todos eles repartem o mesmo conjunto de domicílios investigados. Validado o dicionário, extraímos dele o item de interesse e o confrontamos com 2022.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="st">"Bueiro ou boca de lobo"</span>,</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2010</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> resumo_2010<span class="sc">$</span>existe[resumo_2010<span class="sc">$</span>quesito <span class="sc">==</span> <span class="st">"Bueiro ou boca de lobo"</span>] <span class="sc">/</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                 resumo_2010<span class="sc">$</span>total[resumo_2010<span class="sc">$</span>quesito <span class="sc">==</span> <span class="st">"Bueiro ou boca de lobo"</span>],</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2022</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05009, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> investigados</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>) </span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Item =</span> <span class="st">"Bueiro ou boca de lobo"</span>,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2010</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> resumo_2010<span class="sc">$</span>existe[resumo_2010<span class="sc">$</span>quesito <span class="sc">==</span> <span class="st">"Bueiro ou boca de lobo"</span>] <span class="sc">/</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                 resumo_2010<span class="sc">$</span>total[resumo_2010<span class="sc">$</span>quesito <span class="sc">==</span> <span class="st">"Bueiro ou boca de lobo"</span>],</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2022</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">sum</span>(entorno<span class="sc">$</span>domicilios_V05009, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> investigados</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>) </span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   Item                   `2010` `2022`
