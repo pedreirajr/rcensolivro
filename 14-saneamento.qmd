@@ -301,7 +301,7 @@ Este livro usa o IVS para **definir o que conta como adequado**, e não reproduz
 O que fazemos é bem mais modesto e bem mais seguro. Tomamos emprestadas as definições de adequação e calculamos os indicadores que os agregados permitem, deixando claro em cada caso qual é o numerador e qual é o denominador.
 :::
 
-Segundo o critério do IVS, o abastecimento de água é **inadequado** quando não provém de rede geral, e o esgotamento sanitário é **inadequado** quando não é feito por rede coletora nem por fossa séptica ligada à rede. Traduzidas para as variáveis dos agregados, as duas definições produzem os indicadores a seguir:
+Segundo o critério do IVS, o abastecimento de água é **inadequado** quando não provém de rede geral, e o esgotamento sanitário é **inadequado** quando não é feito por rede coletora nem por fossa séptica ou fossa filtro ligada à rede. Traduzidas para as variáveis dos agregados, as duas definições produzem os indicadores a seguir:
 
 ```{r}
 #| label: ivs-sumarizacao
@@ -372,7 +372,7 @@ A função anônima `\(v)`, na forma abreviada apresentada na @sec-entorno-denom
 Vale registrar que a `map_dbl()` exige que cada aplicação devolva **um único** valor numérico. Se a função devolvesse dois valores, ou um texto, a chamada falharia com erro em vez de devolver um resultado silenciosamente errado. Essa rigidez é uma vantagem, porque avisa cedo quando o cálculo não é o que se imaginava.
 :::
 
-Observe que a alternativa dominante à rede geral em Macapá não é a precariedade extrema, e sim o **poço**, profundo ou raso, que atende mais da metade dos domicílios. É importante destacar que poço não é necessariamente sinônimo de água insegura, embora seja fonte sem tratamento e sem monitoramento regular.
+Observe que a alternativa dominante à rede geral em Macapá não é a precariedade extrema, e sim o **poço**, profundo ou raso, que atende mais da metade dos domicílios. É importante destacar que poço não é necessariamente sinônimo de água insegura, embora seja, em alguns casos, fonte sem tratamento e sem monitoramento regular.
 
 Há ainda uma segunda pergunta que o indicador binário não alcança. Estar ligado a alguma fonte não é o mesmo que ter água chegando dentro de casa, e quesitos adicionais dos agregados nos permitem responder a essa pergunta:
 
@@ -466,7 +466,7 @@ esgoto |>
   knitr::kable(digits = 1, format.args = list(big.mark = ".", decimal.mark = ","))
 ```
 
-O corte binário do Capítulo 7 juntaria as duas primeiras linhas de um lado e as seis restantes do outro. O gradiente mostra por que isso é insuficiente. A destinação mais frequente em Macapá é a fossa séptica ou filtro **não** ligada à rede, seguida da fossa rudimentar, e as duas juntas respondem por cerca de sete em cada dez domicílios. Vale salientar que, em ambos os casos, o efluente termina infiltrado no solo, porque a fossa séptica não ligada à rede tem como destino final o sumidouro ou a vala de infiltração, enquanto a rudimentar acumula as duas funções em um único buraco escavado. Como nem o tanque séptico nem os pós-tratamentos previstos nas normas brasileiras removem nitrogênio, o principal impacto é a contaminação do solo e do lençol freático por patógenos e nitrato [@figueiredo2019fossa], risco que a falta de manutenção e a instalação em local inadequado agravam, e que pesa mais em uma cidade onde metade dos domicílios se abastece por poço.
+O corte binário do Capítulo 7 juntaria as duas primeiras linhas de um lado e as seis restantes do outro. O gradiente mostra por que isso é insuficiente. A destinação mais frequente em Macapá é a fossa séptica ou filtro **não** ligada à rede, seguida da fossa rudimentar, e as duas juntas respondem por cerca de sete em cada dez domicílios. Vale salientar que, em ambos os casos, o efluente termina infiltrado no solo, porque a fossa séptica não ligada à rede tem como destino final o sumidouro ou a vala de infiltração, enquanto a rudimentar acumula as duas funções em um único buraco escavado. Como nem o tanque séptico nem certos tipos de pós-tratamentos previstos nas normas brasileiras removem nitrogênio, o principal impacto é a contaminação do solo e do lençol freático por patógenos e nitrato [@figueiredo2019fossa], risco que a falta de manutenção e a instalação em local inadequado agravam, e que pesa mais em uma cidade onde metade dos domicílios se abastece por poço.
 
 O que mais chama atenção, entretanto, é a sexta linha. Um em cada dez domicílios urbanos de Macapá lançava esgoto diretamente em rio, lago, córrego ou mar. Levado ao mapa, observe que este aspecto não se distribui no território de maneira uniforme:
 
@@ -626,7 +626,7 @@ Note que o déficit é bastante concentrado. Em 530 dos 655 setores urbanos o in
 
 A agregação por bairro confirma a concentração e revela um degrau abrupto. Parque Aeroportuário e Lagoa Azul aparecem com 42,2% e 41,2% dos domicílios sem coleta, e o terceiro colocado, Macapaba, já cai para 8,4%. Os 2.758 domicílios nessa condição em toda a cidade cabem, em boa medida, em um punhado de bairros. Reproduza esse agrupamento por conta própria, somando as quatro colunas de destinação inadequada por `name_neighborhood` e dividindo pelo total de domicílios de cada bairro, e confira quantos deles concentram a maior parte do déficit.
 
-Veja que os três componentes do saneamento básico nem sempre caminham juntos para as mesmas partes do município, e um índice que os combine numa única nota esconde exatamente isso. É por essa razão que apresentamos os três separadamente antes de qualquer síntese.
+Veja que estes três componentes do saneamento básico nem sempre caminham juntos para as mesmas partes do município, e um índice que os combine numa única nota esconde exatamente isso. É por essa razão que apresentamos os três separadamente antes de qualquer síntese.
 
 ## Banheiro e sanitário {#sec-san-banheiro}
 
