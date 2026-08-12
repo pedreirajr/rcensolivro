@@ -247,6 +247,7 @@ Com 65 bairros preenchidos, a agregação é viável. Restringimos a tabela aos 
 #| label: tbl-hab-nao-ocup-bairro
 #| tbl-cap: "Bairros de João Pessoa (PB) com as maiores e as menores proporções de domicílios particulares não ocupados, entre os que possuem ao menos mil domicílios particulares, Censo 2022."
 #| message: false
+## Produzindo sumarização por bairro (com 1000 ou mais domicílios particulares):
 bairros <- jp_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_neighborhood)) |>
@@ -259,6 +260,7 @@ bairros <- jp_geo |>
   filter(dom_part >= 1000) |>
   mutate(perc_nao_ocup = 100 * (dom_part - dom_ocup) / dom_part)
 
+## Juntando os 8 maiores com os 5 menores em % não ocupado:
 bind_rows(
   bairros |> slice_max(perc_nao_ocup, n = 8),
   bairros |> slice_min(perc_nao_ocup, n = 5)
@@ -281,15 +283,19 @@ A tabela nomeia os extremos, mas não diz onde eles estão. Para isso precisamos
 #| fig-height: 6
 #| message: false
 #| warning: false
+## Lendo arquivos de bairro
 bairros_geo <- read_neighborhood(year = 2022, code_muni = joao_pessoa)
 
+## Junção com o arquivo bairros
 bairros_mapa <- bairros_geo |>
   select(name_neighborhood) |>
   left_join(bairros, by = "name_neighborhood")
 
+## Selecionando os 8 maiores para plotar rótulo por cima:
 destaques <- bairros_mapa |>
   slice_max(perc_nao_ocup, n = 8)
 
+## Mapa:
 ggplot(bairros_mapa) +
   geom_sf(aes(fill = perc_nao_ocup), color = "white", linewidth = 0.2) +
   geom_sf_label(data = destaques, aes(label = name_neighborhood),
@@ -399,6 +405,7 @@ A leitura dos microdados de domicílios segue o fluxo do Capítulo 8. Além da v
 #| label: leitura-microdados
 #| message: false
 #| warning: false
+## Selecionando colunas dos microdados:
 cols_dom <- c(
   "V0300",          # Identificador do domicílio
   "V0010",          # Peso amostral calibrado
@@ -407,6 +414,7 @@ cols_dom <- c(
   "V6204"           # Densidade de moradores por dormitório
 )
 
+## Lendo microdados:
 md_jp <- read_households(year = 2010, columns = cols_dom) |>
   filter(code_weighting %in% ap_cods) |>
   collect()
@@ -493,10 +501,12 @@ A média municipal fica em torno de um 1,67 moradores por dormitório, e cerca d
 #| fig-height: 5.5
 #| message: false
 #| warning: false
+## Agrupando por área de ponderação p/ obter % acima de 2 pessoas/dormitório
 dens_ap <- pa_jp |>
   group_by(code_weighting) |>
   summarize(acima_de_dois = survey_mean(V6204 > 2, na.rm = TRUE))
 
+## Mapa:
 ap_jp |>
   left_join(dens_ap, by = join_by(code_weighting)) |>
   ggplot() +
@@ -551,10 +561,12 @@ Filtramos agora as edificações em construção com destinação residencial. A
 #| label: tbl-hab-construcoes
 #| tbl-cap: "Edificações em construção com destinação residencial ou mista em João Pessoa (PB), segundo o número de unidades previstas no endereço, CNEFE 2022."
 #| message: false
+## Filtrando pontos do CNEFE que são construção/reforma:
 construcoes <- jp_cnefe |>
   filter(COD_ESPECIE == 7,
          COD_INDICADOR_FINALIDADE_CONST %in% c(1, 3))
 
+## Produzindo tabela c/ quantitativo dos subtipos
 construcoes |>
   st_drop_geometry() |>
   count(COD_INDICADOR_CONST_ENDERECO) |>
@@ -591,11 +603,13 @@ Resta agregar os pontos por bairro, e faremos isso pelas **coordenadas** de cada
 #| label: juncao-espacial
 #| message: false
 #| warning: false
+## Junção espacial por bairro:
 construcoes_bairro <- construcoes |>
   select(COD_INDICADOR_CONST_ENDERECO) |>
   st_join(bairros_geo |> select(name_neighborhood), join = st_within) |>
   st_drop_geometry()
 
+## Sumário do quantitativo por bairro:
 construcoes_bairro |>
   summarize(
     pontos          = n(),
@@ -617,6 +631,7 @@ Poucas dezenas de pontos ficam sem bairro, o que corresponde a construções sit
 #| label: tbl-hab-constr-bairro
 #| tbl-cap: "Dez bairros de João Pessoa (PB) com maior número de edificações em construção, discriminadas entre unidade única e mais de dez unidades, CNEFE 2022."
 #| message: false
+## Quantitativos por unidade única (= 1) e mais de 10 unidades (= 3)
 expansao <- construcoes_bairro |>
   filter(!is.na(name_neighborhood)) |>
   group_by(name_neighborhood) |>
@@ -626,6 +641,7 @@ expansao <- construcoes_bairro |>
     vertical   = sum(COD_INDICADOR_CONST_ENDERECO == 3)
   )
 
+## Selecionando os 10 maiores bairros com edificações em construção/reforma:
 expansao |>
   slice_max(total, n = 10) |>
   knitr::kable(
@@ -659,10 +675,12 @@ O contraste é um achado importante desta seção. Há bairros em que a constru�
 #| fig-height: 8
 #| message: false
 #| warning: false
+## Junção dos quantativos com o arquivo geográfico de bairro
 expansao_geo <- bairros_geo |>
   select(name_neighborhood) |>
   left_join(expansao, by = "name_neighborhood")
 
+## Mapas:
 mapa_horizontal <- ggplot(expansao_geo) +
   geom_sf(aes(fill = horizontal), color = "white", linewidth = 0.2) +
   scale_fill_distiller(palette = "Greens", direction = 1,
