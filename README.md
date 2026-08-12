@@ -3,7 +3,7 @@
 
 <img src="img/capa/capa-web.jpg" align="right" width="300" alt="Capa do livro Censo Demográfico no R">
 
-# Censo Demográfico no R
+## Censo Demográfico no R
 
 **Conceitos e aplicações para a análise do território brasileiro**
 
