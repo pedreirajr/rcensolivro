@@ -1,7 +1,7 @@
 ---
 title: "Saneamento e Drenagem Urbana"
 execute:
-  freeze: true
+  freeze: auto
 ---
 
 ```{r}

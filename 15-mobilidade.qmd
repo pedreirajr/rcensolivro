@@ -1,7 +1,7 @@
 ---
 title: "Mobilidade e Acessibilidade"
 execute:
-  freeze: true
+  freeze: auto
 ---
 
 ```{r}
