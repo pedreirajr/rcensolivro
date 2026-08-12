@@ -85,14 +85,17 @@ Para os microdados de 2010, precisamos do código do município e da malha de á
 #| message: false
 #| warning: false
 #| results: hide
+## Código IBGE do município:
 salvador <- lookup_muni(name_muni = "Salvador", year = 2022)$code_muni
 
+## Malha de áreas de ponderação de 2010, base dos mapas da primeira metade:
 ap_ssa <- read_weighting_area(
   code_weighting = salvador,
   year           = 2010,
   simplified     = FALSE
 )
 
+## Vetor de códigos, p/ filtrar os microdados:
 ap_cods <- ap_ssa |>
   pull(code_weighting)
 ```
@@ -109,6 +112,7 @@ Começamos pelos domicílios. Além das duas variáveis de interesse, pedimos `V
 #| label: leitura-domicilios
 #| message: false
 #| warning: false
+## Selecionando colunas dos microdados de domicílio:
 cols_dom <- c(
   "V0300",          # Identificador do domicílio
   "V0010",          # Peso amostral calibrado
@@ -118,10 +122,12 @@ cols_dom <- c(
   "V0222"           # Automóvel para uso particular
 )
 
+## Lendo microdados, só das áreas de ponderação de Salvador:
 md_dom <- read_households(year = 2010, columns = cols_dom) |>
   filter(code_weighting %in% ap_cods) |>
   collect()
 
+## Conferindo as respostas de posse de automóvel:
 md_dom |>
   count(V0222)
 ```
@@ -131,6 +137,7 @@ Há registros sem resposta, e antes de aplicar `na.rm = TRUE` convém entender d
 ```{r}
 #| label: ausentes-veiculo
 #| message: false
+## Cruzando os ausentes com o tipo de domicílio:
 md_dom |>
   group_by(V4001) |>
   summarize(
@@ -148,10 +155,12 @@ Esse recorte, porém, não é aplicado à tabela. Declaramos o desenho amostral 
 ```{r}
 #| label: plano-domicilios
 #| message: false
+## Total de domicílios por área de ponderação, p/ a correção de população finita:
 dom_ap <- md_dom |>
   group_by(code_weighting) |>
   summarize(n_dom = sum(V0010))
 
+## Levando esse total para cada registro:
 md_dom <- md_dom |>
   left_join(dom_ap, by = join_by(code_weighting))
 
@@ -174,6 +183,7 @@ O arquivo de pessoas segue a mesma lógica, com a diferença já discutida no Ca
 #| label: leitura-pessoas
 #| message: false
 #| warning: false
+## Selecionando colunas dos microdados de pessoas:
 cols_pes <- c(
   "V0300",          # Identificador do domicílio (conglomerado)
   "V0010",          # Peso amostral calibrado
@@ -183,14 +193,17 @@ cols_pes <- c(
   "V0662"           # Tempo habitual de deslocamento até o trabalho
 )
 
+## Lendo microdados de pessoas:
 md_pes <- read_population(year = 2010, columns = cols_pes) |>
   filter(code_weighting %in% ap_cods) |>
   collect()
 
+## Total de pessoas por área de ponderação, p/ a correção de população finita:
 pes_ap <- md_pes |>
   group_by(code_weighting) |>
   summarize(n_ind = sum(V0010))
 
+## Levando esse total para cada registro:
 md_pes <- md_pes |>
   left_join(pes_ap, by = join_by(code_weighting))
 
@@ -217,6 +230,7 @@ Os dois veículos vêm de variáveis diferentes, e por isso cada um exige uma ch
 #| fig-cap: "Proporção de domicílios particulares permanentes de Salvador (BA) com automóvel e com motocicleta, microdados da amostra do Censo 2010. Barras de erro indicam IC 95%."
 #| fig-height: 2.6
 #| message: false
+## Estimando a posse dos dois veículos e empilhando os resultados:
 posse_mun <- bind_rows(
   pa_dpp |>
     summarize(proporcao = survey_mean(V0222 == "1", vartype = "ci")) |>
@@ -228,6 +242,7 @@ posse_mun <- bind_rows(
 
 posse_mun
 
+## Gráfico de barras com as barras de erro do IC 95%:
 ggplot(posse_mun, aes(x = veiculo, y = proporcao,
                       ymin = proporcao_low, ymax = proporcao_upp)) +
   geom_col(fill = "steelblue", alpha = 0.85, width = 0.5) +
@@ -257,10 +272,12 @@ veic_ap <- pa_dpp |>
     motocicleta = survey_mean(V0221 == "1")
   )
 
+## Junção com a malha de áreas de ponderação:
 veic_geo <- ap_ssa |>
   left_join(veic_ap, by = join_by(code_weighting))
 
 ## Produzindo os gráficos:
+## O tema é guardado em um objeto porque se repete em todos os mapas do capítulo
 tema_mapa <- theme_minimal() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
         plot.subtitle = element_text(hjust = 0.5),
@@ -411,11 +428,13 @@ A @fig-tempo leva o indicador ao território, somando as duas faixas superiores,
 #| fig-height: 5.5
 #| message: false
 #| warning: false
+## Somando as duas faixas acima de uma hora, por área de ponderação:
 tempo_ap <- pa_pes |>
   filter(!is.na(V0662)) |>
   group_by(code_weighting) |>
   summarize(mais_de_uma_hora = survey_mean(V0662 %in% c("4", "5")))
 
+## Mapa:
 ap_ssa |>
   left_join(tempo_ap, by = join_by(code_weighting)) |>
   ggplot() +
@@ -462,6 +481,7 @@ O bloco a ser utilizado é o de **domicílios** do arquivo, e não o de faces de
 #| label: leitura-entorno
 #| message: false
 #| warning: false
+## Lendo o arquivo de Entorno, no bloco de domicílios:
 ent_ssa <- read_tracts(dataset = "Entorno", year = 2022) |>
   filter(code_muni == salvador) |>
   select(code_tract,
@@ -479,6 +499,7 @@ O denominador de todos os indicadores é `domicilios_V05000`, o total de domicí
 #| label: leitura-basico
 #| message: false
 #| warning: false
+## Lendo o arquivo Básico, p/ o total de domicílios ocupados e os bairros:
 basico_2022 <- read_tracts(dataset = "Basico", year = 2022) |>
   filter(code_muni == salvador) |>
   select(code_tract, name_neighborhood, situacao, V0007) |>
@@ -508,9 +529,11 @@ Calculamos agora os indicadores municipais, e eles não cabem todos em uma tabel
 #| label: tbl-mob-entorno-mun
 #| tbl-cap: "Presença dos itens de infraestrutura do entorno investigados em todas as faces, sobre o total de domicílios com entorno pesquisado, Salvador (BA), Censo 2022."
 #| message: false
+## Somando todas as colunas do Entorno de uma vez, p/ o município inteiro:
 totais <- ent_ssa |>
   summarize(across(starts_with("domicilios_"), \(x) sum(x, na.rm = TRUE)))
 
+## Montando a tabela dos quatro itens investigados em toda face:
 tibble(
   Item = c("Via pavimentada", "Ponto de ônibus ou van",
            "Via sinalizada para bicicleta", "Calçada"),
@@ -560,6 +583,7 @@ Levemos os indicadores ao mapa. A leitura das geometrias exige dois cuidados, am
 #| label: entorno-geo
 #| message: false
 #| warning: false
+## Lendo a malha de setores de 2022:
 setores_2022 <- read_census_tract(
   code_tract = salvador,
   year       = 2022,
@@ -567,6 +591,8 @@ setores_2022 <- read_census_tract(
 ) |>
   select(code_tract)
 
+## Dissolvendo os setores repartidos, descartando o setor da baía e
+## criando os quatro indicadores:
 ent_geo <- setores_2022 |>
   group_by(code_tract) |>
   summarize(.groups = "drop") |>
@@ -591,7 +617,7 @@ Restam 4.541 setores, que são os 4.542 do arquivo Básico menos o setor da baí
 #| fig-height: 6
 #| message: false
 #| warning: false
-# Legenda compacta, para sobrar espaço aos mapas nos quatro painéis
+## Legenda compacta, para sobrar espaço aos mapas nos quatro painéis:
 tema_legenda <- theme(
   legend.key.width  = unit(0.30, "cm"),
   legend.key.height = unit(0.55, "cm"),
@@ -601,6 +627,7 @@ tema_legenda <- theme(
   plot.subtitle     = element_text(size = 9, hjust = 0.5)
 )
 
+## Um mapa por indicador:
 e1 <- ggplot(ent_geo) +
   geom_sf(aes(fill = p_pavimentada), color = NA) +
   scale_fill_distiller(palette = "Greys", direction = 1, name = "%",
@@ -629,6 +656,7 @@ e4 <- ggplot(ent_geo) +
   coord_sf(expand = FALSE) + labs(subtitle = "Rampa, entre os com calçada") +
   tema_mapa + tema_legenda
 
+## Composição em dois por dois:
 (e1 + e2) / (e3 + e4)
 ```
 
@@ -637,6 +665,7 @@ O setor censitário é a maior resolução disponível e, com 4.541 unidades, pr
 ```{r}
 #| label: bairros-entorno
 #| message: false
+## Somando numeradores e denominadores por bairro antes de dividir:
 bairros_ent <- ent_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_neighborhood)) |>
@@ -662,6 +691,7 @@ A geometria dos bairros sai da própria malha de setores, dissolvida pelo nome d
 #| label: bairros-geo
 #| message: false
 #| warning: false
+## Dissolvendo os setores por bairro e juntando os indicadores:
 bairros_geo <- ent_geo |>
   filter(!is.na(name_neighborhood)) |>
   st_make_valid() |>
@@ -678,6 +708,7 @@ Os quatro painéis da @fig-entorno-bairros são os mesmos da @fig-entorno, com a
 #| fig-height: 6
 #| message: false
 #| warning: false
+## Os mesmos quatro mapas, agora por bairro:
 b1 <- ggplot(bairros_geo) +
   geom_sf(aes(fill = p_pavimentada), color = NA) +
   scale_fill_distiller(palette = "Greys", direction = 1, name = "%",
@@ -706,6 +737,7 @@ b4 <- ggplot(bairros_geo) +
   coord_sf(expand = FALSE) + labs(subtitle = "Rampa, entre os com calçada") +
   tema_mapa + tema_legenda
 
+## Composição em dois por dois:
 (b1 + b2) / (b3 + b4)
 ```
 
@@ -721,9 +753,11 @@ Passemos aos extremos. Na @tbl-mob-entorno-bairro, mantemos apenas os bairros co
 #| label: tbl-mob-entorno-bairro
 #| tbl-cap: "Bairros de Salvador (BA) com as menores e as maiores proporções de domicílios com calçada, entre os que possuem ao menos quinhentos domicílios investigados, Censo 2022."
 #| message: false
+## Mantendo só os bairros com ao menos 500 domicílios investigados:
 bairros_500 <- bairros_ent |>
   filter(investigados >= 500)
 
+## Juntando os 4 maiores com os 6 menores em % com calçada:
 bind_rows(
   bairros_500 |> slice_max(p_calcada, n = 4),
   bairros_500 |> slice_min(p_calcada, n = 6)

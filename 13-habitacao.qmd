@@ -136,6 +136,7 @@ Do arquivo Básico pedimos também `name_neighborhood` e `code_type`, que serão
 #| label: leitura-agregados
 #| message: false
 #| warning: false
+## Lendo o arquivo Básico e renomeando os totais de domicílio:
 jp_sc <- read_tracts(dataset = "Basico", year = 2022) |>
   filter(code_muni == joao_pessoa) |>
   select(code_tract, name_neighborhood, code_type, V0001, V0003, V0005, V0007) |>
@@ -197,12 +198,14 @@ Isso não dispensa o cuidado com o nome. O vazio de mercado e a segunda residên
 
 ```{r}
 #| label: nao-ocupados
+## Domicílios não ocupados por setor, pela diferença entre V0003 e V0007:
 jp_geo <- jp_geo |>
   mutate(
     nao_ocup      = dom_part - dom_ocup,
     perc_nao_ocup = 100 * nao_ocup / dom_part
   )
 
+## O mesmo indicador para o município inteiro:
 jp_geo |>
   st_drop_geometry() |>
   summarize(
@@ -385,12 +388,14 @@ Como no Capítulo 12, a mudança de fonte traz mudança de unidade espacial e de
 #| message: false
 #| warning: false
 
+## Malha de áreas de ponderação de 2010, que é a unidade dos microdados:
 ap_jp <- read_weighting_area(
   code_weighting = joao_pessoa,
   year           = 2010,
   simplified     = FALSE
 )
 
+## Vetor de códigos, p/ filtrar os microdados:
 ap_cods <- ap_jp |>
   pull(code_weighting)
 
@@ -427,13 +432,16 @@ Lembre-se que, no caso dos domicílios, o plano amostral é uma amostragem estra
 ```{r}
 #| label: plano-amostral
 #| message: false
+## Total de domicílios por área de ponderação, p/ a correção de população finita:
 dom_ap <- md_jp |>
   group_by(code_weighting) |>
   summarize(n_dom = sum(V0010))
 
+## Levando esse total para cada registro:
 md_jp <- md_jp |>
   left_join(dom_ap, by = join_by(code_weighting))
 
+## Montando o plano amostral:
 pa_jp <- md_jp |>
   as_survey_design(
     strata  = code_weighting,
@@ -473,6 +481,7 @@ Cada uma das três estimativas veio acompanhada de um limite inferior e de um su
 
 ```{r}
 #| label: prepara-ic
+## Reorganizando as três estimativas e seus intervalos em formato de tabela:
 ic <- tibble(
   medida = fct_inorder(c(
     "Média de moradores por dormitório",
@@ -532,6 +541,7 @@ Começamos lendo o CNEFE do município como objeto espacial.
 #| label: leitura-cnefe
 #| message: false
 #| warning: false
+## Lendo o CNEFE de João Pessoa como pontos, já em objeto espacial:
 jp_cnefe <- read_cnefe(
   code_muni = joao_pessoa,
   cache     = TRUE,

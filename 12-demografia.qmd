@@ -60,6 +60,7 @@ Com o código em mãos, lemos os três arquivos. Em todos eles o filtro por muni
 #| label: leitura-basico
 #| message: false
 #| warning: false
+## Lendo o arquivo Básico, só para Goiânia:
 sc_basico <- read_tracts(dataset = "Basico", year = 2022) |>
   filter(code_muni == goiania) |>
   select(code_tract, name_subdistrict, situacao, V0001) |>
@@ -142,6 +143,7 @@ Com os três objetos em memória, resta juntá-los pelo código do setor e atrib
 #| label: juncao
 #| message: false
 #| warning: false
+## Juntando os três arquivos pelo código do setor e renomeando as variáveis:
 goiania_sc <- sc_basico |>
   left_join(sc_pessoas,   by = "code_tract") |>
   left_join(sc_domicilio, by = "code_tract") |>
@@ -234,6 +236,7 @@ Abaixo, produz-se uma primeira sumarização das proporções de cada grupo em G
 
 ```{r}
 #| label: indicador-idade
+## Criando os indicadores das duas pontas da distribuição etária, por setor:
 goiania_geo <- goiania_geo |>
   mutate(
     idosos      = id_60_69 + id_70m,
@@ -256,6 +259,7 @@ Levar os dois indicadores ao mapa mostra que eles descrevem um padrão bem marca
 #| fig-height: 8
 #| message: false
 #| warning: false
+## Mapas:
 mapa_criancas <- ggplot(goiania_geo) +
   geom_sf(aes(fill = perc_0_4), color = NA) +
   scale_fill_distiller(palette = "Greens", direction = 1,
@@ -293,6 +297,7 @@ O argumento `use = "complete.obs"` descarta os setores em que algum dos dois ind
 
 ```{r}
 #| label: indicador-razao
+## Razão entre crianças de 0 a 4 anos e pessoas idosas, por setor:
 goiania_geo <- goiania_geo |>
   mutate(razao_cri_idoso = pess_0_4 / idosos)
 
@@ -387,6 +392,7 @@ O Censo classifica a cor ou raça em cinco categorias, branca, preta, amarela, p
 #| label: tbl-dem-raca-mun
 #| tbl-cap: "Composição da população de Goiânia (GO) por cor ou raça autodeclarada, Censo 2022."
 #| message: false
+## Somando a população de cada cor ou raça no município:
 composicao_raca <- goiania_sc |>
   summarize(
     Branca   = sum(branca,   na.rm = TRUE),
@@ -398,6 +404,7 @@ composicao_raca <- goiania_sc |>
   pivot_longer(everything(), names_to = "cor_raca", values_to = "pessoas") |>
   mutate(perc = 100 * pessoas / sum(pessoas))
 
+## Tabela:
 composicao_raca |>
   knitr::kable(
     col.names = c("Cor ou raça", "Pessoas", "% do total"),
@@ -414,6 +421,7 @@ Pretos e pardos somados respondem por pouco mais da metade dos residentes de Goi
 
 ```{r}
 #| label: indicador-raca
+## Somando pretos e pardos e calculando a proporção por setor:
 goiania_geo <- goiania_geo |>
   mutate(
     pretos_pardos      = preta + parda,
@@ -448,6 +456,7 @@ O padrão espacial é nítido, com uma mancha clara e contínua concentrada na r
 #| label: tbl-dem-raca-sub
 #| tbl-cap: "Subdistritos de Goiânia (GO) com as cinco maiores e as cinco menores proporções de população preta e parda, entre os que possuem ao menos mil domicílios particulares permanentes ocupados, Censo 2022."
 #| message: false
+## Agregando por subdistrito, somando cada parcela separadamente:
 raca_sub <- goiania_geo |>
   st_drop_geometry() |>
   filter(!is.na(name_subdistrict)) |>
@@ -460,6 +469,7 @@ raca_sub <- goiania_geo |>
   filter(dppo >= 1000) |>
   mutate(perc_pretos_pardos = 100 * pretos_pardos / pop)
 
+## Juntando os 5 maiores com os 5 menores em % de pretos e pardos:
 bind_rows(
   raca_sub |> slice_max(perc_pretos_pardos, n = 5),
   raca_sub |> slice_min(perc_pretos_pardos, n = 5)
@@ -482,12 +492,14 @@ O bloco de Parentesco traz a pessoa responsável desagregada por sexo, nas vari�
 
 ```{r}
 #| label: indicador-resp
+## Total de responsáveis e proporção de mulheres, por setor:
 goiania_geo <- goiania_geo |>
   mutate(
     resp_total  = resp_m + resp_f,
     perc_resp_f = 100 * resp_f / resp_total
   )
 
+## O mesmo indicador para o município inteiro:
 goiania_geo |>
   st_drop_geometry() |>
   summarize(
@@ -503,12 +515,14 @@ O numerador é a soma de `resp_f_preta` e `resp_f_parda`, que já vêm cruzadas 
 
 ```{r}
 #| label: indicador-resp-negra
+## Responsáveis mulheres pretas ou pardas, sobre o total de responsáveis mulheres:
 goiania_geo <- goiania_geo |>
   mutate(
     resp_f_negra      = resp_f_preta + resp_f_parda,
     perc_resp_f_negra = 100 * resp_f_negra / resp_f
   )
 
+## Comparando os dois denominadores possíveis:
 goiania_geo |>
   st_drop_geometry() |>
   summarize(
@@ -533,6 +547,7 @@ Os dois mapas a seguir tornam a diferença visível. Repare que as legendas traz
 #| fig-height: 8
 #| message: false
 #| warning: false
+## Mapas:
 mapa_resp_f <- ggplot(goiania_geo) +
   geom_sf(aes(fill = perc_resp_f), color = NA) +
   scale_fill_distiller(palette = "BuPu", direction = 1,
@@ -572,6 +587,7 @@ Como a idade em 2010 vem detalhada ano a ano, precisamos somar as colunas corres
 #| label: leitura-2010
 #| message: false
 #| warning: false
+## Lendo o arquivo Pessoa de 2010, com a idade ano a ano:
 pessoa_2010 <- read_tracts(dataset = "Pessoa", year = 2010) |>
   filter(code_muni == goiania) |>
   select(code_tract,
@@ -579,6 +595,7 @@ pessoa_2010 <- read_tracts(dataset = "Pessoa", year = 2010) |>
          num_range("pessoa13_V", 94:134, width = 3)) |>
   collect()
 
+## Lendo o arquivo Responsavel de 2010, que em 2022 não existe como tal:
 resp_2010 <- read_tracts(dataset = "Responsavel", year = 2010) |>
   filter(code_muni == goiania) |>
   select(code_tract, responsavel01_V001, responsavel02_V001) |>
@@ -605,6 +622,7 @@ Com os dois arquivos em memória, calculamos os três indicadores de 2010 e os c
 #| label: tbl-dem-comparativo
 #| tbl-cap: "Envelhecimento, composição por cor ou raça e responsabilidade feminina pelo domicílio em Goiânia (GO), Censos de 2010 e 2022."
 #| message: false
+## Totais de 2010:
 pop_2010   <- sum(pessoa_2010$pessoa03_V001, na.rm = TRUE)
 idade_2010 <- pessoa_2010 |>
   select(num_range("pessoa13_V", 94:134, width = 3)) |>
@@ -612,12 +630,14 @@ idade_2010 <- pessoa_2010 |>
 pp_2010    <- sum(pessoa_2010$pessoa03_V003, na.rm = TRUE) +
               sum(pessoa_2010$pessoa03_V005, na.rm = TRUE)
 
+## Os mesmos totais em 2022:
 pop_2022   <- sum(goiania_sc$pop, na.rm = TRUE)
 idade_2022 <- sum(goiania_sc$id_60_69, na.rm = TRUE) +
               sum(goiania_sc$id_70m,   na.rm = TRUE)
 pp_2022    <- sum(goiania_sc$preta, na.rm = TRUE) +
               sum(goiania_sc$parda, na.rm = TRUE)
 
+## Montando o comparativo entre os dois censos:
 comparativo <- tibble(
   Indicador = c("% com 60 anos ou mais",
                 "% pretos e pardos",
@@ -636,6 +656,7 @@ comparativo <- tibble(
   )
 )
 
+## Tabela:
 comparativo |>
   knitr::kable(digits = 1, format.args = list(decimal.mark = ","))
 ```
@@ -650,6 +671,7 @@ O bloco de Parentesco dos agregados classifica cada domicílio segundo a composi
 #| label: tbl-dem-arranjos
 #| tbl-cap: "Distribuição dos domicílios de Goiânia (GO) segundo a composição da unidade doméstica, Censo 2022."
 #| message: false
+## Somando os domicílios de cada arranjo domiciliar no município:
 arranjos <- goiania_sc |>
   summarize(
     `Responsável e cônjuge, sem filhos`              = sum(arr_casal,  na.rm = TRUE),
@@ -661,6 +683,7 @@ arranjos <- goiania_sc |>
   pivot_longer(everything(), names_to = "arranjo", values_to = "domicilios") |>
   mutate(perc = 100 * domicilios / sum(domicilios))
 
+## Tabela:
 arranjos |>
   knitr::kable(
     col.names = c("Composição da unidade doméstica", "Domicílios", "% do total"),
@@ -705,6 +728,7 @@ Feita a ressalva, construímos o indicador. O denominador é o total de domicíl
 
 ```{r}
 #| label: indicador-mono
+## Arranjos monoparentais sobre o total de domicílios ocupados, por setor:
 goiania_geo <- goiania_geo |>
   mutate(
     perc_mono   = 100 * arr_mono / dppo,
@@ -750,12 +774,14 @@ O primeiro passo é obter a geometria das áreas de ponderação com o `geobr` e
 #| message: false
 #| warning: false
 #| results: hide
+## Malha de áreas de ponderação de 2010, que é a unidade dos microdados:
 ap_goiania <- read_weighting_area(
   code_weighting = goiania,
   year           = 2010,
   simplified     = FALSE
 )
 
+## Vetor de códigos, p/ filtrar os microdados:
 ap_cods <- ap_goiania |>
   pull(code_weighting)
 
@@ -768,6 +794,7 @@ Em seguida lemos o arquivo de pessoas, selecionando apenas as colunas necessári
 #| label: leitura-microdados
 #| message: false
 #| warning: false
+## Selecionando colunas dos microdados:
 cols_pessoa <- c(
   "V0300",          # Identificador do domicílio (conglomerado)
   "V0010",          # Peso amostral calibrado
@@ -780,6 +807,7 @@ cols_pessoa <- c(
   "V6036"           # Idade em anos completos
 )
 
+## Lendo microdados, só das áreas de ponderação de Goiânia:
 md_goiania <- read_population(year = 2010, columns = cols_pessoa) |>
   filter(code_weighting %in% ap_cods) |>
   collect()
@@ -801,13 +829,16 @@ Resta declarar o plano amostral. A construção repete a que foi detalhada no Ca
 ```{r}
 #| label: plano-amostral
 #| message: false
+## Total de pessoas por área de ponderação, p/ a correção de população finita:
 pop_ap <- md_goiania |>
   group_by(code_weighting) |>
   summarize(n_ind = sum(V0010))
 
+## Levando esse total para cada registro:
 md_goiania <- md_goiania |>
   left_join(pop_ap, by = join_by(code_weighting))
 
+## Montando o plano amostral:
 pa_goiania <- md_goiania |>
   as_survey_design(
     ids     = V0300,
@@ -827,6 +858,7 @@ A pergunta que parece trivial, a de quantas pessoas com deficiência há no muni
 #| label: tbl-dem-def-criterios
 #| tbl-cap: "Prevalência de deficiência em Goiânia (GO) pelos critérios amplo e estrito, com intervalos de confiança, microdados da amostra do Censo 2010."
 #| message: false
+## Criando as duas definições de deficiência dentro do plano amostral:
 pa_goiania <- pa_goiania |>
   mutate(
     def_amplo   = V0614 %in% c("1", "2", "3") | V0615 %in% c("1", "2", "3") |
@@ -835,6 +867,7 @@ pa_goiania <- pa_goiania |>
                   V0616 %in% c("1", "2") | V0617 == "1"
   )
 
+## Estimando a prevalência por cada critério, com intervalo de confiança:
 pa_goiania |>
   summarize(
     criterio_amplo   = survey_mean(def_amplo,   vartype = "ci"),
@@ -904,10 +937,12 @@ O mapa a seguir apresenta a prevalência de deficiência por área de ponderaç�
 #| fig-height: 5
 #| message: false
 #| warning: false
+## Estimando a prevalência por área de ponderação:
 def_ap <- pa_goiania |>
   group_by(code_weighting) |>
   summarize(perc_def = survey_mean(def_estrito))
 
+## Mapa:
 ap_goiania |>
   left_join(def_ap, by = join_by(code_weighting)) |>
   ggplot() +
@@ -972,11 +1007,13 @@ O interesse territorial dessa variável está em como ela se distribui intername
 #| fig-height: 5
 #| message: false
 #| warning: false
+## Proporção de quem nasceu no município e nunca morou fora, por área:
 nat_ap <- pa_goiania |>
   mutate(nativo = V0618 == "1") |>
   group_by(code_weighting) |>
   summarize(perc_nativo = survey_mean(nativo))
 
+## Mapa:
 ap_goiania |>
   left_join(nat_ap, by = join_by(code_weighting)) |>
   ggplot() +

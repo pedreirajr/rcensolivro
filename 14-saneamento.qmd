@@ -97,12 +97,14 @@ Como se sabe, o arquivo Básico traz a coluna `situacao`, que classifica cada se
 #| tbl-cap: "Setores censitários, população e área de Macapá (AP) segundo a situação urbana ou rural do setor, Censo 2022."
 #| message: false
 #| warning: false
+## Lendo o arquivo Básico dos agregados, só para Macapá:
 basico <- read_tracts(dataset = "Basico", year = 2022) |>
   filter(code_muni == macapa) |>
   select(code_tract, name_neighborhood, name_district, situacao,
          code_type, area_km2, V0001, V0007) |>
   collect()
 
+## Sumarizando setores, população e área por situação:
 basico |>
   group_by(situacao) |>
   summarize(
@@ -187,13 +189,16 @@ Observemos no mapa para deixar o argumento visível. Na parte superior, os setor
 #| fig-height: 8
 #| message: false
 #| warning: false
+## Separando os setores urbanos:
 urbanos_geo <- setores_geo |>
   filter(zone == "Urbana")
 
+## Caixa delimitadora dos dois distritos centrais, p/ recortar o 2º mapa:
 recorte <- urbanos_geo |>
   filter(name_district %in% c("Macapá", "Fazendinha")) |>
   st_bbox()
 
+## Mapas:
 mapa_municipio <- ggplot() +
   geom_sf(data = setores_geo, fill = "gray93", color = NA) +
   geom_sf(data = urbanos_geo, aes(fill = name_district),
@@ -265,6 +270,7 @@ A leitura seleciona os sete blocos de uma vez, e a restrição aos setores urban
 #| label: leitura-domicilio
 #| message: false
 #| warning: false
+## Lendo o arquivo Domicílio, com os sete blocos de saneamento:
 domicilio <- read_tracts(dataset = "Domicilio", year = 2022) |>
   filter(code_muni == macapa) |>
   select(code_tract, domicilio01_V00001,
@@ -277,10 +283,12 @@ domicilio <- read_tracts(dataset = "Domicilio", year = 2022) |>
          num_range("domicilio02_V00", 341:345, width = 3)) |>
   collect()
 
+## Restringindo aos setores urbanos e juntando com o Básico:
 macapa_sc <- basico |>
   filter(code_tract %in% setores_urbanos) |>
   left_join(domicilio, by = "code_tract")
 
+## Total de domicílios particulares permanentes, denominador do capítulo:
 dpp <- sum(macapa_sc$domicilio01_V00001, na.rm = TRUE)
 dpp
 ```
@@ -305,6 +313,7 @@ Segundo o critério do IVS, o abastecimento de água é **inadequado** quando n�
 
 ```{r}
 #| label: ivs-sumarizacao
+## Criando os indicadores de inadequação pelo critério do IVS, por setor:
 macapa_sc <- macapa_sc |>
   mutate(
     dom      = domicilio01_V00001,
@@ -315,6 +324,7 @@ macapa_sc <- macapa_sc |>
     perc_esg_inadeq  = 100 * (1 - (redger_e + fossa_s) / dom)
   )
 
+## Mesmos indicadores para o conjunto da área urbana:
 macapa_sc |>
   summarize(
     agua_inadequada  = 100 * (1 - sum(redger_a, na.rm = TRUE) / dpp),
@@ -405,6 +415,7 @@ Por fim, mapeamos abaixo a situação dos setores tanto quanto ao fato de a águ
 #| fig-height: 8
 #| message: false
 #| warning: false
+## Juntando geometria e indicadores, criando os dois percentuais de água:
 macapa_geo <- setores_geo |>
   select(code_tract) |>
   inner_join(macapa_sc, by = "code_tract") |>
@@ -413,6 +424,7 @@ macapa_geo <- setores_geo |>
     perc_encanada  = 100 * domicilio02_V00199 / dom
   )
 
+## Mapas:
 mapa_rede <- ggplot(macapa_geo) +
   geom_sf(aes(fill = perc_rede_agua), color = NA) +
   scale_fill_distiller(palette = "Blues", direction = 1,
@@ -448,6 +460,7 @@ Observemos o quantitativo em cada um dos casos:
 #| label: tbl-san-esgoto-destino
 #| tbl-cap: "Domicílios particulares permanentes de Macapá (AP) segundo a destinação do esgotamento sanitário, Censo 2022."
 #| message: false
+## Somando os domicílios de cada uma das oito destinações de esgoto:
 esgoto <- tibble(
   Destinação = c("Rede geral ou pluvial", "Fossa séptica ou filtro ligada à rede",
                  "Fossa séptica ou filtro não ligada à rede",
@@ -462,6 +475,7 @@ esgoto <- tibble(
   ) |>
   select(-variavel)
 
+## Tabela:
 esgoto |>
   knitr::kable(digits = 1, format.args = list(big.mark = ".", decimal.mark = ","))
 ```
@@ -476,11 +490,13 @@ O que mais chama atenção, entretanto, é a sexta linha. Um em cada dez domicí
 #| fig-height: 5.5
 #| message: false
 #| warning: false
+## Somando vala e curso d'água em um só indicador, por setor:
 macapa_geo <- macapa_geo |>
   mutate(
     perc_curso_agua = 100 * (domicilio02_V00313 + domicilio02_V00314) / dom
   )
 
+## Mapa:
 ggplot(macapa_geo) +
   geom_sf(aes(fill = perc_curso_agua), color = NA) +
   scale_fill_distiller(palette = "YlOrRd", direction = 1,
@@ -514,6 +530,7 @@ bairros <- macapa_sc |>
     perc_curso_agua = 100 * (vala + curso) / dom
   )
 
+## Selecionando os 6 bairros com maior % em vala ou curso d'água:
 bairros |>
   slice_max(perc_curso_agua, n = 6) |>
   select(name_neighborhood, dom, perc_curso_agua, perc_rede) |>
@@ -604,6 +621,7 @@ Poderíamos calculá-lo subtraindo as duas primeiras linhas do total, mas é mel
 #| fig-height: 5.5
 #| message: false
 #| warning: false
+## Somando as quatro destinações inadequadas do lixo, por setor:
 macapa_geo <- macapa_geo |>
   mutate(
     perc_sem_coleta = 100 * rowSums(
@@ -612,6 +630,7 @@ macapa_geo <- macapa_geo |>
     ) / dom
   )
 
+## Mapa:
 ggplot(macapa_geo) +
   geom_sf(aes(fill = perc_sem_coleta), color = NA) +
   scale_fill_distiller(palette = "OrRd", direction = 1,
@@ -636,6 +655,8 @@ A última linha da @tbl-san-esgoto-destino registrou os domicílios que não tin
 #| label: tbl-san-banheiro
 #| tbl-cap: "Domicílios particulares permanentes de Macapá (AP) segundo a instalação sanitária disponível, Censo 2022."
 #| message: false
+## Somando os domicílios de cada instalação sanitária e contando as
+## células suprimidas por sigilo em cada uma:
 banheiro <- tibble(
   Instalação = c("1 banheiro de uso exclusivo", "2 banheiros de uso exclusivo",
                  "3 banheiros de uso exclusivo", "4 ou mais banheiros de uso exclusivo",
@@ -651,6 +672,7 @@ banheiro <- tibble(
   ) |>
   select(-variavel)
 
+## Tabela:
 banheiro |>
   knitr::kable(digits = 2, align = c("l", "c", "c", "c"),
                format.args = list(big.mark = ".", decimal.mark = ","))
@@ -695,6 +717,7 @@ São dezenove áreas de ponderação para todo o município, contra as centenas 
 #| label: leitura-microdados-macapa
 #| message: false
 #| warning: false
+## Selecionando colunas dos microdados:
 cols_dom <- c(
   "V0300",          # Identificador do domicílio
   "V0010",          # Peso amostral calibrado
@@ -705,10 +728,12 @@ cols_dom <- c(
   "V0206"           # Sanitário ou buraco para dejeções, existência
 )
 
+## Lendo microdados, só das áreas de ponderação de Macapá:
 md_macapa <- read_households(year = 2010, columns = cols_dom) |>
   filter(code_weighting %in% ap_macapa$code_weighting) |>
   collect()
 
+## Conferindo o encadeamento entre as perguntas V0205 e V0206:
 md_macapa |>
   summarize(
     registros            = n(),
@@ -724,13 +749,16 @@ Declarado isso, montamos o plano amostral no formato do Capítulo 8, com estrati
 ```{r}
 #| label: plano-amostral-macapa
 #| message: false
+## Total de domicílios por área de ponderação, p/ a correção de população finita:
 dom_ap <- md_macapa |>
   group_by(code_weighting) |>
   summarize(n_dom = sum(V0010))
 
+## Levando esse total para cada registro:
 md_macapa <- md_macapa |>
   left_join(dom_ap, by = join_by(code_weighting))
 
+## Montando o plano amostral:
 pa_macapa <- md_macapa |>
   as_survey_design(
     strata  = code_weighting,
@@ -745,6 +773,7 @@ Falta um recorte antes de estimar. O arquivo de domicílios traz também improvi
 #| label: tbl-san-banheiro-2010
 #| tbl-cap: "Domicílios particulares permanentes urbanos de Macapá (AP) sem banheiro de uso exclusivo, com intervalo de confiança de 95%, microdados da amostra do Censo 2010."
 #| message: false
+## Estimando as três situações no desenho amostral, com intervalo de confiança:
 banheiro_2010 <- pa_macapa |>
   filter(V4001 == "01", V1006 == "1") |>
   mutate(
@@ -758,6 +787,7 @@ banheiro_2010 <- pa_macapa |>
     sem_nada     = survey_mean(sem_nada,     vartype = "ci")
   )
 
+## Reorganizando as estimativas em formato de tabela:
 tibble(
   Situação = fct_inorder(c(
     "Sem banheiro de uso exclusivo",
@@ -788,6 +818,7 @@ Os microdados permitem ainda descer da cidade para as áreas de ponderação, qu
 #| fig-height: 4
 #| message: false
 #| warning: false
+## Mesmas estimativas, agora por área de ponderação:
 banheiro_ap <- pa_macapa |>
   filter(V4001 == "01", V1006 == "1") |>
   mutate(
@@ -802,6 +833,7 @@ banheiro_ap <- pa_macapa |>
     sem_nada     = survey_mean(sem_nada)
   )
 
+## Mapa em três painéis, um por situação:
 ap_macapa |>
   left_join(banheiro_ap, by = join_by(code_weighting)) |>
   pivot_longer(c(sem_banheiro, so_sanitario, sem_nada),
@@ -839,6 +871,7 @@ Usamos o bloco de **domicílios** do arquivo de **Entorno**, pelo motivo já dis
 ```{r}
 #| message: false
 #| warning: false
+## Lendo o arquivo de Entorno, no bloco de domicílios:
 entorno <- read_tracts(dataset = "Entorno", year = 2022) |>
   filter(code_muni == macapa) |>
   select(code_tract, name_neighborhood,
@@ -848,13 +881,16 @@ entorno <- read_tracts(dataset = "Entorno", year = 2022) |>
   collect() |>
   filter(code_tract %in% setores_urbanos)
 
+## Domicílios com entorno pesquisado, que é o denominador desta seção:
 investigados <- sum(entorno$domicilios_V05000, na.rm = TRUE)
 
+## Total de domicílios ocupados dos mesmos setores, p/ comparação:
 dom_urbanos <- basico |>
   filter(code_tract %in% setores_urbanos) |>
   summarize(total = sum(V0007, na.rm = TRUE)) |>
   pull(total)
 
+## Verificando a cobertura da pesquisa:
 tibble(
   setores_com_entorno = nrow(entorno),
   domicilios_investigados = investigados,
@@ -884,6 +920,7 @@ Levado ao mapa, o indicador mostra a distribuição espacial desse aspecto da dr
 #| fig-height: 5.5
 #| message: false
 #| warning: false
+## Juntando o Entorno à geometria e criando o indicador de bueiro:
 entorno_geo <- macapa_geo |>
   left_join(
     entorno |> select(code_tract, domicilios_V05000, domicilios_V05009),
@@ -893,6 +930,7 @@ entorno_geo <- macapa_geo |>
     perc_bueiro = 100 * domicilios_V05009 / domicilios_V05000
   )
 
+## Mapa:
 ggplot(entorno_geo) +
   geom_sf(aes(fill = perc_bueiro), color = NA) +
   scale_fill_distiller(palette = "PuBu", direction = 1,
@@ -918,6 +956,7 @@ Repare que o vetor `quesitos_2010` lista os dez itens do questionário, e não a
 #| label: entorno-2010
 #| message: false
 #| warning: false
+## Os dez itens do questionário de 2010, na ordem em que aparecem no arquivo:
 quesitos_2010 <- c(
   "Identificação do logradouro", "Iluminação pública", "Pavimentação",
   "Calçada", "Meio-fio ou guia", "Bueiro ou boca de lobo",
@@ -925,6 +964,7 @@ quesitos_2010 <- c(
   "Lixo acumulado nos logradouros"
 )
 
+## Montando o dicionário de códigos, quatro colunas por item:
 dic_2010 <- tibble(
   quesito = quesitos_2010,
   inicio  = 382 + 4 * (seq_along(quesitos_2010) - 1)
@@ -936,10 +976,12 @@ dic_2010 <- tibble(
     fem_nao     = sprintf("entorno02_V%03d", inicio + 3)
   )
 
+## Lendo o Entorno de 2010:
 entorno_2010 <- read_tracts(dataset = "Entorno", year = 2010) |>
   filter(code_muni == macapa) |>
   collect()
 
+## Somando existência e total de cada item, juntando os dois sexos do responsável:
 resumo_2010 <- dic_2010 |>
   rowwise() |>
   mutate(

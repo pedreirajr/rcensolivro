@@ -332,6 +332,7 @@ Com as ressalvas postas, lemos o arquivo para os setores urbanos de Manaus e olh
 #| label: renda-responsavel
 #| message: false
 #| warning: false
+## Lendo o arquivo ResponsavelRenda, só dos setores urbanos:
 resprenda_2022 <- read_tracts(dataset = "ResponsavelRenda", year = 2022) |>
   filter(code_tract %in% manaus_sc_urb) |>
   select(code_tract, code_neighborhood, name_neighborhood,
@@ -347,6 +348,7 @@ A variância divulgada na `V06005` permite algo que raramente se faz. Sua raiz q
 
 ```{r}
 #| label: coef-variacao
+## Desvio padrão e coeficiente de variação da renda, por setor:
 resprenda_2022 <- resprenda_2022 |>
   mutate(
     desvio_padrao = sqrt(V06005),
@@ -529,11 +531,14 @@ Antes de mapear, descartamos as células vazias e reaproveitamos a escala limita
 #| fig-height: 6
 #| message: false
 #| warning: false
+## Descartando os hexágonos sem renda interpolada:
 renda_h3_ocupados <- renda_h3 |>
   filter(!is.na(avg_inc_resp))
 
+## Percentil 95, p/ limitar a escala de cor:
 limite_h3 <- quantile(renda_h3_ocupados$avg_inc_resp, 0.95)
 
+## Mapa:
 ggplot(renda_h3_ocupados) +
   geom_sf(aes(fill = avg_inc_resp), color = NA) +
   scale_fill_distiller(palette = "YlGnBu", direction = 1,
@@ -648,6 +653,7 @@ Com as predefinições realizadas, calculamos, primeiro, a média e a mediana do
 #| fig-cap: "Média e mediana do rendimento domiciliar per capita em Manaus (AM), microdados da amostra do Censo 2010. Barras de erro indicam IC 95%."
 #| fig-height: 2.6
 #| message: false
+## Estimando média e mediana municipais e empilhando os resultados:
 renda_mun <- bind_rows(
   pa_manaus |>
     summarize(valor = survey_mean(V6531, na.rm = TRUE, vartype = "ci")) |>
@@ -659,6 +665,7 @@ renda_mun <- bind_rows(
 
 renda_mun
 
+## Gráfico de barras com as barras de erro do IC 95%:
 ggplot(renda_mun, aes(x = medida, y = valor,
                       ymin = valor_low, ymax = valor_upp)) +
   geom_col(fill = "steelblue", alpha = 0.85, width = 0.5) +
@@ -770,6 +777,7 @@ Basta responder sim a qualquer uma delas para ser considerada ocupada na semana 
 
 ```{r}
 #| label: ocupados
+## Marcando quem estava ocupado e quem produzia apenas para autoconsumo:
 md_manaus <- md_manaus |>
   mutate(
     ocupado = coalesce(
@@ -779,6 +787,7 @@ md_manaus <- md_manaus |>
     autoconsumo = coalesce(V0644 == "1", FALSE)
   )
 
+## Conferindo os totais e as ausências nas variáveis de trabalho:
 md_manaus |>
   summarize(
     registros           = n(),
@@ -855,11 +864,13 @@ Esse número municipal esconde as diferenças internas, e a área de ponderaçã
 #| fig-height: 5.5
 #| message: false
 #| warning: false
+## Estimando a proporção sem carteira assinada, por área de ponderação:
 vinculo_ap <- pa_manaus |>
   filter(ocupado, !autoconsumo) |>
   group_by(code_weighting) |>
   summarize(sem_carteira = survey_mean(V0648 == "4", na.rm = TRUE))
 
+## Mapa:
 ap_urbanas |>
   left_join(vinculo_ap, by = join_by(code_weighting)) |>
   ggplot() +
