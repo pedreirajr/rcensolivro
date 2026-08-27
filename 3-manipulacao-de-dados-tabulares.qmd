@@ -762,7 +762,7 @@ Antes de iniciar os exercícios, baixe os arquivos abaixo para uma pasta onde vo
 
 2. Crie uma nova variável na base `vel` chamada `cat_vel` que classifique as velocidades em três níveis usando `case_when()`:
    - `"Lenta"`: velocidade menor que 40 km/h
-   - `"Normal"`: velocidade entre 40 e 60 km/h (inclindo esses limites)
+   - `"Normal"`: velocidade entre 40 e 60 km/h (incluindo esses limites)
    - `"Alta"`: velocidade acima de 60 km/h
 
 3. Leia o arquivo `escolha_modal.csv` como um `tibble` (com a codificação de caracteres correta) e armazene-o em um objeto denominado `em`. Posteriormente, crie um dataframe com valores médios de emissão de CO2 por km rodado para cada um dos modos presentes na coluna `modo_viagem` (A pé = 0 g/km, Bicicleta = 0 g/km, Carro ou App = 120 g/km e TP = 50 g/km). Na sequência faça um left_join de `em` com essa nova tabela para incorporar os valores de emissão a `em`.
