@@ -53,7 +53,9 @@ book:
 
 format:
   html:
-    theme: default
+    theme:
+      light: default
+      dark: darkly
     css: custom.css
     number-sections: true
     toc: true
